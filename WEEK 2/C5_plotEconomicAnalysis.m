@@ -47,11 +47,9 @@ end
 title('Economic Analysis of Conductor Sizing');
 xlabel('Standard Conductor Cross-Section (mm^2)');
 ylabel('Lifecycle Cost (Currency)');
-legend('Initial Cable Cost', 'Cost of Energy Losses', 'Total Lifecycle Cost', 'Location', 'northeast');
+legend('Initial Cable Cost', 'Cost of Energy Losses', 'Total Lifecycle Cost', 'Location', 'northwest');
 grid on;
+box on;
 hold off;
-
-b(1).FaceColor = [0.2, 0.6, 1]; % Blue for cable cost
-b(2).FaceColor = [1, 0.6, 0.2]; % Orange for loss cost
 
 end

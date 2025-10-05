@@ -40,12 +40,12 @@ numerator = phase_factor * d * I * cos_phi;
 denominator = sigma * s_final;
 
 if denominator == 0
-    error('Cross-sectional area cannot be zero.');
+    error('Final cross-section cannot be zero.');
 end
 
-final_vd_volts = numerator / denominator;
+deltaU = numerator / denominator;
 
-% Convert the voltage drop to a percentage of the source voltage
-final_vd_percent = (final_vd_volts / U_source) * 100;
+% Calculate the final percentage voltage drop
+final_vd_percent = (deltaU / U_source) * 100;
 
 end

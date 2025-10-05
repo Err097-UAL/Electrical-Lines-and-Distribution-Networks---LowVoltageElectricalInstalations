@@ -1,0 +1,7 @@
+Arctic Mokey
+
+-create amazing python visuals and animatics the same
+way that 3B1B does it
+
+-interactive GUI like the ones provided by the ARM teacher
+(regulacion automatica)

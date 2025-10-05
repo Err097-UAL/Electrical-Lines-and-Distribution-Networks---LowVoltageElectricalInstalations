@@ -45,7 +45,8 @@ total_resistance = (1/sigma) * d / s;
 power_loss_watts = num_conductors * (I^2) * total_resistance;
 
 % Convert power loss to kWh over the entire period
-total_energy_loss_kWh = (power_loss_watts / 1000) * hours_per_year * years;
+total_hours = years * hours_per_year;
+total_energy_loss_kWh = (power_loss_watts / 1000) * total_hours;
 
 % Calculate the total cost of these losses
 loss_cost = total_energy_loss_kWh * cost_per_kWh;

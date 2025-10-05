@@ -17,7 +17,7 @@ function [selected_section, ampacity, standard_sections_data] = C3_selectStandar
 % Outputs:
 %   selected_section     - The chosen standard section [mm^2]
 %   ampacity             - The ampacity of the chosen section [A]
-%   standard_sections_data - The full data table used for the lookup
+%   standard_sections_data - The full data table in a struct array
 % =========================================================================
 
 % Define standard sections, ampacities, and illustrative costs
@@ -51,20 +51,17 @@ else % Aluminum
     ];
 end
 
-% Create a structure for easier data access
-standard_sections_data = struct('section', num2cell(data(:,1)), ...
-                                'ampacity', num2cell(data(:,2)), ...
-                                'cost_per_meter', num2cell(data(:,3)));
+% Convert table to a more usable struct array
+standard_sections_data = struct('section', num2cell(data(:,1)), 'ampacity', num2cell(data(:,2)), 'cost_per_meter', num2cell(data(:,3)));
 
 % Find the first standard section that is >= the required section
 idx = find([standard_sections_data.section] >= s_required, 1, 'first');
 
-% Handle case where required section is larger than any standard size
 if isempty(idx)
-    error('Required section (%.2f mm^2) is larger than the largest available standard size.', s_required);
+    error('Required section of %.2f mm^2 is larger than any available standard size.', s_required);
 end
 
-% Extract the details of the selected section
+% Extract the data for the selected section
 selected_section = standard_sections_data(idx).section;
 ampacity = standard_sections_data(idx).ampacity;
 

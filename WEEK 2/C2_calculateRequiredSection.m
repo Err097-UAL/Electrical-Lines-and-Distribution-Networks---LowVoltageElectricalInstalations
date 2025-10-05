@@ -37,7 +37,7 @@ numerator = phase_factor * d * I * cos_phi;
 denominator = sigma * deltaU_max;
 
 if denominator == 0
-    error('Maximum allowable voltage drop cannot be zero.');
+    error('Maximum voltage drop cannot be zero.');
 end
 
 s = numerator / denominator;
