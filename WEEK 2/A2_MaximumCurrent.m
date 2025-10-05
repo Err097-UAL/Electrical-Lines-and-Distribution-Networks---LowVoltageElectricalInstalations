@@ -1,35 +1,33 @@
-function I_max = A2_MaximumCurrent(R_20, alpha, T_mat, T_ref, T_env, k, length, r_inner, r_outer)
+function I_max = A2_MaximumCurrent(R_20, alpha, T_mat, envParams, length, r_inner, r_outer)
 % =========================================================================
-% FUNCTION: calculateMaxCurrent (V3)
+% FUNCTION: A2_MaximumCurrent (V4)
 % =========================================================================
 % Description:
-% Calculates the maximum allowable current by solving the heat balance equation.
-% UPDATED: Now uses the precise logarithmic conduction formula for a hollow cylinder.
-%
-% Heat Balance: P_generated = P_dissipated
-% R_Tmat*I_max^2 = (2*pi*k*L*(T_mat-T_env)) / log(r_outer/r_inner)
-%
-% Inputs:
-%   ... (standard inputs) ...
-%   r_inner  - Conductor (inner) radius [m]
-%   r_outer  - Outer insulation radius [m]
+% Calculates the maximum allowable current (ampacity) based on the steady-state
+% heat balance at the maximum rated temperature of the conductor.
+% MODIFIED: This version calls the A7_HeatDissipation module to handle
+%           scenario-specific heat transfer physics.
 % =========================================================================
 
-% 1. Calculate resistance at maximum temperature
+% 1. Calculate the conductor's resistance at its maximum temperature
+T_ref = 20; % Reference temperature is constant at 20°C
 R_Tmat = A3_ResistanceTemperatureCorrection(R_20, alpha, T_mat, T_ref);
 
-% 2. Calculate heat dissipation using the logarithmic formula for a cylinder
-% UPDATED: Replaced linear approximation with precise formula.
-if r_outer <= r_inner
-    error('Outer radius must be greater than inner radius.');
-end
-P_dissipated = (2 * pi * k * length * (T_mat - T_env)) / log(r_outer / r_inner);
+% 2. Calculate the total heat the cable can dissipate at T_mat
+P_dissipated = A7_HeatDissipation(T_mat, envParams, r_outer, length);
 
-% 3. Solve for I_max from the heat balance equation
+% 3. From P_generated = P_dissipated, solve for I_max
+% P_generated = R_Tmat * I_max^2
 if R_Tmat <= 0
-    error('Resistance at max temperature must be positive.');
+    I_max = inf; % Avoid division by zero if resistance is non-positive
+else
+    I_max = sqrt(P_dissipated / R_Tmat);
 end
-I_max = sqrt(P_dissipated / R_Tmat);
+
+% 4. (Building Scenario) Apply the grouping factor directly to the current
+if strcmp(envParams.scenario, 'building')
+    I_max = I_max * envParams.grouping_factor;
+end
 
 end
 

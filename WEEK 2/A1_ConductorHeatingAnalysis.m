@@ -1,141 +1,126 @@
 % =========================================================================
-% MAIN SCRIPT for Conductor Thermal Analysis (V3 - AC Effects & Log Conduction)
+% MAIN SCRIPT for Conductor Thermal Analysis (V5 - Simplified & Functional)
 % =========================================================================
-% Description:
-% This script is the main entry point for a comprehensive conductor thermal
-% analysis. It now performs all calculations for both DC resistance and AC
-% resistance (including skin and proximity effects) to allow for direct
-% comparison. It also uses the precise logarithmic formula for heat
-% conduction through the cylindrical insulation.
-%
-% Author: Gemini
-% Date: 2025-10-05
+% MODIFIED:
+% - The logic from A8_GroupingFactor.m has been merged directly into this
+%   script to reduce complexity and potential file path errors.
+% - This version is streamlined for robust functionality.
 % =========================================================================
 
 %% --- Cleanup and Initialization ---
-clc;
-clear;
-close all;
+% clc; clear; close all; % Commented out for master script control
+
+%% --- User Input: Scenario Selection ---
+if ~exist('installationChoice', 'var')
+    installationChoice = centeredMenu('Select Installation Scenario:', 'Underground (Student A)', 'Overhead (Student B)', 'Building/Grouped (Student C)');
+end
 
 %% --- Define Physical Constants ---
-T_env = 40;     % Environment temperature [°C]
 T_ref = 20;     % Reference temperature for resistance [°C]
+rho_den_copper = 8960;      cp_copper = 385;
+rho_den_aluminum = 2700;    cp_aluminum = 900;
+cp_pvc = 1000;              cp_xlpe = 2300;
 
-% Material Properties
-rho_den_copper = 8960;      % Density of Copper [kg/m^3]
-rho_den_aluminum = 2700;    % Density of Aluminum [kg/m^3]
-cp_copper = 385;            % Specific Heat of Copper [J/(kg*°C)]
-cp_aluminum = 900;          % Specific Heat of Aluminum [J/(kg*°C)]
+%% --- Scenario-Specific User Input ---
+envParams = struct();
+switch installationChoice
+    case 1 % Underground
+        envParams.scenario = 'underground';
+        disp('--- UNDERGROUND INSTALLATION INPUT ---');
+        envParams.T_env = input('Enter ground temperature [°C] (e.g., 15): ');
+        envParams.rho_soil = input('Enter soil thermal resistivity [K*m/W] (e.g., 1.2): ');
+        envParams.burial_depth = input('Enter burial depth to cable center [m] (e.g., 1): ');
+    case 2 % Overhead
+        envParams.scenario = 'overhead';
+        disp('--- OVERHEAD INSTALLATION INPUT ---');
+        envParams.T_env = input('Enter ambient air temperature [°C] (e.g., 40): ');
+        envParams.wind_speed = input('Enter wind speed [m/s] (e.g., 0.5): ');
+        envParams.solar_irradiance = input('Enter solar irradiance [W/m^2] (e.g., 1000): ');
+        envParams.emissivity = 0.9;
+        envParams.absorptivity = 1.0;
+    case 3 % Building/Grouped
+        envParams.scenario = 'building';
+        disp('--- BUILDING/GROUPED INSTALLATION INPUT ---');
+        envParams.T_env = input('Enter ambient air temperature [°C] (e.g., 30): ');
+        num_cables = input('Enter total number of cables in the group (e.g., 6): ');
+        
+        % SIMPLIFICATION: A8_GroupingFactor logic moved directly here
+        if num_cables <= 1, k_g = 1.0;
+        elseif num_cables <= 3, k_g = 0.80;
+        elseif num_cables <= 6, k_g = 0.70;
+        elseif num_cables <= 9, k_g = 0.60;
+        elseif num_cables <= 20, k_g = 0.50;
+        else, k_g = 0.45;
+        end
+        envParams.grouping_factor = k_g;
+        
+        envParams.wind_speed = 0; % No wind inside a building
+        envParams.solar_irradiance = 0; % No sun inside a building
+        envParams.emissivity = 0.9;
+        envParams.absorptivity = 1.0;
+        fprintf('Applied grouping derating factor: %.2f\n', envParams.grouping_factor);
+    case 0
+        disp('No scenario selected. Exiting script.'); return;
+    otherwise
+        error('Invalid scenario choice. Exiting.');
+end
 
-% UPDATED: Added specific heat for insulators [J/(kg*°C)]
-cp_pvc = 1000;  % 1 kJ/kgK
-cp_xlpe = 2300; % 2.3 kJ/kgK
-% Note: Insulator cp is stored but not used in the current transient model,
-% which only considers the conductor's internal energy storage.
-
-%% --- User Input ---
-disp('--- Conductor Thermal Analysis Input ---');
-lineLength = input('Enter the total line length [m] (e.g., 100): ');
-crossSection = input('Enter conductor cross-sectional area [mm^2] (e.g., 50): ');
+%% --- General User Input ---
+disp('--- GENERAL CONDUCTOR INPUT ---');
+lineLength = input('Enter line length [m] (e.g., 100): ');
+crossSection = input('Enter cross-sectional area [mm^2] (e.g., 50): ');
 insulatorThickness = input('Enter insulator thickness [mm] (e.g., 1.2): ');
-frequency = input('Enter the AC frequency in Hz (e.g., 50 or 60): '); % NEW input for AC effects
-materialChoice = menu('Select Conductor Material:', 'Copper', 'Aluminum', 'ACSR');
-insulationChoice = menu('Select Insulation Type:', 'PVC', 'XLPE');
+frequency = input('Enter AC frequency [Hz] (e.g., 50): ');
+materialChoice = centeredMenu('Select Conductor Material:', 'Copper', 'Aluminum', 'ACSR');
+insulationChoice = centeredMenu('Select Insulation Type:', 'PVC', 'XLPE');
 
-%% --- Set Parameters based on User Choices ---
-alpha = 0.00393; % Temp coefficient for resistance (Cu/Al) [1/°C]
-
-switch materialChoice
-    case 1 % Copper
-        sigma = 56;
-        materialName = 'Copper';
-        density = rho_den_copper;
-        specificHeat = cp_copper;
-    case 2 % Aluminum
-        sigma = 36;
-        materialName = 'Aluminum';
-        density = rho_den_aluminum;
-        specificHeat = cp_aluminum;
-    case 3 % ACSR
-        sigma = 36;
-        materialName = 'ACSR';
-        density = rho_den_aluminum;
-        specificHeat = cp_aluminum;
+if materialChoice == 0 || insulationChoice == 0
+    disp('No material or insulation selected. Exiting script.'); return;
 end
 
-switch insulationChoice
-    case 1 % PVC
-        T_mat = 70;
-        k = 0.19; % Thermal conductivity [W/(m*°C)]
-        insulationName = 'PVC';
-    case 2 % XLPE
-        T_mat = 90;
-        k = 0.35;
-        insulationName = 'XLPE';
-end
+%% --- Set Conductor & Insulation Parameters ---
+alpha = 0.00393;
+switch materialChoice, case 1, sigma = 56; materialName = 'Copper'; density = rho_den_copper; specificHeat = cp_copper; case 2, sigma = 36; materialName = 'Aluminum'; density = rho_den_aluminum; specificHeat = cp_aluminum; case 3, sigma = 36; materialName = 'ACSR'; density = rho_den_aluminum; specificHeat = cp_aluminum; end
+switch insulationChoice, case 1, T_mat = 70; k = 0.19; insulationName = 'PVC'; case 2, T_mat = 90; k = 0.35; insulationName = 'XLPE'; end
+envParams.k_insulator = k;
 
 %% --- Resistance and Geometry Calculations ---
-% UPDATED: Calculate radii for logarithmic conduction model
-r_inner_m = sqrt(crossSection / pi) / 1000;      % Conductor radius [m]
-r_outer_m = r_inner_m + (insulatorThickness / 1000); % Outer radius [m]
-
-% Calculate DC resistance at reference temperature
+r_inner_m = sqrt(crossSection / pi) / 1000;
+r_outer_m = r_inner_m + (insulatorThickness / 1000);
 R_20_DC = lineLength / (sigma * crossSection);
-
-% UPDATED: Calculate AC resistance at reference temperature
 [k_skin, k_proximity] = A3b_AC_Resistance_Factor(frequency, r_inner_m * 2, sigma);
 R_20_AC = R_20_DC * (1 + k_skin + k_proximity);
 
-%% --- Steady-State Analysis (DC vs AC) ---
-% Calculate Max Current for both DC and AC resistance
-I_max_DC = A2_MaximumCurrent(R_20_DC, alpha, T_mat, T_ref, T_env, k, lineLength, r_inner_m, r_outer_m);
-I_max_AC = A2_MaximumCurrent(R_20_AC, alpha, T_mat, T_ref, T_env, k, lineLength, r_inner_m, r_outer_m);
-
-%% --- Display Comparative Steady-State Results ---
-fprintf('\n--- STEADY-STATE CALCULATION RESULTS ---\n');
-fprintf('Conductor: %s, Insulation: %s @ %.1f Hz\n', materialName, insulationName, frequency);
-fprintf('DC Resistance at 20°C: %.5f Ohms\n', R_20_DC);
-fprintf('AC Resistance at 20°C: %.5f Ohms (Skin+Proximity Factor: %.3f)\n', R_20_AC, (1 + k_skin + k_proximity));
-fprintf('--------------------------------------------------\n');
-fprintf('Max Current (I_max) based on DC Resistance: %.2f A\n', I_max_DC);
-fprintf('Max Current (I_max) based on AC Resistance: %.2f A\n', I_max_AC);
-fprintf('AC effects reduce the max current capacity by %.2f%%.\n', (1 - I_max_AC/I_max_DC)*100);
+%% --- Analysis & Display ---
+fprintf('\n--- ANALYSIS FOR SCENARIO: %s ---\n', upper(envParams.scenario));
+I_max_DC = A2_MaximumCurrent(R_20_DC, alpha, T_mat, envParams, lineLength, r_inner_m, r_outer_m);
+I_max_AC = A2_MaximumCurrent(R_20_AC, alpha, T_mat, envParams, lineLength, r_inner_m, r_outer_m);
+fprintf('Max Current (Ampacity) - DC Resistance: %.2f A\n', I_max_DC);
+fprintf('Max Current (Ampacity) - AC Resistance: %.2f A\n', I_max_AC);
+if isfield(envParams, 'grouping_factor')
+    fprintf('NOTE: Above values INCLUDE the grouping derating factor of %.2f.\n', envParams.grouping_factor);
+end
 fprintf('--------------------------------------------------\n');
 
-%% --- Steady-State Visualization (DC vs AC) ---
-A5_HeatingCurves(I_max_DC, I_max_AC, T_mat, T_env, R_20_DC, R_20_AC, alpha, T_ref, k, lineLength, r_inner_m, r_outer_m, materialName, insulationName);
+% Plotting Steady-State Curves
+A5_HeatingCurves(I_max_AC, T_mat, envParams, R_20_DC, R_20_AC, alpha, T_ref, lineLength, r_inner_m, r_outer_m, materialName, insulationName);
 
-%% --- Transient Analysis Section (DC vs AC) ---
-fprintf('\n--- TRANSIENT ANALYSIS ---\n');
-sim_current = input(sprintf('Enter a current to simulate (e.g., %.0f A): ', I_max_AC * 0.8));
+% Transient Analysis
+sim_current_prompt = sprintf('Enter a current for transient simulation (e.g., %.0f A): ', I_max_AC * 0.8);
+sim_current = input(sim_current_prompt);
+if isempty(sim_current), sim_current = I_max_AC * 0.8; end
 
-% Calculate conductor mass
 volume = (crossSection / 1e6) * lineLength;
 mass = volume * density;
+time_span = [0 7200]; % Simulate for 2 hours
 
-% Define simulation time span
-time_span = [0 3600]; % Simulate for 1 hour
+[time_ac, temp_ac] = A6_TransientHeating(sim_current, time_span, envParams, R_20_AC, alpha, T_ref, lineLength, r_inner_m, r_outer_m, mass, specificHeat);
 
-% Run transient simulation for both DC and AC resistances
-[time_dc, temp_dc] = A6_TransientHeating(sim_current, time_span, T_env, R_20_DC, alpha, T_ref, k, lineLength, r_inner_m, r_outer_m, mass, specificHeat);
-[time_ac, temp_ac] = A6_TransientHeating(sim_current, time_span, T_env, R_20_AC, alpha, T_ref, k, lineLength, r_inner_m, r_outer_m, mass, specificHeat);
-
-% --- Transient Visualization (DC vs AC) ---
 figure;
-hold on;
-plot(time_dc/60, temp_dc, 'b-', 'LineWidth', 2, 'DisplayName', 'Temp Rise (DC Res.)');
-plot(time_ac/60, temp_ac, 'r-', 'LineWidth', 2, 'DisplayName', 'Temp Rise (AC Res.)');
-
-% Calculate and plot final steady-state lines for comparison
-T_ss_dc = A4_ThermalEquilibrium(sim_current, R_20_DC, alpha, T_ref, T_env, k, lineLength, r_inner_m, r_outer_m);
-T_ss_ac = A4_ThermalEquilibrium(sim_current, R_20_AC, alpha, T_ref, T_env, k, lineLength, r_inner_m, r_outer_m);
-line([0, time_ac(end)/60], [T_ss_dc, T_ss_dc], 'Color', 'b', 'LineStyle', '--', 'DisplayName', sprintf('SS Temp (DC) %.1f°C', T_ss_dc));
-line([0, time_ac(end)/60], [T_ss_ac, T_ss_ac], 'Color', 'r', 'LineStyle', '--', 'DisplayName', sprintf('SS Temp (AC) %.1f°C', T_ss_ac));
-
-title(sprintf('Transient Heating Comparison for %.1f A', sim_current));
-xlabel('Time (minutes)');
-ylabel('Conductor Temperature (°C)');
-grid on;
-legend('show', 'Location', 'southeast');
-fprintf('Transient analysis complete. See new comparative plot.\n');
+plot(time_ac/60, temp_ac, 'r-', 'LineWidth', 2);
+T_ss_ac = A4_ThermalEquilibrium(sim_current, R_20_AC, alpha, T_ref, envParams, lineLength, r_inner_m, r_outer_m);
+line([0, time_ac(end)/60], [T_ss_ac, T_ss_ac], 'Color', 'r', 'LineStyle', '--');
+title(sprintf('Transient Heating (%s) for %.1f A', envParams.scenario, sim_current));
+xlabel('Time (minutes)'); ylabel('Conductor Temperature (°C)'); grid on;
+legend('Transient Temperature', sprintf('Final Equilibrium Temp (%.1f°C)', T_ss_ac));
 

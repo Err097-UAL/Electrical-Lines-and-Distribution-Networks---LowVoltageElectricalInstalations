@@ -18,8 +18,6 @@ function [k_skin, k_proximity] = A3b_AC_Resistance_Factor(freq, diameter, sigma)
 %   k_proximity - Proximity effect factor (dimensionless)
 % =========================================================================
 
-%https://elek.com/articles/skin-and-proximity-effects-on-ac-resistance-calculations/?srsltid=AfmBOooqsLXyq-RP8HYPW10aoOZp7M-i5KNrajposunww0TFV06Qz1iQ
-
 % --- Skin Effect Calculation (Based on IEC 60287-1-1) ---
 
 % 1. Calculate DC resistance per meter [Ohm/m]

@@ -1,43 +1,53 @@
-function A5_HeatingCurves(I_max_DC, I_max_AC, T_mat, T_env, R_20_DC, R_20_AC, alpha, T_ref, k, lineLength, r_inner, r_outer, materialName, insulationName)
+function A5_HeatingCurves(I_max, T_mat, envParams, R_20_DC, R_20_AC, alpha, T_ref, lineLength, r_inner, r_outer, materialName, insulationName)
 % =========================================================================
-% FUNCTION: plotHeatingCurves (V3)
+% FUNCTION: A5_HeatingCurves (V5 - Corrected)
 % =========================================================================
 % Description:
-% Generates a comparative plot showing the steady-state temperature for
-% both DC and AC resistance as a function of current.
+% Generates plots showing the conductor's equilibrium temperature vs. current.
+% MODIFIED: The input variable 'length' was renamed to 'lineLength' to
+%           avoid conflict with MATLAB's built-in length() function, which
+%           was causing a runtime error.
 % =========================================================================
 
-% Create a current vector based on the larger of the two max currents
-current_vector = linspace(0, I_max_DC * 1.2, 200);
+% 1. Create a vector of currents to plot
+current_vector = linspace(0, I_max * 1.2, 100);
 
-% Calculate equilibrium temperatures for both DC and AC cases
+% 2. Calculate equilibrium temperatures for both DC and AC resistance
 temp_vector_dc = zeros(size(current_vector));
 temp_vector_ac = zeros(size(current_vector));
+
+% The loop now correctly calls the built-in 'length' function
 for i = 1:length(current_vector)
-    temp_vector_dc(i) = A4_ThermalEquilibrium(current_vector(i), R_20_DC, alpha, T_ref, T_env, k, lineLength, r_inner, r_outer);
-    temp_vector_ac(i) = A4_ThermalEquilibrium(current_vector(i), R_20_AC, alpha, T_ref, T_env, k, lineLength, r_inner, r_outer);
+    % The variable 'lineLength' is correctly passed to the next function
+    temp_vector_dc(i) = A4_ThermalEquilibrium(current_vector(i), R_20_DC, alpha, T_ref, envParams, lineLength, r_inner, r_outer);
+    temp_vector_ac(i) = A4_ThermalEquilibrium(current_vector(i), R_20_AC, alpha, T_ref, envParams, lineLength, r_inner, r_outer);
 end
 
-% Create the plot
+% 3. Create the plot
 figure;
 hold on;
-plot(current_vector, temp_vector_dc, 'b-', 'LineWidth', 2, 'DisplayName', 'Temp (DC Res.)');
-plot(current_vector, temp_vector_ac, 'r-', 'LineWidth', 2, 'DisplayName', 'Temp (AC Res.)');
 
-% Plot Max Temperature Line
-line([0, current_vector(end)], [T_mat, T_mat], 'Color', 'k', 'LineStyle', '--', 'LineWidth', 1, 'DisplayName', sprintf('Max Temp (%.0f°C)', T_mat));
+% Plot the curves
+plot(current_vector, temp_vector_dc, 'b-', 'LineWidth', 2, 'DisplayName', 'Equilibrium Temp (DC)');
+plot(current_vector, temp_vector_ac, 'r-', 'LineWidth', 2, 'DisplayName', 'Equilibrium Temp (AC)');
 
-% Plot Max Current Lines for DC and AC
-line([I_max_DC, I_max_DC], [T_env, T_mat], 'Color', 'b', 'LineStyle', ':', 'LineWidth', 1.5, 'DisplayName', sprintf('I_{max,DC} (%.1f A)', I_max_DC));
-line([I_max_AC, I_max_AC], [T_env, T_mat], 'Color', 'r', 'LineStyle', ':', 'LineWidth', 1.5, 'DisplayName', sprintf('I_{max,AC} (%.1f A)', I_max_AC));
+% Plot safety and reference lines
+line([0, I_max * 1.2], [T_mat, T_mat], 'Color', 'k', 'LineStyle', '--', 'LineWidth', 1.5, 'DisplayName', sprintf('Max Temp (%.0f°C)', T_mat));
+line([I_max, I_max], [envParams.T_env, T_mat], 'Color', [0.4660 0.6740 0.1880], 'LineStyle', ':', 'LineWidth', 1.5, 'DisplayName', sprintf('Max AC Current (%.1f A)', I_max));
+
+% Add marker at the intersection
+plot(I_max, T_mat, 'ro', 'MarkerFaceColor', 'r', 'MarkerSize', 8, 'HandleVisibility', 'off');
 
 % Formatting
-title(sprintf('DC vs AC Steady-State Heating for %s (%s)', materialName, insulationName));
+title(sprintf('Steady-State Heating Curve (%s)', envParams.scenario));
+subtitle(sprintf('%s Conductor, %s Insulation', materialName, insulationName));
 xlabel('Current (A)');
-ylabel('Equilibrium Temperature (°C)');
-grid on;
+ylabel('Conductor Temperature (°C)');
 legend('show', 'Location', 'southeast');
-ylim([T_env-10, T_mat + 20]);
+grid on;
+box on;
+ylim([envParams.T_env - 10, T_mat + 20]);
+xlim([0, I_max * 1.25]);
 hold off;
 
 end
