@@ -1,32 +1,23 @@
-function [] = B5_plotVoltageProfile(U_source, deltaU_total, total_length, circuitType)
+function [] = B5_plotVoltageProfile(U_source, deltaU_total_dc, deltaU_total_ac, total_length, circuitType)
 % =========================================================================
-% FUNCTION: plotVoltageProfile
+% FUNCTION: plotVoltageProfile (V2 - AC/DC Comparison)
 % =========================================================================
-% Description:
-% Generates a plot of voltage versus line length, illustrating how the
-% voltage decreases from the source to the load. It also plots the
-% REBT compliance limit as a horizontal line for easy visual inspection.
-%
-% Inputs:
-%   U_source     - The source voltage [V]
-%   deltaU_total - The total calculated voltage drop over the line [V]
-%   total_length - The total length of the line [m]
-%   circuitType  - String: 'lighting' or 'power'
+% MODIFIED:
+% - Now accepts voltage drop values calculated from both DC and AC resistance.
+% - Plots both voltage profiles on the same axes for direct comparison.
 % =========================================================================
 
 % 1. Create a vector of distances from source to load
 length_vector = linspace(0, total_length, 200);
 
-% 2. Calculate the voltage at each point along the line
-% Voltage drop is assumed to be linear with distance
-voltage_profile = U_source - (deltaU_total / total_length) * length_vector;
+% 2. Calculate the voltage profile for both DC and AC resistance cases
+voltage_profile_dc = U_source - (deltaU_total_dc / total_length) * length_vector;
+voltage_profile_ac = U_source - (deltaU_total_ac / total_length) * length_vector;
 
 % 3. Determine the minimum allowed voltage based on REBT limits
 switch circuitType
-    case 'lighting'
-        limit_percent = 4.5 / 100;
-    case 'power'
-        limit_percent = 6.5 / 100;
+    case 'lighting', limit_percent = 4.5 / 100;
+    case 'power', limit_percent = 6.5 / 100;
 end
 min_voltage_limit = U_source * (1 - limit_percent);
 
@@ -34,27 +25,29 @@ min_voltage_limit = U_source * (1 - limit_percent);
 figure;
 hold on;
 
-% Plot the voltage profile
-plot(length_vector, voltage_profile, 'b-', 'LineWidth', 2, 'DisplayName', 'Voltage Profile');
+% Plot the voltage profiles
+plot(length_vector, voltage_profile_dc, 'b-', 'LineWidth', 2, 'DisplayName', 'Voltage Profile (DC Res.)');
+plot(length_vector, voltage_profile_ac, 'r-', 'LineWidth', 2, 'DisplayName', 'Voltage Profile (AC Res.)');
 
 % Plot the REBT minimum voltage limit line
 line([0, total_length], [min_voltage_limit, min_voltage_limit], ...
-    'Color', 'r', 'LineStyle', '--', 'LineWidth', 1.5, ...
+    'Color', 'k', 'LineStyle', '--', 'LineWidth', 1.5, ...
     'DisplayName', sprintf('REBT Limit (%.2f V)', min_voltage_limit));
 
-% Add a marker at the end of the line (load voltage)
-plot(total_length, U_source - deltaU_total, 'ko', 'MarkerFaceColor', 'g', 'MarkerSize', 8, ...
-    'DisplayName', sprintf('Voltage at Load (%.2f V)', U_source - deltaU_total));
+% Add markers at the end of the line
+plot(total_length, U_source - deltaU_total_dc, 'bo', 'MarkerFaceColor', 'b', 'MarkerSize', 6, 'HandleVisibility', 'off');
+plot(total_length, U_source - deltaU_total_ac, 'ro', 'MarkerFaceColor', 'r', 'MarkerSize', 8, 'HandleVisibility', 'off');
 
-% 5. Formatting and Labels
-title('Voltage Profile Along the Line');
+% Formatting
+title(sprintf('Voltage Profile Comparison (DC vs AC Resistance) for %s Line', circuitType));
 xlabel('Line Length (m)');
 ylabel('Voltage (V)');
+legend('show', 'Location', 'southwest');
 grid on;
-legend('show', 'Location', 'best');
-% Adjust y-axis to start slightly below the lowest voltage for better visibility
-ylim([min(voltage_profile) * 0.99, U_source * 1.01]);
+box on;
+ylim([min_voltage_limit * 0.99, U_source * 1.01]);
 xlim([0, total_length]);
 hold off;
 
 end
+

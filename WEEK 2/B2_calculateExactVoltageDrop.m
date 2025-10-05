@@ -1,4 +1,4 @@
-function deltaU = calculateExactVoltageDrop(lineType, d, I, r, xL, cos_phi)
+function deltaU = B2_calculateExactVoltageDrop(lineType, d, I, r, xL, cos_phi)
 % =========================================================================
 % FUNCTION: calculateExactVoltageDrop
 % =========================================================================
@@ -9,17 +9,6 @@ function deltaU = calculateExactVoltageDrop(lineType, d, I, r, xL, cos_phi)
 % Formulas:
 % Single-phase: ∆U = 2 * d * I * (r * cos(φ) + xL * sin(φ))
 % Three-phase:  ∆U = sqrt(3) * d * I * (r * cos(φ) + xL * sin(φ))
-%
-% Inputs:
-%   lineType - String: 'single-phase' or 'three-phase'
-%   d        - Total line length [m]
-%   I        - Load current [A]
-%   r        - Resistance per unit length [Ohm/m]
-%   xL       - Reactance per unit length [Ohm/m]
-%   cos_phi  - Power factor of the load
-%
-% Output:
-%   deltaU   - The total voltage drop along the line [V]
 % =========================================================================
 
 % Calculate sin(φ) from cos(φ). Assuming a lagging power factor.
@@ -35,7 +24,7 @@ switch lineType
         error('Invalid lineType specified. Use ''single-phase'' or ''three-phase''.');
 end
 
-% Apply the Blondel formula
+% Apply the full Blondel formula
 deltaU = phase_factor * d * I * (r * cos_phi + xL * sin_phi);
 
 end

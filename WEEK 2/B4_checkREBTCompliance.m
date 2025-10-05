@@ -6,19 +6,7 @@ function [isCompliant, percentDrop, limit] = B4_checkREBTCompliance(deltaU, U_so
 % Checks if the calculated voltage drop complies with the Spanish Low
 % Voltage Electrotechnical Regulation (REBT) limits.
 %
-% REBT Limits:
-% - Lighting Circuits: 4.5%
-% - Power (Other Uses): 6.5%
-%
-% Inputs:
-%   deltaU      - The calculated voltage drop [V]
-%   U_source    - The source voltage [V]
-%   circuitType - String: 'lighting' or 'power'
-%
-% Outputs:
-%   isCompliant - Boolean (true if compliant, false otherwise)
-%   percentDrop - The calculated percentage voltage drop [%]
-%   limit       - The specific limit applied for the check [%]
+% REBT Limits: Lighting Circuits: 4.5%, Power (Other Uses): 6.5%
 % =========================================================================
 
 % Determine the REBT limit based on the circuit type
