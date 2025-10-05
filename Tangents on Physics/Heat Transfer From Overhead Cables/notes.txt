@@ -1,0 +1,43 @@
+===================================================================================
+		
+===================================================================================
+Los archivos con prefijo 
+A son para Flujo natural (dia tranquilo)
+B flujo forzado (viento)
+C (regimen transitorio)
+
+
+
+===================================================================================
+		Problemas
+===================================================================================
+1) para comprobar el valor del numero adimensional Reynolds despues de suponer Nusselt, necesito
+saber la velocidad del viento generado por la diferencia de calor, pero no encuentro
+como modelar esto
+
+
+
+
+
+
+
+
+
+===================================================================================
+		Referencias
+===================================================================================
+PROPIEDADES TERMICAS FISICAS DEL AIRE
+https://www.engineersedge.com/physics/viscosity_of_air_dynamic_and_kinematic_14483.htm#google_vignette
+
+PROPIEDADES TERMICAS DEL XLPE
+Specific Heat and Thermal Conductivity Measurement of XLPE Insulator and
+Semiconducting Materials //Kyoung - Yong Lee 1*, Jong - Seok Yang 1, Yong Sung Choi 'and Dae - Hee Park
+
+Transferencia de Calor y Masa
+Yunus A. Cengel
+
+Termotecnia UAL
+Francisco Molina Aiz
+
+Propiedades Fisicas del PVC
+Kök, Mediha & Demirelli, Kadir & Aydogdu, Yildirim. (2008). Thermophysical Properties Of Blend Of Poly ( Vinyl Chloride ) With Poly ( Isobornyl Acrylate ). Int. J. Sci. Technol.. 3. 
