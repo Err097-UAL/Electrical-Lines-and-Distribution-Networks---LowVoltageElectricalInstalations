@@ -1,4 +1,4 @@
-function P_diss = A7_HeatDissipation(T_conductor, envParams, r_outer, length)
+ function P_diss = A7_HeatDissipation(T_conductor, envParams, r_outer, length)
 % =========================================================================
 % FUNCTION: A7_HeatDissipation (Module - Corrected)
 % =========================================================================
@@ -47,16 +47,16 @@ function P_diss = dissipation_overhead(T_conductor, T_air, V_wind, Q_solar, epsi
 % Model based on IEEE 738 standard for overhead lines
     D_outer = r_outer * 2;
     P_conv = convection_overhead(T_conductor, T_air, V_wind, D_outer, L);
-    P_rad = radiation_overhead(T_conductor, T_air, epsilon, D_outer, L);
+   % P_rad = radiation_overhead(T_conductor, T_air, epsilon, D_outer, L);
     P_solar = solar_gain(Q_solar, alpha, D_outer, L);
 
     % Net dissipation is cooling (convection + radiation) minus heating (solar)
-    P_diss = (P_conv + P_rad) - P_solar;
+    P_diss = (P_conv ) - P_solar; %+ P_rad
 end
 
 function P_conv = convection_overhead(T_conductor, T_air, V_wind, D_outer, L)
 % Simplified convection model
-    k_air = 0.026; % Thermal conductivity of air [W/(m*K)]
+    k_air = 0.026; % Thermal conductivity of air [W/(m*K)], varies from 0.025 to 0.03 from 20 to 30 C
     
     % Nusselt number correlations (simplified)
     if V_wind > 0
@@ -74,17 +74,17 @@ function P_conv = convection_overhead(T_conductor, T_air, V_wind, D_outer, L)
     P_conv = h * surface_area * (T_conductor - T_air);
 end
 
-function P_rad = radiation_overhead(T_conductor, T_air, epsilon, D_outer, L)
-% Radiation based on Stefan-Boltzmann law
-    sigma_sb = 5.67e-8; % Stefan-Boltzmann constant [W/(m^2*K^4)]
-    surface_area = pi * D_outer * L;
-    
-    % Temperatures must be in Kelvin
-    T_cond_K = T_conductor + 273.15;
-    T_air_K = T_air + 273.15;
-    
-    P_rad = sigma_sb * epsilon * surface_area * (T_cond_K^4 - T_air_K^4);
-end
+% function P_rad = radiation_overhead(T_conductor, T_air, epsilon, D_outer, L)
+% % Radiation based on Stefan-Boltzmann law
+%     sigma_sb = 5.67e-8; % Stefan-Boltzmann constant [W/(m^2*K^4)]
+%     surface_area = pi * D_outer * L;
+% 
+%     % Temperatures must be in Kelvin
+%     T_cond_K = T_conductor + 273.15;
+%     T_air_K = T_air + 273.15;
+% 
+%     P_rad = sigma_sb * epsilon * surface_area * (T_cond_K^4 - T_air_K^4);
+% end
 
 function P_solar = solar_gain(Q_solar, alpha, D_outer, L)
 % Solar heat gain on the projected area of the conductor

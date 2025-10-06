@@ -1,32 +1,38 @@
-function I_max = A2_MaximumCurrent(R_20, alpha, T_mat, envParams, length, r_inner, r_outer)
+function [I_max, R_Tmat, T_surface, P_diss_max] = A2_MaximumCurrent(R_20, alpha, T_mat, T_ref, envParams, lineLength, r_inner, r_outer)
 % =========================================================================
-% FUNCTION: A2_MaximumCurrent (V4)
+% FUNCTION: A2_MaximumCurrent (V5 - Reporting)
 % =========================================================================
-% Description:
-% Calculates the maximum allowable current (ampacity) based on the steady-state
-% heat balance at the maximum rated temperature of the conductor.
-% MODIFIED: This version calls the A7_HeatDissipation module to handle
-%           scenario-specific heat transfer physics.
+% MODIFIED: Now returns key intermediate values for the final report.
 % =========================================================================
 
 % 1. Calculate the conductor's resistance at its maximum temperature
-T_ref = 20; % Reference temperature is constant at 20°C
 R_Tmat = A3_ResistanceTemperatureCorrection(R_20, alpha, T_mat, T_ref);
 
-% 2. Calculate the total heat the cable can dissipate at T_mat
-P_dissipated = A7_HeatDissipation(T_mat, envParams, r_outer, length);
-
-% 3. From P_generated = P_dissipated, solve for I_max
-% P_generated = R_Tmat * I_max^2
-if R_Tmat <= 0
-    I_max = inf; % Avoid division by zero if resistance is non-positive
+% 2. Find the cable's surface temperature when the conductor is at T_mat
+options = optimset('Display','off');
+% Thermal resistance of the insulation layer
+if r_outer <= r_inner
+    R_thermal_ins = inf;
 else
-    I_max = sqrt(P_dissipated / R_Tmat);
+    R_thermal_ins = log(r_outer / r_inner) / (2 * pi * envParams.k_insulator * lineLength);
 end
 
-% 4. (Building Scenario) Apply the grouping factor directly to the current
-if strcmp(envParams.scenario, 'building')
-    I_max = I_max * envParams.grouping_factor;
+% Balance equation: heat through insulation = heat dissipated from surface
+balance_eq = @(T_s) (T_mat - T_s) / R_thermal_ins - A7_HeatDissipation(T_s, envParams, r_outer, lineLength);
+try
+    T_surface = fzero(balance_eq, T_mat, options);
+catch
+    T_surface = T_mat; % If solver fails, assume no temp drop across insulation
+end
+
+% 3. Calculate total heat dissipation from the surface at this temperature
+P_diss_max = A7_HeatDissipation(T_surface, envParams, r_outer, lineLength);
+
+% 4. Solve for I_max from the heat balance equation: P_gen = P_diss_max
+if R_Tmat <= 0
+    I_max = inf;
+else
+    I_max = sqrt(P_diss_max / R_Tmat);
 end
 
 end

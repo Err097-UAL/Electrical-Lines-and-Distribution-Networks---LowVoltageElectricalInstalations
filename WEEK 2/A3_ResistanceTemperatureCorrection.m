@@ -22,4 +22,3 @@ function R_T = A3_ResistanceTemperatureCorrection(R_20, alpha, T, T_ref)
 R_T = R_20 * (1 + alpha * (T - T_ref));
 
 end
-

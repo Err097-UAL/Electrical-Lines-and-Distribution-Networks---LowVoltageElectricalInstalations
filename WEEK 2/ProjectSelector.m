@@ -1,11 +1,10 @@
 % =========================================================================
-% MASTER SCRIPT for Electrical Line Design Suite (V2.1 - Centered)
+% MASTER SCRIPT for Electrical Line Design Suite (V5 - Final)
 % =========================================================================
-% MODIFIED: This version now calls the custom 'centeredMenu.m' function
-% to ensure all selection dialogs appear in the middle of the screen.
-%
-% Author: Gemini
-% Date: 2025-10-05
+% MODIFIED:
+% - For Case 1 (Heating), it now prompts for the scenario and then calls
+%   the final reporting script 'A_Run_Analysis_And_Report.m'. This makes
+%   the workflow consistent with the other analysis cases.
 % =========================================================================
 
 %% --- Cleanup and Initialization ---
@@ -22,40 +21,46 @@ analysisChoice = centeredMenu('Select which project case to work with:', ...
 %% --- Run the Selected Analysis Script ---
 switch analysisChoice
     case 1 % --- CONDUCTOR HEATING ---
+        % Get the scenario choice from the user first
         scenarioChoice = centeredMenu('Select Heating Scenario:', 'Underground (Student A)', 'Overhead (Student B)', 'Building/Grouped (Student C)');
+        
+        % Check if the user made a selection
         if scenarioChoice > 0
-            % Pass the user's choice to the workspace for the script to use
+            % Pass the choice to the base workspace so the function can see it
             assignin('base', 'installationChoice', scenarioChoice);
-            disp('--- Launching Conductor Heating Analysis ---');
-            run('A1_ConductorHeatingAnalysis.m');
-            % Clean up the variable after the script finishes
+            
+            % Now, run the final reporting script
+            disp('--- Launching Conductor Heating Analysis with Report ---');
+            run('A0_Run_Analysis_and_Report.m');
+            
+            % Clean up the variable from the workspace after the script is done
             evalin('base', 'clear installationChoice');
         end
 
     case 2 % --- VOLTAGE DROP ---
-        scenarioChoice = centeredMenu('Select Voltage Drop Scenario:', 'Lighting Circuit (REBT 4.5%)', 'Power Circuit (REBT 6.5%)', 'Main Feeder');
-        if scenarioChoice > 0
-            assignin('base', 'vd_scenarioChoice', scenarioChoice);
-            disp('--- Launching Voltage Drop Analysis ---');
-            if exist('B1_VoltageDropAnalysis.m', 'file')
+        if ~exist('B1_VoltageDropAnalysis.m', 'file')
+            warning('Voltage Drop script (B1_VoltageDropAnalysis.m) not found.');
+        else
+            analysisMode = centeredMenu('Select Voltage Drop Analysis Type:', 'Full Installation Analysis (Multi-Segment)', 'Simple Single Line Analysis');
+            if analysisMode > 0
+                assignin('base', 'vd_analysisMode', analysisMode);
+                disp('--- Launching Voltage Drop Analysis ---');
                 run('B1_VoltageDropAnalysis.m');
-            else
-                warning('Voltage Drop script (e.g., ''B1_VoltageDropAnalysis.m'') not found.');
+                evalin('base', 'clear vd_analysisMode');
             end
-            evalin('base', 'clear vd_scenarioChoice');
         end
 
     case 3 % --- CONDUCTOR SIZING ---
-         scenarioChoice = centeredMenu('Select Sizing Priority:', 'Size by Voltage Drop Limit', 'Size by Current-Carrying Capacity', 'Economic Optimization');
-         if scenarioChoice > 0
-            assignin('base', 'sizing_scenarioChoice', scenarioChoice);
-            disp('--- Launching Conductor Sizing Analysis ---');
-            if exist('C1_ConductorSizingAnalysis.m', 'file')
+         if ~exist('C1_ConductorSizingAnalysis.m', 'file')
+            warning('Conductor Sizing script (C1_ConductorSizingAnalysis.m) not found.');
+         else
+            scenarioChoice = centeredMenu('Select Sizing Criterion:', 'Voltage Drop (Student A)', 'Current-Carrying Capacity (Student B)', 'Economic Optimization (Student C)');
+             if scenarioChoice > 0
+                assignin('base', 'sizing_scenarioChoice', scenarioChoice);
+                disp('--- Launching Conductor Sizing Analysis ---');
                 run('C1_ConductorSizingAnalysis.m');
-            else
-                warning('Conductor Sizing script (e.g., ''C1_ConductorSizingAnalysis.m'') not found.');
-            end
-            evalin('base', 'clear sizing_scenarioChoice');
+                evalin('base', 'clear sizing_scenarioChoice');
+             end
          end
          
     case 0

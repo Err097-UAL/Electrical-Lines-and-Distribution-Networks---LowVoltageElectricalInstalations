@@ -32,7 +32,7 @@ plot(current_vector, temp_vector_dc, 'b-', 'LineWidth', 2, 'DisplayName', 'Equil
 plot(current_vector, temp_vector_ac, 'r-', 'LineWidth', 2, 'DisplayName', 'Equilibrium Temp (AC)');
 
 % Plot safety and reference lines
-line([0, I_max * 1.2], [T_mat, T_mat], 'Color', 'k', 'LineStyle', '--', 'LineWidth', 1.5, 'DisplayName', sprintf('Max Temp (%.0f°C)', T_mat));
+line([0, I_max * 1.2], [T_mat, T_mat], 'Color', 'g', 'LineStyle', '--', 'LineWidth', 1.5, 'DisplayName', sprintf('Max Temp (%.0f°C)', T_mat));
 line([I_max, I_max], [envParams.T_env, T_mat], 'Color', [0.4660 0.6740 0.1880], 'LineStyle', ':', 'LineWidth', 1.5, 'DisplayName', sprintf('Max AC Current (%.1f A)', I_max));
 
 % Add marker at the intersection
