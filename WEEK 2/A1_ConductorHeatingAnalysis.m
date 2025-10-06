@@ -23,7 +23,7 @@ T_ref = 20;     % Reference temperature for resistance [°C]
 rho_den_copper = 8960;      cp_copper = 385;
 rho_den_aluminum = 2700;    cp_aluminum = 900;
 rho_den_pvc = 1400;         cp_pvc = 1000;
-rho_den_xlpe = 920;         cp_xlpe = 2300;
+rho_den_xlpe = 920;         cp_xlpe = 3200;
 
 %% --- Scenario-Specific User Input ---
 envParams = struct();
@@ -115,7 +115,7 @@ if isempty(sim_current), sim_current = I_max_AC * 0.8; end
 % Conductor mass calculation
 volume_cond = (crossSection / 1e6) * lineLength;
 mass_cond = volume_cond * density_cond;
-time_span = [0 7200]; % Simulate for 2 hours
+time_span = [0 3600]; % Simulate for 1 hours
 
 % Run primary simulation for conductor temperature
 [time_ac, temp_cond_ac] = A6_TransientHeating(sim_current, time_span, envParams, R_20_AC, alpha, T_ref, lineLength, r_inner_m, r_outer_m, mass_cond, cp_cond);
