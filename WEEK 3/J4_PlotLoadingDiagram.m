@@ -1,4 +1,4 @@
-function C4_PlotLoadingDiagram(results)
+function J4_PlotLoadingDiagram(results)
 % =========================================================================
 % FUNCTION: C4_PlotLoadingDiagram (NEW for C Module)
 % =========================================================================

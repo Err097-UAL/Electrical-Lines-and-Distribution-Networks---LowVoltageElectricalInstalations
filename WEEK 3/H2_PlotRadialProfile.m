@@ -1,4 +1,4 @@
-function A2_PlotRadialProfile(results)
+function H2_PlotRadialProfile(results)
 % =========================================================================
 % FUNCTION: Plot Radial Voltage Profile
 % =========================================================================

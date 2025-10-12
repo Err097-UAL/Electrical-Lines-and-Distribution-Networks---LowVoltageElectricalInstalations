@@ -1,4 +1,4 @@
-function C3_PlotUnifilarDiagram(results)
+function J3_PlotUnifilarDiagram(results)
 % =========================================================================
 % FUNCTION: C3_PlotUnifilarDiagram (NEW)
 % =========================================================================

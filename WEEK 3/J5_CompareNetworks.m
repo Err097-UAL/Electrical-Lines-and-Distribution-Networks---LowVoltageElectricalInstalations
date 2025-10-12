@@ -1,4 +1,4 @@
-function results = C5_CompareNetworks()
+function results = J5_CompareNetworks()
 % =========================================================================
 % FUNCTION: Compare Ring and Radial Networks (V3 - Plotting Fix)
 % =========================================================================
@@ -15,7 +15,7 @@ disp('This tool will design and compare a Ring vs. a Radial network for the same
 
 % --- Get common inputs for both networks ---
 U_source = input('Enter the source/feed-in voltage [V]: ');
-materialChoice = centeredMenu('Select Conductor Material:', 'Copper', 'Aluminum');
+materialChoice = centeredMenu3('Select Conductor Material:', 'Copper', 'Aluminum');
 if materialChoice == 0, return; end
 if materialChoice == 1, materialName = 'Copper'; else, materialName = 'Aluminum'; end
 materialProps = getMaterialProperties(materialName);
@@ -61,8 +61,8 @@ results.reliability.max_drop_percent_fault = (U_source - min_v_fault) / U_source
 
 % --- 4. ECONOMIC ANALYSIS ---
 cost_per_meter = input('Enter an illustrative cost per meter for the conductor [€/m]: ');
-[results.ring.total_cost, results.ring.cable_cost, results.ring.loss_cost] = C6_CalculateNetworkCost('ring', L_total_ring, Ia_ring, Ib_ring, sorted_loads, sigma, crossSection, cost_per_meter);
-[results.radial.total_cost, results.radial.cable_cost, results.radial.loss_cost] = C6_CalculateNetworkCost('radial', L_total_radial, sum([sorted_loads.current]), 0, sorted_loads, sigma, crossSection, cost_per_meter);
+[results.ring.total_cost, results.ring.cable_cost, results.ring.loss_cost] = J6_CalculateNetworkCost('ring', L_total_ring, Ia_ring, Ib_ring, sorted_loads, sigma, crossSection, cost_per_meter);
+[results.radial.total_cost, results.radial.cable_cost, results.radial.loss_cost] = J6_CalculateNetworkCost('radial', L_total_radial, sum([sorted_loads.current]), 0, sorted_loads, sigma, crossSection, cost_per_meter);
 
 % --- 5. FINALIZE & PLOT ---
 results.U_source = U_source;
@@ -72,7 +72,7 @@ results.loads = sorted_loads;
 if results.ring.max_drop_percent < results.radial.max_drop_percent, results.voltage_winner = 'Ring'; else, results.voltage_winner = 'Radial'; end
 if results.ring.total_cost < results.radial.total_cost, results.economic_winner = 'Ring'; else, results.economic_winner = 'Radial'; end
 
-C7_PlotComparison(results);
+J7_PlotComparison(results);
 end
 
 % --- Helper function for min voltage calculation ---

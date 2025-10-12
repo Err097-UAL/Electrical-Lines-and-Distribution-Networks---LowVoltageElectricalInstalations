@@ -1,4 +1,4 @@
-function [total_cost, cable_cost, loss_cost] = C6_CalculateNetworkCost(type, L_total, Ia, Ib, loads, sigma, s, cost_per_meter)
+function [total_cost, cable_cost, loss_cost] = J6_CalculateNetworkCost(type, L_total, Ia, Ib, loads, sigma, s, cost_per_meter)
 % =========================================================================
 % FUNCTION: Calculate Network Lifecycle Cost (V2 - Corrected)
 % =========================================================================

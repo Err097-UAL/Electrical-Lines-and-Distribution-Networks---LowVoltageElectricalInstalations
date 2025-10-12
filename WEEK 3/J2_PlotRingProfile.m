@@ -1,4 +1,4 @@
-function C2_PlotRingProfile(results)
+function J2_PlotRingProfile(results)
 % =========================================================================
 % FUNCTION: Plot Ring Voltage Profile (as an unwrapped line)
 % =========================================================================

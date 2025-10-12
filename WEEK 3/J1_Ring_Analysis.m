@@ -1,4 +1,4 @@
-function results = C1_Ring_Analysis()
+function results = J1_Ring_Analysis()
 % =========================================================================
 % FUNCTION: Main Ring Network Analysis (V5 - Loading Diagram)
 % =========================================================================
@@ -17,7 +17,7 @@ function results = C1_Ring_Analysis()
 %             final results for reporting, or empty if cancelled.
 % =========================================================================
 results = [];
-scenarioChoice = centeredMenu('Select Ring/Meshed Scenario:', ...
+scenarioChoice = centeredMenu3('Select Ring/Meshed Scenario:', ...
     'Simple Ring Network (Student A)', ...
     'Double Ring Network (Conceptual)', ...
     'Meshed Network (Conceptual)');
@@ -30,7 +30,7 @@ results.scenarioName = 'Simple Ring Network';
 
 % --- Get Inputs ---
 Ua = input('Enter the feed-in voltage [V]: ');
-materialChoice = centeredMenu('Select Conductor Material:', 'Copper', 'Aluminum');
+materialChoice = centeredMenu3('Select Conductor Material:', 'Copper', 'Aluminum');
 if materialChoice == 0, return; end
 if materialChoice == 1, materialName = 'Copper'; else, materialName = 'Aluminum'; end
 materialProps = getMaterialProperties(materialName);
@@ -84,8 +84,8 @@ results.max_drop_V = Ua - min_voltage;
 results.max_drop_percent = (results.max_drop_V / Ua) * 100;
 
 % Generate Plots
-C3_PlotUnifilarDiagram(results);
-C2_PlotRingProfile(results);
-C4_PlotLoadingDiagram(results);
+J3_PlotUnifilarDiagram(results);
+J2_PlotRingProfile(results);
+J4_PlotLoadingDiagram(results);
 end
 

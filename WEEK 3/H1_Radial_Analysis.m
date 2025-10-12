@@ -1,4 +1,4 @@
-function results = A1_Radial_Analysis()
+function results = H1_Radial_Analysis()
 % =========================================================================
 % FUNCTION: Main Radial Network Analysis (V3 - Phase Selection)
 % =========================================================================
@@ -14,7 +14,7 @@ function results = A1_Radial_Analysis()
 
 results = []; % Initialize
 % UPDATED: Corrected the text for Student C's scenario
-scenarioChoice = centeredMenu('Select Radial Network Scenario:', ...
+scenarioChoice = centeredMenu3('Select Radial Network Scenario:', ...
     'Industrial Estate (Concentrated Loads) - Student A', ...
     'Residential Area (Distributed Loads) - Student B', ...
     'Street Lighting (Uniform Loads) - Student C');
@@ -24,7 +24,7 @@ if scenarioChoice == 0, return; end
 U_source = input('Enter source line-to-neutral voltage [V] (e.g., 230): ');
 
 % --- NEW: Ask for phase type ---
-lineTypeChoice = centeredMenu('Select System Type:', 'Single-Phase', 'Three-Phase');
+lineTypeChoice = centeredMenu3('Select System Type:', 'Single-Phase', 'Three-Phase');
 if lineTypeChoice == 0, return; end
 if lineTypeChoice == 1
     lineType = 'single-phase';
@@ -35,7 +35,7 @@ else
 end
 
 % Material Selection Menu
-materialChoice = centeredMenu('Select Conductor Material:', 'Copper', 'Aluminum');
+materialChoice = centeredMenu3('Select Conductor Material:', 'Copper', 'Aluminum');
 if materialChoice == 0, return; end
 if materialChoice == 1, materialName = 'Copper'; else, materialName = 'Aluminum'; end
 materialProps = getMaterialProperties(materialName);
@@ -115,7 +115,7 @@ results.crossSection = crossSection;
 results.nodes = nodes;
 results.totalVoltageDrop = nodes(end).voltageDrop;
 results.totalVoltageDropPercent = (results.totalVoltageDrop / U_source) * 100;
-A2_PlotRadialProfile(results);
+H2_PlotRadialProfile(results);
 end
 
 

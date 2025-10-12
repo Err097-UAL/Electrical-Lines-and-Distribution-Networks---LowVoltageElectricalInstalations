@@ -1,4 +1,4 @@
-function choice = centeredMenu(title, varargin)
+function choice = centeredMenu3(title, varargin)
 % =========================================================================
 % FUNCTION: centeredMenu (V2 - Robust UI Figure)
 % =========================================================================

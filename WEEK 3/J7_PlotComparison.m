@@ -1,4 +1,4 @@
-function C7_PlotComparison(results)
+function J7_PlotComparison(results)
 % =========================================================================
 % FUNCTION: Plot Network Comparison Charts (V4 - Corrected and Split)
 % =========================================================================

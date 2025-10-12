@@ -14,7 +14,7 @@ clc; % Clear the command window for a clean report
 
 %% --- 1. Run the Full Analysis ---
 % Call the main analysis function, which returns all data in a struct
-results = A1_Radial_Analysis();
+results = H1_Radial_Analysis();
 
 
 %% --- 2. Generate and Display the Final Report Table ---

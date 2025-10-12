@@ -1,4 +1,4 @@
-function results = B1_DualFed_Analysis()
+function results = I1_DualFed_Analysis()
 % =========================================================================
 % FUNCTION: Main Dual-Fed Network Analysis (V7 - Unifilar)
 % =========================================================================
@@ -14,14 +14,14 @@ function results = B1_DualFed_Analysis()
 % - Added a call to the new B4_PlotUnifilarDiagram function.
 % =========================================================================
 results = []; 
-scenarioChoice = centeredMenu('Select Dual-Fed Network Scenario:', ...
+scenarioChoice = centeredMenu3('Select Dual-Fed Network Scenario:', ...
     'Symmetrical Network (Single Load) - Student A', ...
     'Asymmetrical Network (Single Load) - Student B', ...
     'Backup Feeding / Reliability Analysis (Multiple Loads) - Student C');
 if scenarioChoice == 0, return; end
 
 % --- Get common inputs ---
-materialChoice = centeredMenu('Select Conductor Material:', 'Copper', 'Aluminum');
+materialChoice = centeredMenu3('Select Conductor Material:', 'Copper', 'Aluminum');
 if materialChoice == 0, return; end
 if materialChoice == 1, materialName = 'Copper'; else, materialName = 'Aluminum'; end
 materialProps = getMaterialProperties(materialName);
@@ -117,8 +117,8 @@ results.min_voltage_normal = min_voltage_normal;
 results.min_voltage_node_distance = min_voltage_node_distance;
 
 % Generate Plots
-B4_PlotUnifilarDiagram(results); % Generate the schematic diagram
-B2_PlotDualFedProfile(results); 
-B3_PlotLoadingDiagram(results); 
+I4_PlotUnifilarDiagram(results); % Generate the schematic diagram
+I2_PlotDualFedProfile(results); 
+I3_PlotLoadingDiagram(results); 
 end
 

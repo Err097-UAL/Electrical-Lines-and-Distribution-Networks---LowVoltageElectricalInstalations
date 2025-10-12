@@ -12,7 +12,7 @@ clc;
 
 %% --- 1. Run the Full Analysis ---
 % Call the main analysis function, which returns all data in a struct
-results = C1_Ring_Analysis();
+results = J1_Ring_Analysis();
 
 %% --- 2. Generate and Display the Final Report Table ---
 if isempty(results)

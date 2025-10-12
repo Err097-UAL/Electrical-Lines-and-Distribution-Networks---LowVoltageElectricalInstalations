@@ -13,7 +13,7 @@ clc;
 
 %% --- 1. Run the Full Analysis ---
 % Call the main analysis function, which returns all data in a struct
-results = C5_CompareNetworks();
+results = J5_CompareNetworks();
 
 %% --- 2. Generate and Display the Final Report Table ---
 if isempty(results)

@@ -1,13 +1,20 @@
 % =========================================================================
-% SCRIPT for Dual-Fed Network Analysis and Reporting (V2 - Reliability)
+% SCRIPT for Dual-Fed Network Analysis and Reporting (V3 - Corrected)
 % =========================================================================
-% MODIFIED: Added a new section to the report for the reliability analysis.
+% MODIFIED: Corrected function call to use 'I3_PlotLoadingDiagram'.
 % =========================================================================
 clc;
-results = B1_DualFed_Analysis();
+results = I1_DualFed_Analysis();
 
 if isempty(results), disp('Analysis cancelled.'); return; end
 
+% --- Generate Plots ---
+I2_PlotDualFedProfile(results);
+I3_PlotLoadingDiagram(results); % Corrected function call
+I4_PlotUnifilarDiagram(results);
+
+
+% --- Generate Command Window Report ---
 fprintf('\n\n\n======================================================================\n');
 fprintf('      COMPREHENSIVE TECHNICAL REPORT: DUAL-FED NETWORK ANALYSIS\n');
 fprintf('======================================================================\n');
@@ -22,22 +29,24 @@ fprintf('%-35s: %.1f mm^2\n', 'Conductor Cross-Section', results.crossSection);
 fprintf('%-35s: %.1f m\n', 'Total Line Length', results.L_total);
 
 fprintf('\n--- 2. Load Data ---\n');
-fprintf('%-10s | %-20s | %-15s\n', 'Load', 'Distance from A (m)', 'Current (A)');
-fprintf('-----------------------------------------------------------\n');
-for i = 1:length(results.loads), fprintf(' %-9s | %-20.1f | %-15.1f\n', ['Load ' num2str(i)], results.loads(i).distance, results.loads(i).current); end
+fprintf('%-10s | %-15s | %-15s\n', 'Load ID', 'Distance (m)', 'Current (A)');
+fprintf('----------------------------------------------\n');
+for i = 1:length(results.loads)
+    fprintf(' %-9s | %-15.1f | %-15.1f\n', ['Load ' num2str(i)], results.loads(i).distance, results.loads(i).current);
+end
 
-fprintf('\n--- 3. Normal Operation Analysis ---\n');
-fprintf('%-35s: %.1f A\n', 'Total Load Current', results.I_total);
-fprintf('%-35s: %.1f A\n', 'Current Supplied from Source A (Ia)', results.Ia);
-fprintf('%-35s: %.1f A\n', 'Current Supplied from Source B (Ib)', results.Ib);
-fprintf('%-35s: %.1f m\n', 'Location of Min Voltage Point', results.min_voltage_node_distance);
+fprintf('\n--- 3. Normal Operation Results ---\n');
+fprintf('%-35s: %.2f A\n', 'Current from Source A (Ia)', results.Ia);
+fprintf('%-35s: %.2f A\n', 'Current from Source B (Ib)', results.Ib);
+fprintf('%-35s: %.2f m\n', 'Current Division Point', results.division_point);
+fprintf('%-35s: %.2f V\n', 'Min Voltage Location', results.min_voltage_node_distance);
 fprintf('----------------------------------------------------------------------\n');
 fprintf('%-35s: %.2f V\n', 'MINIMUM VOLTAGE (NORMAL)', results.min_voltage_normal);
 fprintf('%-35s: %.2f V (%.2f %%)\n', 'Max Voltage Drop (Normal)', results.Ua - results.min_voltage_normal, (results.Ua - results.min_voltage_normal)/results.Ua*100);
 fprintf('----------------------------------------------------------------------\n');
 
-% --- NEW: Section for Reliability Analysis ---
-if strcmp(results.scenarioName, 'Backup Feeding / Reliability')
+% --- Section for Reliability Analysis ---
+if strcmp(results.scenarioName, 'Backup Feeding / Reliability Analysis (Multiple Loads)')
     fprintf('\n--- 4. Reliability / Backup Scenario Analysis ---\n');
     fprintf('--- Scenario: Source B Fails (Radial from A) ---\n');
     fprintf('%-35s: %.2f V\n', 'Voltage at final load', results.min_voltage_fail_B);
@@ -49,5 +58,4 @@ end
 
 fprintf('\n======================================================================\n');
 fprintf('                      END OF REPORT\n');
-fprintf('======================================================================\n');
-
+fprintf('======================================================================\n\n');

@@ -1,4 +1,4 @@
-function B4_PlotUnifilarDiagram(results)
+function I4_PlotUnifilarDiagram(results)
 % =========================================================================
 % FUNCTION: B4_PlotUnifilarDiagram (NEW)
 % =========================================================================

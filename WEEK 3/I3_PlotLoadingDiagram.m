@@ -1,14 +1,9 @@
-function B3_PlotLoadingDiagram(results)
+function I3_PlotLoadingDiagram(results)
 % =========================================================================
-% FUNCTION: B3_PlotLoadingDiagram (NEW)
+% FUNCTION: I3_PlotLoadingDiagram (Corrected)
 % =========================================================================
-% Description:
-% Generates a network loading diagram for a dual-fed line. This plot
-% visualizes the current distribution along the line, showing the flow
-% from each source and how it decreases as it serves each load.
-%
-% Input:
-%   results - The struct containing all analysis data from B1_DualFed_Analysis.
+% MODIFIED: Renamed function from 'I3_PlotLoadingDiagramResults' for
+% consistency.
 % =========================================================================
 figure;
 hold on;
@@ -48,13 +43,15 @@ line([0, results.L_total], [0, 0], 'Color', 'k', 'LineStyle', '--');
 
 % Annotate start and end currents
 text(0, results.Ia, sprintf('  Ia = %.1f A', results.Ia), 'VerticalAlignment', 'bottom', 'FontWeight', 'bold');
-text(results.L_total, -results.Ib, sprintf('Ib = %.1f A  ', results.Ib), 'VerticalAlignment', 'top', 'HorizontalAlignment', 'right', 'FontWeight', 'bold');
+text(results.L_total, -results.Ib, sprintf('  Ib = %.1f A  ', -results.Ib), 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right', 'FontWeight', 'bold');
 
-% Formatting
-title(['Network Loading Diagram (' results.scenarioName ')']);
+% --- Formatting ---
+title('Network Loading Diagram');
 xlabel('Distance from Source A (m)');
 ylabel('Current (A)');
-legend('Current Distribution', 'Location', 'best');
+ylim_max = max(abs(currents)) * 1.2;
+if ylim_max == 0, ylim_max = 1; end
+ylim([-ylim_max, ylim_max]);
+hold off;
 
 end
-

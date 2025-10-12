@@ -1,4 +1,4 @@
-function B2_PlotDualFedProfile(results)
+function I2_PlotDualFedProfile(results)
 % =========================================================================
 % FUNCTION: Plot Dual-Fed Voltage Profile (V2 - Reliability)
 % =========================================================================
