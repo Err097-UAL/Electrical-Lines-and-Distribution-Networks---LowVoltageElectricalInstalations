@@ -1,10 +1,13 @@
 function [total_cost, cable_cost, loss_cost] = C6_CalculateNetworkCost(type, L_total, Ia, Ib, loads, sigma, s, cost_per_meter)
 % =========================================================================
-% FUNCTION: Calculate Network Lifecycle Cost (NEW)
+% FUNCTION: Calculate Network Lifecycle Cost (V2 - Corrected)
 % =========================================================================
 % Description:
 % Calculates the initial cable cost and the lifecycle cost of energy
 % losses for a given network configuration.
+% MODIFIED: Corrected a struct concatenation error by ensuring the
+%           temporary structs used for calculation have the same fields
+%           as the main 'loads' struct.
 % =========================================================================
 % --- Economic Constants ---
 LCC_years = 20;
@@ -24,7 +27,8 @@ total_power_loss_watts = 0;
 if strcmp(type, 'ring')
     % Path A (clockwise)
     I_seg_A = Ia;
-    nodes_A = [struct('distance', 0); loads];
+    % CORRECTED: Added the 'current' field to the temporary struct
+    nodes_A = [struct('distance', 0, 'current', 0); loads];
     for i = 2:length(nodes_A)
         seg_len = nodes_A(i).distance - nodes_A(i-1).distance;
         R_seg = (1/(sigma*s)) * seg_len;
@@ -34,7 +38,8 @@ if strcmp(type, 'ring')
     % Path B (anti-clockwise)
     I_seg_B = Ib;
     loads_rev = sortrows(struct2table(loads), 'distance', 'descend');
-    nodes_B = [struct('distance', L_total); table2struct(loads_rev)];
+    % CORRECTED: Added the 'current' field to the temporary struct
+    nodes_B = [struct('distance', L_total, 'current', 0); table2struct(loads_rev)];
      for i = 2:length(nodes_B)
         seg_len = nodes_B(i-1).distance - nodes_B(i).distance;
         R_seg = (1/(sigma*s)) * seg_len;
@@ -43,7 +48,8 @@ if strcmp(type, 'ring')
     end
 else % radial
     I_seg = Ia; % Ia is total current for radial
-    nodes_rad = [struct('distance', 0); loads];
+    % CORRECTED: Added the 'current' field to the temporary struct
+    nodes_rad = [struct('distance', 0, 'current', 0); loads];
     for i = 2:length(nodes_rad)
         seg_len = nodes_rad(i).distance - nodes_rad(i-1).distance;
         R_seg = (1/(sigma*s)) * seg_len;
@@ -57,3 +63,4 @@ loss_cost = total_loss_kWh * cost_per_kWh;
 % --- 3. Calculate Total Lifecycle Cost ---
 total_cost = cable_cost + loss_cost;
 end
+
