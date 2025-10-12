@@ -1,4 +1,4 @@
-function s = C2_calculateRequiredSection(lineType, d, I, cos_phi, sigma, deltaU_max)
+function s = G2_calculateRequiredSection(lineType, d, I, cos_phi, sigma, deltaU_max)
 % =========================================================================
 % FUNCTION: calculateRequiredSection
 % =========================================================================

@@ -1,4 +1,4 @@
-function B4b_checkInstallationCompliance(results, U_source)
+function F4b_checkInstallationCompliance(results, U_source)
 % =========================================================================
 % FUNCTION: B4b_checkInstallationCompliance (NEW)
 % =========================================================================

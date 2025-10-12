@@ -12,7 +12,7 @@
 % clc; clear; close all; % Controlled by master script
 
 %% --- User Selection of Analysis Mode ---
-analysisMode = centeredMenu('Select Voltage Drop Analysis Type:', 'Full Installation Analysis (Multi-Segment)', 'Simple Single Line Analysis');
+analysisMode = centeredMenu2('Select Voltage Drop Analysis Type:', 'Full Installation Analysis (Multi-Segment)', 'Simple Single Line Analysis');
 
 if analysisMode == 0
     disp('No analysis type selected. Exiting.');
@@ -55,7 +55,7 @@ function run_full_installation_analysis()
     cos_phi = input('Enter final load power factor (e.g., 0.95): ');
     frequency = input('Enter AC frequency [Hz] (e.g., 50): ');
 
-    lineTypeChoice = centeredMenu('Select Dominant System Type:', 'Single-Phase', 'Three-Phase');
+    lineTypeChoice = centeredMenu2('Select Dominant System Type:', 'Single-Phase', 'Three-Phase');
     if lineTypeChoice == 1, lineType = 'single-phase'; else, lineType = 'three-phase'; end
     
     % --- Data Collection Loop for Each Segment ---
@@ -65,7 +65,7 @@ function run_full_installation_analysis()
         segmentData.name = installationSegments{i};
         segmentData.length = input(sprintf('Enter length [m] for %s: ', segmentData.name));
         segmentData.crossSection = input(sprintf('Enter cross-section [mm^2] for %s: ', segmentData.name));
-        materialChoice = centeredMenu(['Select Material for ' segmentData.name], 'Copper', 'Aluminum');
+        materialChoice = centeredMenu2(['Select Material for ' segmentData.name], 'Copper', 'Aluminum');
         if materialChoice == 0, disp('Selection cancelled. Aborting.'); return; end
         switch materialChoice, case 1, segmentData.resistivity = rho_copper; segmentData.sigma = sigma_copper; case 2, segmentData.resistivity = rho_aluminum; segmentData.sigma = sigma_aluminum; end
         segmentData.reactance_per_meter = input(sprintf('Enter reactance [Ohm/m] for %s (e.g., 0.0001): ', segmentData.name));
@@ -75,7 +75,7 @@ function run_full_installation_analysis()
         [k_skin, k_prox] = A3b_AC_Resistance_Factor(frequency, diameter_m, segmentData.sigma);
         r_ac = r_dc * (1 + k_skin + k_prox);
         
-        segmentData.voltageDrop = B2_calculateExactVoltageDrop(lineType, segmentData.length, loadCurrent, r_ac, segmentData.reactance_per_meter, cos_phi);
+        segmentData.voltageDrop = F2_calculateExactVoltageDrop(lineType, segmentData.length, loadCurrent, r_ac, segmentData.reactance_per_meter, cos_phi);
         segmentData.voltage_in = voltage_at_start_of_segment;
         segmentData.voltage_out = voltage_at_start_of_segment - segmentData.voltageDrop;
         voltage_at_start_of_segment = segmentData.voltage_out;
@@ -84,8 +84,8 @@ function run_full_installation_analysis()
     
     % --- Display Summary and Compliance ---
     display_summary_table(results, U_source_initial);
-    B4b_checkInstallationCompliance(results, U_source_initial);
-    B6_plotInstallationProfile(results, U_source_initial);
+    F4b_checkInstallationCompliance(results, U_source_initial);
+    F6_plotInstallationProfile(results, U_source_initial);
 end
 
 function display_summary_table(results, U_source_initial)
@@ -114,7 +114,7 @@ function run_single_line_analysis()
 
     % --- User Input ---
     fprintf('\n--- Input for Single Line Analysis ---\n');
-    lineTypeChoice = centeredMenu('Select Line Type:', 'Single-Phase', 'Three-Phase');
+    lineTypeChoice = centeredMenu2('Select Line Type:', 'Single-Phase', 'Three-Phase');
     if lineTypeChoice == 1
         lineType = 'single-phase';
         U_source = input('Enter single-phase source voltage (L-N) [V] (e.g., 230): ');
@@ -127,9 +127,9 @@ function run_single_line_analysis()
     lineLength = input('Enter total line length [m] (e.g., 150): ');
     reactance = input('Enter line reactance per unit length [Ohm/m] (e.g., 0.0001): ');
     frequency = input('Enter AC frequency [Hz] (e.g., 50): ');
-    materialChoice = centeredMenu('Select Conductor Material:', 'Copper', 'Aluminum');
+    materialChoice = centeredMenu2('Select Conductor Material:', 'Copper', 'Aluminum');
     crossSection = input('Enter conductor cross-section [mm^2] (e.g., 16): ');
-    circuitChoice = centeredMenu('Select Circuit Type (for REBT limits):', 'Lighting', 'Power (Other uses)');
+    circuitChoice = centeredMenu2('Select Circuit Type (for REBT limits):', 'Lighting', 'Power (Other uses)');
     if materialChoice == 0 || circuitChoice == 0, disp('Invalid selection. Aborting.'); return; end
     
     % --- Set Parameters ---
@@ -143,9 +143,9 @@ function run_single_line_analysis()
     resistance_ac_per_meter = resistance_dc_per_meter * (1 + k_skin + k_proximity);
 
     % --- Perform Voltage Drop Calculations ---
-    deltaU_exact_dc = B2_calculateExactVoltageDrop(lineType, lineLength, loadCurrent, resistance_dc_per_meter, reactance, cos_phi);
-    deltaU_exact_ac = B2_calculateExactVoltageDrop(lineType, lineLength, loadCurrent, resistance_ac_per_meter, reactance, cos_phi);
-    [isCompliant, percentDrop, limit] = B4_checkREBTCompliance(deltaU_exact_ac, U_source, circuitType);
+    deltaU_exact_dc = F2_calculateExactVoltageDrop(lineType, lineLength, loadCurrent, resistance_dc_per_meter, reactance, cos_phi);
+    deltaU_exact_ac = F2_calculateExactVoltageDrop(lineType, lineLength, loadCurrent, resistance_ac_per_meter, reactance, cos_phi);
+    [isCompliant, percentDrop, limit] = F4_checkREBTCompliance(deltaU_exact_ac, U_source, circuitType);
 
     % --- Display Results ---
     fprintf('\n--- RESULTS for Single Line ---\n');
@@ -159,6 +159,6 @@ function run_single_line_analysis()
     fprintf('--------------------------------------------------\n');
 
     % --- Plotting ---
-    B5_plotVoltageProfile(U_source, deltaU_exact_dc, deltaU_exact_ac, lineLength, circuitType);
+    F5_plotVoltageProfile(U_source, deltaU_exact_dc, deltaU_exact_ac, lineLength, circuitType);
 end
 

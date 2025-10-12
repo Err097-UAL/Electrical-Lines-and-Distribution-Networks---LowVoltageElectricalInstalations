@@ -1,4 +1,4 @@
-function [selected_section, ampacity, standard_sections_data] = C3_selectStandardSection(s_required, material)
+function [selected_section, ampacity, standard_sections_data] = G3_selectStandardSection(s_required, material)
 % =========================================================================
 % FUNCTION: selectStandardSection
 % =========================================================================

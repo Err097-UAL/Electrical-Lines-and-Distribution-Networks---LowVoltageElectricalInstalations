@@ -1,4 +1,4 @@
-function B6_plotInstallationProfile(results, U_source)
+function F6_plotInstallationProfile(results, U_source)
 % =========================================================================
 % FUNCTION: B6_plotInstallationProfile (NEW)
 % =========================================================================

@@ -1,4 +1,4 @@
-function deltaU_simple = B3_calculateSimplifiedVoltageDrop(lineType, d, I, r, cos_phi)
+function deltaU_simple = F3_calculateSimplifiedVoltageDrop(lineType, d, I, r, cos_phi)
 % =========================================================================
 % FUNCTION: calculateSimplifiedVoltageDrop
 % =========================================================================

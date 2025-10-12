@@ -1,4 +1,4 @@
-function [total_cost, cable_cost, loss_cost] = C4_calculateLifecycleCost(section_data, lineType, d, I, cos_phi, sigma, years, hours_per_year, cost_per_kWh)
+function [total_cost, cable_cost, loss_cost] = G4_calculateLifecycleCost(section_data, lineType, d, I, cos_phi, sigma, years, hours_per_year, cost_per_kWh)
 % =========================================================================
 % FUNCTION: calculateLifecycleCost
 % =========================================================================

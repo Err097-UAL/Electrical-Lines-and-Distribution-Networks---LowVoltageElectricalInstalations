@@ -1,4 +1,4 @@
-function k_g = A8_GroupingFactor(num_cables)
+function k_g = E8_GroupingFactor(num_cables)
 % =========================================================================
 % FUNCTION: A8_GroupingFactor (NEW)
 % =========================================================================

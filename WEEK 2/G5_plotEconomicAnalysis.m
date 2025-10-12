@@ -1,4 +1,4 @@
-function [] = C5_plotEconomicAnalysis(sections, cable_costs, loss_costs, total_costs, s_technical, s_optimal)
+function [] = G5_plotEconomicAnalysis(sections, cable_costs, loss_costs, total_costs, s_technical, s_optimal)
 % =========================================================================
 % FUNCTION: plotEconomicAnalysis
 % =========================================================================

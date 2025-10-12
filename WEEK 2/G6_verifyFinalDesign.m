@@ -1,4 +1,4 @@
-function final_vd_percent = C6_verifyFinalDesign(lineType, d, I, cos_phi, sigma, s_final, U_source)
+function final_vd_percent = G6_verifyFinalDesign(lineType, d, I, cos_phi, sigma, s_final, U_source)
 % =========================================================================
 % FUNCTION: verifyFinalDesign
 % =========================================================================

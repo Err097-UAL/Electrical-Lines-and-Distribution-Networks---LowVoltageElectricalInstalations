@@ -1,4 +1,4 @@
-function deltaU = B2_calculateExactVoltageDrop(lineType, d, I, r, xL, cos_phi)
+function deltaU = F2_calculateExactVoltageDrop(lineType, d, I, r, xL, cos_phi)
 % =========================================================================
 % FUNCTION: calculateExactVoltageDrop
 % =========================================================================

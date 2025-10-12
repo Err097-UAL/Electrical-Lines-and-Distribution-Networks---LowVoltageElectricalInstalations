@@ -1,4 +1,4 @@
-function [isCompliant, percentDrop, limit] = B4_checkREBTCompliance(deltaU, U_source, circuitType)
+function [isCompliant, percentDrop, limit] = F4_checkREBTCompliance(deltaU, U_source, circuitType)
 % =========================================================================
 % FUNCTION: checkREBTCompliance
 % =========================================================================

@@ -1,4 +1,4 @@
-function [k_skin, k_proximity] = A3b_AC_Resistance_Factor(freq, diameter, sigma)
+function [k_skin, k_proximity] = E3b_AC_Resistance_Factor(freq, diameter, sigma)
 % =========================================================================
 % FUNCTION: calculateACResistanceFactor (V2 - Corrected)
 % =========================================================================

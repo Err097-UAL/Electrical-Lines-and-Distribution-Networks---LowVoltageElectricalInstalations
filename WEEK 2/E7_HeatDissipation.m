@@ -1,4 +1,4 @@
- function P_diss = A7_HeatDissipation(T_conductor, envParams, r_outer, length)
+ function P_diss = E7_HeatDissipation(T_conductor, envParams, r_outer, length)
 % =========================================================================
 % FUNCTION: A7_HeatDissipation (Module - Corrected)
 % =========================================================================

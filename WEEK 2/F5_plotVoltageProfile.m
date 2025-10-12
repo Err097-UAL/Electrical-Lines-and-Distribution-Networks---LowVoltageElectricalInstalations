@@ -1,4 +1,4 @@
-function [] = B5_plotVoltageProfile(U_source, deltaU_total_dc, deltaU_total_ac, total_length, circuitType)
+function [] = F5_plotVoltageProfile(U_source, deltaU_total_dc, deltaU_total_ac, total_length, circuitType)
 % =========================================================================
 % FUNCTION: plotVoltageProfile (V2 - AC/DC Comparison)
 % =========================================================================

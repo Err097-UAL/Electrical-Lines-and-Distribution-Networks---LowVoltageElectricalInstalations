@@ -21,7 +21,7 @@ clc; % Clear the command window for a clean report
 %% --- 1. Run the Full Analysis ---
 % The main analysis script has been converted to a function that returns
 % all its important data in a single 'results' struct.
-results = A1_ConductorHeatingAnalysis();
+results = E1_ConductorHeatingAnalysis();
 
 
 %% --- 2. Generate and Display the Final Report Table ---
