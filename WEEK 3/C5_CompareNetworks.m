@@ -38,6 +38,10 @@ Ib_ring = sum([sorted_loads.current]) - Ia_ring;
 [min_v_ring, ~] = calculate_min_voltage(U_source, Ia_ring, sorted_loads, sigma, crossSection);
 results.ring.min_voltage = min_v_ring;
 results.ring.max_drop_percent = (U_source - min_v_ring)/U_source * 100;
+results.ring.Ia = Ia_ring;
+results.ring.Ib = Ib_ring;
+results.ring.L_total = L_total_ring;
+
 
 % --- 2. ANALYZE THE RADIAL NETWORK ---
 L_total_radial = sorted_loads(end).distance;
@@ -51,6 +55,8 @@ for i = 1:length(radial_nodes)
 end
 results.radial.min_voltage = U_source - total_drop_radial;
 results.radial.max_drop_percent = (total_drop_radial / U_source) * 100;
+results.radial.L_total = L_total_radial;
+
 
 % --- 3. RELIABILITY / FAILURE IMPACT (on Ring) ---
 % Simulate an open-circuit fault in the ring just after the feed-in point.
