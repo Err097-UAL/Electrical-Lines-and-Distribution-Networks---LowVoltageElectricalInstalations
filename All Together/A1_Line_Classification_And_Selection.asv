@@ -1,0 +1,39 @@
+% Create a table to store line classifications
+% Using a structure to organize line data
+powerLines= struct();
+
+% Student A
+powerLines.IndustrialFacility.Voltage = 20000; % Volts
+powerLines.IndustrialFacility.VoltageLevel = 'MV';
+powerLines.IndustrialFacility.Application = 'Distribution';
+powerLines.IndustrialFacility.Topology = 'Mixed';
+powerLines.IndustrialFacility.TypicalConductor = 'XLPE Insulated Aluminum';
+
+%Student B
+powerLines.ResidentialComplex.Voltage = 400; % Volts
+powerLines.ResidentialComplex.VoltageLevel = 'LV';
+powerLines.ResidentialComplex.Application = 'Distribution';
+powerLines.ResidentialComplex.Topology = 'Underground';
+powerLines.ResidentialComplex.TypicalConductor = 'XLPE Insulated Aluminum';
+
+%Student C
+    %Linea de Media Tension
+powerLines.CommercialCentreMV.Voltage = 20000; % Volts
+powerLines.CommercialCentreMV.VoltageLevel = 'MV';
+powerLines.CommercialCentreMV.Application = 'Distribution';
+powerLines.CommercialCentreMV.Topology = 'Overhead';
+powerLines.CommercialCentreMV.TypicalConductor = 'XLPE Insulated Aluminum';
+
+    %Linea de Baja Tension
+powerLines.CommercialCentreLV.Voltage = 400; % Volts
+powerLines.CommercialCentreLV.VoltageLevel = 'LV';
+powerLines.CommercialCentreLV.Application = 'Service/Interior';
+powerLines.CommercialCentreLV.Topology = 'Underground';
+powerLines.CommercialCentreLV.TypicalConductor = 'XLPE Insulated Aluminum';
+
+% Display the database in the command window
+disp('Commercial Center Line Database:');
+disp(powerLines.IndustrialFacility)
+disp(powerLines.ResidentialComplex)
+disp(powerLines.CommercialCentreMV)
+disp(powerLines.CommercialCentreLV)
