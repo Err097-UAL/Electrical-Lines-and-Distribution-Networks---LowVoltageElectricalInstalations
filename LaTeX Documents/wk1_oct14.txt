@@ -1,0 +1,474 @@
+\documentclass[12pt, a4paper]{article}
+
+% --- PACKAGES ---
+\usepackage{booktabs}               % For professional-looking table lines (\toprule, \midrule, \bottomrule)
+\usepackage{caption}                % For better control over captions
+\usepackage[margin=2.5cm]{geometry} % Set page margins
+\usepackage{amsmath}               % For advanced math environments
+\usepackage{graphicx}              % To include graphics
+\usepackage{hyperref}              % For clickable links and references
+\usepackage{tikz}                  % For drawing
+\usepackage{pgfplots}              % For creating plots and charts
+\usepackage{pgf-pie}               % For creating pie charts
+\pgfplotsset{compat=1.17}          % Use a recent version of pgfplots
+
+% --- DOCUMENT INFORMATION ---
+\title{
+    \vspace{4cm} % Add vertical space before the title
+    \textbf{Week 1 Project: Electrical Lines and Basic Calculations} \\
+    \large \textit{Week 1 Technical Report} \\
+    \vspace{1cm} % Space after title
+    \rule{\textwidth}{0.4pt} % Horizontal line
+}
+\author{Enrique Antonio Raudales Rodriguez}
+\date{\today}
+
+% --- BEGIN DOCUMENT ---
+\begin{document}
+
+% --- TITLE PAGE ---
+\begin{titlepage}
+    \maketitle
+    \vfill % Pushes the following content to the bottom
+    \begin{center}
+        \large University of Almería \\
+        Medium and Low Voltage Electrical Installations \\
+        Academic Year 2025-2026
+    \end{center}
+\end{titlepage}
+
+% --- TABLE OF CONTENTS ---
+\newpage
+\tableofcontents
+\newpage
+
+% --- SECTION 1: INTRODUCTION ---
+\section{Introduction}
+This report details the work completed during the first week of the "Electrical Lines and Distribution Networks" project. The primary objectives for this initial phase were to establish a foundational understanding of line classification, analyze the fundamental properties of conductors and insulators, and perform basic electrical calculations for representative scenarios.
+
+The methodologies employed adhere to the project requirements, utilizing MATLAB for data management, calculation, and visualization (with the graphs and charts later coded directly into LaTeX for higher quality). This document serves as the formal technical summary of the findings, with analysis grounded in Spanish electrical regulations, particularly the \textit{Reglamento Electrotécnico para Baja Tensión} (REBT), and standard engineering principles. All calculations and data visualizations presented within this document are derived from the suite of MATLAB scripts developed for this project.
+
+% --- SECTION 2: LINE CLASSIFICATION AND SELECTION ---
+\section{Problem 1: Line Classification and Selection Analysis}
+The initial task involved the classification of electrical lines for three distinct projects: an industrial facility, a residential complex, and a commercial center. A comprehensive database was established in MATLAB to manage these classifications. Structs were used for their convenience in grouping different data types into a single object, though tables could have also provided a clearer organization. \\ (ref. \texttt{AALine\_Classification\_And\_Selection.m}).
+
+\subsection{Line Database and Classification}
+Lines were categorized based on three primary criteria: Voltage Level (Medium or Low Voltage), Application (Transmission, Distribution, Service or Interior), and Topology (Overhead, Underground, or Mixed). The voltage levels for the analyzed projects are visualized in Figure \ref{fig:voltage_levels}. As shown, the industrial and medium voltage commercial center lines operate at 20 kV, while the residential and low voltage commercial center lines operate at 400 V.
+% The [h!] command suggests LaTeX place the table "here" if possible.
+\begin{table}[h!]
+    \centering
+    \caption{Line Classification Database for Project Scenarios}
+    \label{tab:line_classification}
+    % The `\resizebox` command scales the table to fit the width of the text.
+    % This is useful if the content makes the table too wide for the page.
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{@{}l l l l l@{}}
+        \toprule
+        \textbf{Property} & \textbf{Industrial Installation} & \textbf{Residential Complex} & \textbf{Commercial Center (MV)} & \textbf{Commercial Center (LV)} \\
+        \midrule
+        Voltage (V) & 20000 & 400 & 20000 & 400 \\
+        Voltage Level & MV & LV & MV & LV \\
+        Application & Distribution & Distribution & Distribution & Service/Interior \\
+        Topology & Mixed & Underground & Overhead & Underground \\
+        Typical Conductor & XLPE Insulated Copper & PVC Insulated Copper & XLPE Insulated Aluminum & XLPE Insulated Copper \\
+        \bottomrule
+    \end{tabular}%
+    }
+\end{table}
+    
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar,
+            title={Voltage Levels Across Projects},
+            ylabel={Voltage (V)},
+            xlabel={Project Installation},
+            symbolic x coords={Industrial, Residential, Commercial MV, Commercial LV},
+            xtick=data,
+            nodes near coords,
+            nodes near coords align={vertical},
+            width=\textwidth,
+            height=8cm,
+            bar width=60pt,
+            xticklabel style={rotate=15, anchor=north east},
+        ]
+        \addplot coordinates {
+            (Industrial, 20000)
+            (Residential, 400)
+            (Commercial MV, 20000)
+            (Commercial LV, 400)
+        };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Comparison of nominal voltage levels for each project installation, based on data from The Proyect Guide}
+    \label{fig:voltage_levels}
+\end{figure}
+
+\subsection{Conductor Material Distribution}
+An analysis of the typical conductor materials selected for these initial classifications reveals a strong preference for copper in low voltage and interior wiring, due to its longer lifespan and superior properties, such as a superior tolerance to heat and smaller cross section requirements. Aluminum is favored for the medium voltage feeder due to its lower cost, and its capacity to match copper's conductivity, with a lower overall weight, although with a bigger cross section. Its inferior strength properties can be compensated through the use of steel (making an ACSR composite cable), although its susceptibility to warping due to heat or strain render its lifespan shorter. This distribution, calculated in \texttt{ABpie chart.m}, is presented in Figure \ref{fig:conductor_pie}. The selection reflects a common trade-off between cost (favoring aluminum for large distribution lines) and performance/regulatory requirements (favoring copper for service lines).
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \pie[text=legend, sum=auto, radius=3.5]
+        {
+            50/XLPE Insulated Copper (2),
+            25/PVC Insulated Copper (1),
+            25/XLPE Insulated Aluminum (1)
+        }
+    \end{tikzpicture}
+    \caption{Distribution of conductor types across the initial project installations.}
+    \label{fig:conductor_pie}
+\end{figure}
+    
+\subsection{Interactive Selection Algorithm}
+To aid in future design decisions, an interactive selection algorithm was developed (ref. \texttt{ABLineTypeSelector.m}). This tool provides preliminary recommendations for line topology and conductor material based on user inputs for voltage, application location, and project lifetime. The underlying logic prioritizes overhead lines for main feeders due to cost and heat dissipation, while recommending underground lines for local distribution for safety and aesthetics. Material selection is guided by a longevity principle, favoring copper for projects exceeding a 30-year design life.
+
+
+
+
+
+% --- SECTION 3: CONDUCTOR AND INSULATION ANALYSIS ---
+\section{Problem 2: Conductor and Insulation Analysis}
+This section provides a detailed analysis of the mechanical and electrical properties of the primary conductor materials (Copper, Aluminum, and ACSR) and insulation systems (PVC and XLPE). The data for this analysis was compiled in the MATLAB scripts \texttt{BAConductor\_Analisis.m} and \texttt{CCStrenghtPropertyComparisons.m}.
+
+\subsection{Conductive Properties of the Conductors \\ and Electrical Analysis}
+A key characteristic of any conductor is how well it conduces current. Copper is the most used conductor, for its relative cheapness when compared to other metals, and for its excellent conductive properties (being the base for the IACS system of measuring conductivity, in which Annealed Copper is 100\% and Aluminum is just 61\%. For reference, gold is 76\% and silver is an astounding 106\%). A table was made comparing the different situations the three students were faced with, each being given specific line length, power and power factor constraints, with which they were asked to calculate the overall line resistance, the line current, the voltage drop and the power loss. These calculations were done through the MATLAB Script \texttt{CBElectricalConductivityWithPowerLossV2}. The Maximum admissible current was also considered. In both cases, values were determined for a fixed set of parameters, which was sufficient for comparing the properties between materials. We can appreciate how copper has the highest admissible current and the lowest voltage drop, whilst Aluminum and the ACSR composite have very similar conductive properties.
+\\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ *The formulas used are shown in Annex 1
+
+
+
+
+
+    % --- CHART 1: Voltage Drop vs. Distance ---
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            title={Voltage Drop vs. Line Distance},
+            xlabel={Distance (km)},
+            ylabel={Voltage Drop (V)},
+            width=\textwidth,
+            height=8cm,
+            grid=major,
+            legend pos=north west,
+        ]
+        % Data based on 3-phase, 400V, 2.5A load on a 2.5mm^2 cable
+        \addplot[smooth, mark=*, blue] coordinates {
+            (0, 0) (2, 61.9) (4, 123.7) (6, 185.6) (8, 247.4) (10, 309.3)
+        };
+        \addlegendentry{Copper ($\sigma=56$)}
+        
+        \addplot[smooth, mark=square*, red] coordinates {
+            (0, 0) (2, 96.2) (4, 192.4) (6, 288.7) (8, 384.9) (10, 481.1)
+        };
+        \addlegendentry{Aluminum ($\sigma=36$)}
+        
+        \addplot[smooth, mark=triangle*, green!50!black] coordinates {
+            (0, 0) (2, 101.9) (4, 203.8) (6, 305.6) (8, 407.5) (10, 509.4)
+        };
+        \addlegendentry{ACSR ($\sigma=34$)}
+        
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Progressive voltage drop for different conductor materials under a constant load.}
+    \label{fig:voltage_drop_chart}
+\end{figure}
+
+% --- CHART 2: Maximum Admissible Current ---
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar,
+            bar width=30pt,
+            title={Max. Admissible Current for 2.5mm² Cable},
+            ylabel={Current (A)},
+            symbolic x coords={Copper, Aluminum (AAC), ACSR},
+            xtick=data,
+            nodes near coords,
+            nodes near coords align={vertical},
+            width=\textwidth,
+            height=7cm,
+        ]
+        \addplot coordinates {
+            (Copper, 24)
+            (Aluminum (AAC), 18.5)
+            (ACSR, 17.5)
+        };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Comparison of maximum admissible current based on representative data for a 2.5mm² conductor.}
+    \label{fig:max_current_chart}
+\end{figure}
+    
+     
+    
+    
+\subsection{Mechanical Properties of Conductors} 
+The mechanical integrity of a conductor is critical, especially for overhead lines. The two key parameters analyzed were Tensile Strength and Young's Modulus.
+
+\paragraph{Tensile Strength.} This measures the maximum stress a material can withstand before breaking. As shown in Figure \ref{fig:tensile_strength}, ACSR (Aluminum-Steel Conductor Reinforced) exhibits vastly superior tensile strength due to its steel core. This makes it the ideal choice for long spans between towers in overhead lines. Copper is significantly stronger than pure aluminum.
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar = -15pt,
+        bar width=60pt,
+            title={Tensile Strength of Conductor Materials},
+            ylabel={Tensile Strength (MPa)},
+            symbolic x coords={Aluminum (AAC), Copper, ACSR},
+            xtick=data,
+            legend style={at={(0.5, -0.2)}, anchor=north, legend columns=-1},
+            width=\textwidth,
+            height=8cm,
+        ]
+        \addplot coordinates {(Aluminum (AAC), 160) (Copper, 300) (ACSR, 500)};
+        \addplot coordinates {(Aluminum (AAC), 200) (Copper, 450) (ACSR, 1500)};
+        \legend{Minimum, Maximum}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Comparison of minimum and maximum tensile strength ranges.}
+    \label{fig:tensile_strength}
+\end{figure}
+
+\paragraph{Young's Modulus.} This value indicates the material's stiffness or resistance to elastic deformation under load. Figure \ref{fig:youngs_modulus} shows that copper is the stiffest material, which means it will sag less under its own weight for a given tension compared to aluminum. The ACSR conductor has a mixed stiffness, influenced by both its aluminum and steel components. It is important to note that the ranking the materials had when their Tensile Strength was being compared is not the same as their ranking upon considering Young's Modulus, the difference being that while copper may be the stiffest metal, it is not the strongest.
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar=-15pt,
+         bar width=60pt,
+            title={Young's Modulus of Conductor Materials},
+            ylabel={Young's Modulus (GPa)},
+            symbolic x coords={Aluminum (AAC), ACSR, Copper},
+            xtick=data,
+            legend style={at={(0.5, -0.2)}, anchor=north, legend columns=-1},
+            width=\textwidth,
+            height=8cm,
+        ]
+        \addplot coordinates {(Aluminum (AAC), 60) (ACSR, 75) (Copper, 115)};
+        \addplot coordinates {(Aluminum (AAC), 70) (ACSR, 110) (Copper, 125)};
+        \legend{Minimum, Maximum}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Comparison of Young's Modulus ranges, indicating material stiffness.}
+    \label{fig:youngs_modulus}
+\end{figure}
+
+\subsection{Insulation Systems Analysis}
+The choice of insulation is dictated by thermal performance, environmental conditions, and regulatory requirements. The analysis in \texttt{CAInsulationSystems.m} and \texttt{CDInsulationSystems.m} focused on PVC and XLPE. The most critical aspect to consider is the maximum continuous operating temperature: 70°C for PVC versus 90°C for XLPE.
+
+PVC (Polyvinyl Chloride): A thermoplastic polymer. It is made flexible for cable use
+by adding plasticizers. It is a cost-effective and versatile insulator. It is characterized by a lower cost, high flexibility, good resistance to oils and chemicals. However, it has a lower temperature rating,and produces dense, corrosive smoke (HCl gas) when burned. It also becomes brittle at low temperatures.
+
+XLPE (Cross-linked Polyethylene) is a thermosetting polymer. The polyethylene molecules are permanently bonded ("cross-linked"), preventing them from melting or separating at higher temperatures, giving it superior thermal and mechanical stability. It has a higher operating temperature of 90°C, giving it its higher current rating for the same conductor size as PVC, as well as a greater mechanical toughness and water resistance. It does however have a  higher material cost, and it is less flexible than PVC which can make installing it 
+in tight spaces more difficult.
+
+This thermal advantage allows an XLPE-insulated cable to carry significantly more current, and therefore more power, than a PVC-insulated cable of the same conductor size. This relationship is illustrated in Figure \ref{fig:power_capacity}, which shows the calculated maximum power capacity for a standard 2.5 mm² copper conductor. This makes XLPE the mandatory choice for high-power circuits as specified in REBT ITC-BT-07 and ITC-BT-15.
+
+\subsection{Instalation Cost Analysis}
+%reference Table 2 and Figure 8
+
+We have also studied the cost of the installation according to the different possible materials, with estimated prices per kilometer gathered in 
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar,
+        	    bar width=80pt,
+            title={Max. Power Capacity by Insulation Type},
+            ylabel={Power (kW)},
+            symbolic x coords={PVC, XLPE},
+            xtick=data,
+            nodes near coords,
+            nodes near coords align={vertical},
+            width=0.7\textwidth,
+            height=7cm,
+            bar width=40pt,
+        ]
+        \addplot coordinates {(PVC, 12.5) (XLPE, 16.6)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Calculated maximum three-phase power capacity at 400V for a 2.5 mm² copper conductor, limited by insulation temperature.}
+    \label{fig:power_capacity}
+\end{figure}
+    
+       % --- NEW TABLE: Economic Analysis ---
+\begin{table}[h!]
+    \centering
+    \caption{Economic Analysis of Conductor Materials}
+    \label{tab:economic_analysis}
+    \begin{tabular}{@{}l c c@{}}
+        \toprule
+        \textbf{Conductor Material} & \textbf{Estimated Cost (€/km)} & \textbf{Illustrative Cost for 10km (€)} \\
+        \midrule
+        Copper & 12,500 & 125,000 \\
+        Aluminum (AAC) & 5,800 & 58,000 \\
+        Aluminum-Steel (ACSR) & 6,700 & 67,000 \\
+        \bottomrule
+    \end{tabular}
+    \caption*{Note: Cost data is representative and based on values used in the MATLAB analysis scripts such as \texttt{CBElectricalConductivityWithPowerLossV2.m}. Market prices are subject to change.}
+\end{table}
+    
+    % --- CHART 3: Cost vs. Distance ---
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            title={Total Installation Cost vs. Distance},
+            xlabel={Distance (km)},
+            ylabel={Total Cost (€)},
+            width=\textwidth,
+            height=8cm,
+            grid=major,
+            legend pos=north west,
+            yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=0},
+        ]
+        \addplot[smooth, mark=*, blue] coordinates {
+            (0, 0) (2, 25000) (4, 50000) (6, 75000) (8, 100000) (10, 125000)
+        };
+        \addlegendentry{Copper (€12,500/km)}
+        
+        \addplot[smooth, mark=square*, red] coordinates {
+            (0, 0) (2, 11600) (4, 23200) (6, 34800) (8, 46400) (10, 58000)
+        };
+        \addlegendentry{Aluminum (AAC) (€5,800/km)}
+        
+        \addplot[smooth, mark=triangle*, green!50!black] coordinates {
+            (0, 0) (2, 13400) (4, 26800) (6, 40200) (8, 53600) (10, 67000)
+        };
+        \addlegendentry{ACSR (€6,700/km)}
+        
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Progressive installation cost based on material type.}
+    \label{fig:cost_chart}
+\end{figure}
+
+% --- SECTION 4: BASIC LINE CALCULATIONS ---
+\section{Problem 3: Basic Line Calculations}
+To quantify the performance of a line, a set of fundamental calculations were implemented in the MATLAB script \texttt{DDBasicLineCalculations.m}. These calculations determine resistance, current, and voltage drop for the scenarios assigned to each student.
+
+\subsection{Fundamental Formulas}
+The following standard formulas were used for the analysis.
+
+\paragraph{Resistance.} The DC resistance ($R$) of a conductor is calculated based on its length ($L$), conductivity ($\sigma$), and cross-sectional area ($s$):
+\[ R = \frac{L}{\sigma \cdot s} \]
+
+\paragraph{Three-Phase Current.} The line current ($I$) in a balanced three-phase system is determined by the active power ($P$), line-to-line voltage ($V_L$), and the power factor ($\cos\varphi$):
+\[ I = \frac{P}{V_L \cdot \sqrt{3} \cdot \cos\varphi} \]
+
+\paragraph{Voltage Drop.} A simplified estimation for the per-phase voltage drop ($\Delta U_{\text{phase}}$) in a BT line is given by the product of the line current and the phase resistance:
+\[ \Delta U_{\text{phase}} \approx I \cdot R \]
+
+\subsection{Scenario Analysis Results}
+The implemented functions were used to analyze the three student scenarios, with results compiled into a comparative table. The analysis assumes a standard 95 mm² copper conductor for consistent comparison.
+
+\begin{table}[h!]
+    \centering
+    \caption{Comparative Results of Basic Line Calculations.}
+    \label{tab:calc_results}
+    \begin{tabular}{l c c c}
+        \hline
+        \textbf{Parameter} & \textbf{Student A} & \textbf{Student B} & \textbf{Student C} \\
+        \hline
+        Length (m) & 500 & 1200 & 2500 \\
+        Power (kW) & 50 & 150 & 300 \\
+        Power Factor & 0.80 & 0.90 & 0.85 \\
+        \hline
+        \textit{Calculated Values} & & & \\
+        Resistance ($\Omega$) & 0.093 & 0.224 & 0.466 \\
+        Current (A) & 89.4 & 240.6 & 508.9 \\
+        Voltage Drop (V/phase) & 8.3 & 53.9 & 237.1 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+The results in Table \ref{tab:calc_results} clearly demonstrate the impact of line length and transmitted power on electrical parameters. The scenario for Student C, with the longest line and highest power, experiences a severe voltage drop. This drop is far beyond the limits stipulated in the REBT (typically 3-6.5\%, depending on the specific type of line), indicating that a 95 mm² conductor is critically undersized for this application. This initial calculation underscores the necessity of proper conductor dimensioning, which will be the focus of subsequent project weeks.
+
+% --- SECTION 5: CONCLUSION ---
+\section{Conclusion}
+The first week of the project has successfully established the foundational framework for the design and analysis of electrical distribution networks. A structured database for line classification has been created, and the core mechanical and thermal properties of essential conductors and insulators have been analyzed and visualized.
+
+The implementation of basic calculation formulas in MATLAB has provided critical insights into the performance of electrical lines under different load and length conditions. The results highlight the direct relationship between a line's physical characteristics and its electrical performance, particularly concerning voltage drop. It is evident from the initial analysis that compliance with REBT regulations is a primary constraint that will drive the design and dimensioning process in the upcoming weeks.
+
+\section{Annex 1: Fundamental Formulas }
+% --- NEW SECTION: Fundamental Formulas ---
+\section*{Fundamental Calculation Formulas}
+
+The following formulas form the basis for the electrical performance analysis presented in this report.
+
+\subsection*{Total Line Resistance}
+The electrical resistance of a conductor is calculated based on its material properties and physical dimensions:
+\begin{equation}
+    R = \frac{L}{\sigma \cdot s}
+\end{equation}
+Where:
+\begin{itemize}
+    \item $R$ is the total resistance in Ohms ($\Omega$).
+    \item $L$ is the conductor length in meters (m).
+    \item $\sigma$ is the material's electrical conductivity in m/($\Omega \cdot \text{mm}^2$).
+    \item $s$ is the conductor's cross-sectional area in square millimeters ($\text{mm}^2$).
+\end{itemize}
+
+\subsection*{Voltage Drop (Per Phase)}
+For this preliminary analysis, the voltage drop per phase is estimated using Ohm's Law:
+\begin{equation}
+    \Delta U_{\text{phase}} = I \cdot R
+\end{equation}
+Where:
+\begin{itemize}
+    \item $\Delta U_{\text{phase}}$ is the voltage drop in Volts (V).
+    \item $I$ is the line current in Amperes (A).
+    \item $R$ is the total resistance of a single conductor in Ohms ($\Omega$).
+\end{itemize}
+
+\subsection*{Three-Phase Power Loss}
+The total power lost as heat in a balanced three-phase line is given by:
+\begin{equation}
+    P_{\text{loss}} = 3 \cdot I^2 \cdot R
+\end{equation}
+Where:
+\begin{itemize}
+    \item $P_{\text{loss}}$ is the total power loss in Watts (W).
+    \item $I$ is the current per phase in Amperes (A).
+    \item $R$ is the resistance per phase in Ohms ($\Omega$).
+\end{itemize}
+To find the power loss per kilometer, this calculation is performed using the resistance of a 1 km length of the conductor.
+
+
+% --- SECTION 6: BIBLIOGRAPHY ---
+\section*{Bibliography}
+\begin{thebibliography}{9}
+
+    \bibitem{rebt}
+    Ministerio de Ciencia y Tecnología. (2002). \textit{Reglamento Electrotécnico para Baja Tensión (REBT)}. Real Decreto 842/2002. Boletín Oficial del Estado.
+
+        \bibitem{rebt_itc06}
+    REBT ITC-BT-06: Redes Aereas de distribución.
+
+    \bibitem{rebt_itc07}
+    REBT ITC-BT-07: Redes subterráneas de distribución.
+
+    \bibitem{rebt_itc15}
+    REBT ITC-BT-15: Instalaciones de enlace. 
+
+    \bibitem{rebt_itc19}
+    REBT ITC-BT-19: Instalaciones interiores o receptoras. Prescripciones generales.
+    
+    \bibitem{rebt_itc28}
+    REBT ITC-BT-28: Locales de Publica Concurrencia
+
+    \bibitem{prysmian_acsr}
+    Prysmian Group. (2024). \textit{ACSR Bare Overhead Conductor Technical Datasheet}. Document ID: PGC-OHL-ACSR-EN-01A. Milan, Italy.
+
+    \bibitem{generalcable_cu}
+    General Cable (Prysmian Group). (2024). \textit{Hard-Drawn Bare Copper Conductor Technical Datasheet}. Document ID: GC-BCC-HD-ES-03. Barcelona, Spain.
+    
+\end{thebibliography}
+
+\end{document}
