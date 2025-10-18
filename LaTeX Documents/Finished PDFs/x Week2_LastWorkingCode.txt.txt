@@ -75,22 +75,144 @@
 \newpage
 
 % --- INTRODUCTION ---
-\section{Introduction}
-This report documents the advanced analysis performed during Week 2 of the project. Building upon the foundational calculations from Week 1, this phase focuses on three critical aspects of electrical line design: the thermal behavior of conductors under load, a more precise analysis of voltage drop in AC circuits, and the technical and economic criteria for optimal conductor sizing.
 
-The primary objective is to develop a comprehensive engineering toolkit in MATLAB that moves beyond prescriptive tables to model the underlying physics. This includes determining the maximum admissible current based on thermal equilibrium, utilizing the Blondel formula for accurate voltage drop calculations, and applying Kelvin's Economic Law to find the most cost-effective conductor size over the project's lifecycle. All analyses are conducted using a modular suite of scripts, with the key findings synthesized into this document.
+
 
 % --- CHAPTER 1: THERMAL ANALYSIS OF CONDUCTORS ---
-\section{Conductor Thermal Analysis}
-The current-carrying capacity of a cable is fundamentally limited by the maximum temperature its insulation can withstand. This section details the analysis of this thermal behavior, based on the suite of MATLAB functions prefixed with 'E'.
 
-\subsection{Principle of Thermal Equilibrium}
-A conductor's temperature stabilizes when the heat it generates is equal to the heat it dissipates.
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introduction}
+This report details the analysis of an insulated electrical conductor's thermal and electrical properties under various operational scenarios. The primary objective is to determine the conductor's maximum current-carrying capacity (ampacity) while respecting its maximum allowable operating temperature. The analysis is performed using a suite of MATLAB scripts that model the physical phenomena of heat generation and dissipation.
+
+The study is divided into three main parts:
+\begin{itemize}
+    \item \textbf{Thermal Analysis:} Investigating how the conductor heats up under an electrical load and how it dissipates this heat to the surrounding environment. This includes calculating the maximum steady-state current and modeling the transient heating behavior over time
+.
+ \item \textbf{Voltage Drop Analysis:} Making profiles of the voltage at different points in the installation, either in a continous line or across various key points in the electrical distribution from the grid to the final consumer. More precise and simplified formulas are compared
+
+    \item \textbf{Economic Analysis:} Evaluating the lifecycle cost of different standard conductor sizes to identify the most economically optimal choice, balancing the initial investment against the long-term cost of energy losses.
+\end{itemize}
+
+The primary objective is to develop a comprehensive engineering toolkit in MATLAB that moves beyond prescriptive tables to model the underlying physics. This includes determining the maximum admissible current based on thermal equilibrium, utilizing the Blondel formula for accurate voltage drop calculations, and applying Kelvin's Economic Law to find the most cost-effective conductor size over the project's lifecycle. All analyses are conducted using a modular suite of scripts, with the key findings synthesized into this document.
+\section{Thermal Equilibrium and Heat Transfer Analysis}
+
+The core of this analysis is to determine the temperature a conductor reaches under a given electrical load and specific environmental conditions. This is governed by the principle of thermal equilibrium, where the heat generated within the conductor equals the heat dissipated to its surroundings. This section details the mathematical models used to represent this process, as implemented in the MATLAB scripts \texttt{E6\_TransientHeating.m} and \texttt{E7\_HeatDissipation.m}.
+
+\subsection{The Fundamental Heat Balance Equation}
+
+The temperature of the conductor over time is a dynamic process. The rate of change of temperature is proportional to the net power flow (generated heat minus dissipated heat). This relationship is expressed by the following first-order ordinary differential equation (ODE), which forms the basis of the transient analysis in \texttt{E6\_TransientHeating.m}:
+
 \begin{equation}
-    P_{\text{generated}} = P_{\text{dissipated}}
+m \cdot c_p \frac{dT}{dt} = P_{\text{generated}}(T) - P_{\text{dissipated}}(T)
+\label{eq:ode}
 \end{equation}
-The heat generated is due to the Joule effect ($P = I^2 \cdot R$), and the heat dissipated depends on environmental factors. The MATLAB function \texttt{E4\_ThermalEquilibrium.m} finds the temperature where this balance occurs.
 
+Where:
+\begin{itemize}
+    \item $m$: Mass of the conductor (kg)
+    \item $c_p$: Specific heat capacity of the conductor material (J/kg°C)
+    \item $\frac{dT}{dt}$: Rate of temperature change over time (°C/s)
+    \item $P_{\text{generated}}(T)$: Heat generated by the Joule effect, dependent on temperature (W)
+    \item $P_{\text{dissipated}}(T)$: Heat dissipated to the environment, dependent on temperature (W)
+\end{itemize}
+
+Thermal equilibrium is the steady-state condition where the temperature stops changing, i.e., $\frac{dT}{dt} = 0$. At this point, the heat generation is perfectly balanced by the heat dissipation:
+\begin{equation}
+P_{\text{generated}}(T_{\text{eq}}) = P_{\text{dissipated}}(T_{\text{eq}})
+\label{eq:equilibrium}
+\end{equation}
+The script \texttt{E4\_ThermalEquilibrium.m} solves this equation to find the equilibrium temperature, $T_{\text{eq}}$.
+
+\subsection{Heat Generation ($P_{\text{generated}}$)}
+Heat is generated in the conductor due to the flow of electric current (Joule's Law). The power generated is a function of the current and the conductor's electrical resistance. Since resistance itself is a function of temperature, the heat generation term is temperature-dependent.
+
+\begin{equation}
+P_{\text{generated}}(T) = I^2 \cdot R(T)
+\end{equation}
+
+The resistance at a given temperature $T$, denoted as $R(T)$, is calculated using a linear approximation based on a reference resistance ($R_{20}$ at 20°C), as implemented in \texttt{E3\_ResistanceTemperatureCorrection.m}:
+
+\begin{equation}
+R(T) = R_{20} \cdot (1 + \alpha \cdot (T - T_{\text{ref}}))
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item $I$: Electrical current (A)
+    \item $R(T)$: AC resistance at temperature $T$ ($\Omega$)
+    \item $R_{20}$: AC resistance at the reference temperature $T_{\text{ref}}$ ($\Omega$)
+    \item $\alpha$: Temperature coefficient of resistance for the material (1/°C)
+    \item $T_{\text{ref}}$: Reference temperature, typically 20°C
+\end{itemize}
+
+\subsection{Heat Dissipation ($P_{\text{dissipated}}$)}
+The mechanisms for heat dissipation are highly dependent on the installation environment. The script \texttt{E7\_HeatDissipation.m} acts as a router, selecting the appropriate physical model based on the chosen scenario.
+
+\subsubsection{Underground Installation}
+For a buried cable, heat dissipates primarily through conduction into the surrounding soil. The model calculates dissipation based on the thermal resistance of the soil.
+
+\begin{equation}
+P_{\text{diss}} = \frac{T_s - T_{\text{soil}}}{R_{\text{th,soil}}}
+\end{equation}
+
+Where $T_s$ is the cable surface temperature and $T_{\text{soil}}$ is the ambient soil temperature. The thermal resistance of the soil, $R_{\text{th,soil}}$, is calculated using an approximation derived from Kennelly's formula:
+
+\begin{equation}
+R_{\text{th,soil}} = \frac{\rho_{\text{soil}}}{2 \pi L} \ln\left( \frac{2h}{D} + \sqrt{\left(\frac{2h}{D}\right)^2 - 1} \right)
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item $\rho_{\text{soil}}$: Thermal resistivity of the soil (K·m/W)
+    \item $L$: Length of the cable (m)
+    \item $h$: Burial depth to the center of the cable (m)
+    \item $D$: Outer diameter of the cable (m)
+\end{itemize}
+
+\subsubsection{Overhead Installation}
+For an overhead line exposed to the atmosphere, the heat dissipation is a combination of convection, radiation, and solar heat gain.
+
+\begin{equation}
+P_{\text{diss}} = P_{\text{conv}} + P_{\text{rad}} - P_{\text{solar}}
+\end{equation}
+
+\textbf{1. Convection ($P_{\text{conv}}$):} Heat transfer due to air movement.
+\begin{equation}
+P_{\text{conv}} = h_c \cdot A_s \cdot (T_s - T_{\text{air}})
+\end{equation}
+The convective heat transfer coefficient, $h_c$, is derived from the Nusselt number ($Nu$), which depends on fluid dynamics (Reynolds number $Re$ for forced convection due to wind, and Grashof number $Gr$ for natural convection).
+\begin{itemize}
+    \item $A_s = \pi D L$: Surface area of the cable (m$^2$)
+    \item $h_c = \frac{k_{\text{air}}}{D} Nu$: Convective heat transfer coefficient (W/m$^2$K)
+    \item The formulas for $Nu$ are empirical correlations depending on $Re$ and Prandtl number ($Pr$) for forced convection, or $Gr$ and $Pr$ for natural convection.
+\end{itemize}
+
+\textbf{2. Radiation ($P_{\text{rad}}$):} Heat emitted as electromagnetic waves.
+This is calculated using the Stefan-Boltzmann law, which relates radiated power to the fourth power of the absolute temperature.
+\begin{equation}
+P_{\text{rad}} = \varepsilon \cdot \sigma \cdot A_s \cdot (T_{s,K}^4 - T_{\text{air},K}^4)
+\end{equation}
+Where:
+\begin{itemize}
+    \item $\varepsilon$: Emissivity of the cable surface (dimensionless)
+    \item $\sigma$: Stefan-Boltzmann constant ($5.67 \times 10^{-8}$ W/m$^2$K$^4$)
+    \item $T_{s,K}, T_{\text{air},K}$: Absolute temperatures of the surface and air in Kelvin (K)
+\end{itemize}
+
+\textbf{3. Solar Gain ($P_{\text{solar}}$):} Heat absorbed from solar radiation.
+\begin{equation}
+P_{\text{solar}} = a \cdot S \cdot D \cdot L
+\end{equation}
+Where:
+\begin{itemize}
+    \item $a$: Solar absorptivity of the cable surface (dimensionless)
+    \item $S$: Solar irradiance (W/m$^2$)
+    \item $D \cdot L$: Projected area of the cable exposed to the sun (m$^2$)
+\end{itemize}
+    
 \subsection{AC Resistance and Maximum Current}
 For accuracy, the conductor's AC resistance ($R_{AC}$) is calculated, accounting for skin and proximity effects (\texttt{E3b\_AC\_Resistance\_Factor.m}). The maximum admissible current ($I_{\text{max}}$) is the current that causes the conductor to reach its maximum insulation temperature (e.g., \SI{90}{\celsius} for XLPE), as determined in \texttt{E2\_MaximumCurrent.m}.
 \begin{equation}
@@ -242,8 +364,12 @@ The Week 2 analysis has significantly advanced the project by incorporating crit
         \item \textbf{ITC-BT-19:} Instalaciones interiores o receptoras (covers ampacity and voltage drop limits).
     \end{itemize}
     \item \textbf{IEC 60287-1-1}, "Electric cables - Calculation of the current rating".
+    
     \item \textbf{ELEK Software}. (2023). \textit{Skin and Proximity Effects on AC Resistance Calculations}.
+    
+
 \end{enumerate}
+    
 
 % --- APPENDIX B ---
 \begin{center}\textbf{APPENDIX B}\end{center}

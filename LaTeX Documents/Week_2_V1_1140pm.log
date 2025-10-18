@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.9.18)  18 OCT 2025 18:15
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.9.18)  18 OCT 2025 19:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1032,20 +1032,50 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.41 ...allationCompliance.m}{16}{subsection.D.16}
+l.41 ...oltageDropAnalysis.m}{19}{subsection.D.12}
                                                   % [1])
 \tf@toc=\write5
 \openout5 = `Week_2_V1_1140pm.toc'.
 
  [2]
-LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 9
-2.
+(Week_2_V1_1140pm.toc)
+\tf@toc=\write6
+\openout6 = `Week_2_V1_1140pm.toc'.
+
+ [3]
+LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 1
+02.
 
 (C:\Users\Enrique A. Raudales\AppData\Local\Programs\MiKTeX\tex/latex/base\t1cm
 tt.fd
 File: t1cmtt.fd 2023/04/13 v2.5m Standard LaTeX font definitions
-)
-Overfull \hbox (0.8817pt too wide) in paragraph at lines 120--121
+) [4]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 129.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 129.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 129.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 151.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 151.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 151.
+
+[5] [6]
+Overfull \hbox (0.8817pt too wide) in paragraph at lines 242--243
  [][] 
  []
 
@@ -1055,152 +1085,161 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[3] [4]
-Overfull \hbox (124.95822pt too wide) in paragraph at lines 151--152
+
+Overfull \hbox (124.95822pt too wide) in paragraph at lines 273--274
 \T1/cmr/m/n/12 Compliance with the Span-ish reg-u-la-tion (REBT) is manda-tory.
  The script \T1/cmtt/m/n/12 F4b_checkInstallationCompliance.m
  []
 
 
-Overfull \hbox (10.4693pt too wide) in paragraph at lines 168--169
+Overfull \hbox (10.4693pt too wide) in paragraph at lines 290--291
  [][] 
  []
 
-[5]
-Package pgfplots info on input line 206: Using 'lua backend=false' for axis: st
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[7] [8]
+Package pgfplots info on input line 328: Using 'lua backend=false' for axis: st
 acked plots unsupported (yet).
-Package pgfplots info on input line 206: Using 'lua backend=false' for axis: x 
+Package pgfplots info on input line 328: Using 'lua backend=false' for axis: x 
 coord trafo unsupported.
-Package pgfplots info on input line 217: Using 'lua backend=false' for axis: x 
+Package pgfplots info on input line 339: Using 'lua backend=false' for axis: x 
 coord trafo unsupported.
 
-Overfull \hbox (21.11308pt too wide) in paragraph at lines 221--222
+Overfull \hbox (21.11308pt too wide) in paragraph at lines 343--344
  [][] 
  []
 
-[6]
-Overfull \hbox (13.96886pt too wide) in paragraph at lines 238--239
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[9] [10]
+Overfull \hbox (13.96886pt too wide) in paragraph at lines 360--361
 []\T1/cmr/bx/n/12 Reglamento Elec-trotéc-nico para Baja Ten-sión (REBT)\T1/cmr/
 m/n/12 , Real De-creto 842/2002.
  []
 
 (Week_2_V1_1140pm.lot)
-\tf@lot=\write6
-\openout6 = `Week_2_V1_1140pm.lot'.
+\tf@lot=\write7
+\openout7 = `Week_2_V1_1140pm.lot'.
 
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[7]
+[11]
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
-nput line 321.
+nput line 447.
 
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 322--323
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 448--449
 [][][][] 
  []
 
 
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 324--325
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 450--451
 [][][][] 
  []
 
-[8]
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 329--331
+[12]
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 455--457
 [][][][] 
  []
 
-[9]
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 387--388
-[][][][] 
- []
-
-
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 389--390
+[13]
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 513--514
 [][][][] 
  []
 
 
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 394--396
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 515--516
 [][][][] 
  []
 
 
-Overfull \hbox (11.95102pt too wide) in paragraph at lines 406--407
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 520--522
 [][][][] 
  []
 
 
-Overfull \hbox (11.95102pt too wide) in paragraph at lines 408--410
-[][][][] 
- []
-
-[10]
-Overfull \hbox (11.95102pt too wide) in paragraph at lines 430--431
+Overfull \hbox (11.95102pt too wide) in paragraph at lines 532--533
 [][][][] 
  []
 
 
-Overfull \hbox (11.95102pt too wide) in paragraph at lines 432--433
+Overfull \hbox (11.95102pt too wide) in paragraph at lines 534--536
+[][][][] 
+ []
+
+[14]
+Overfull \hbox (11.95102pt too wide) in paragraph at lines 556--557
 [][][][] 
  []
 
 
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 438--439
+Overfull \hbox (11.95102pt too wide) in paragraph at lines 558--559
 [][][][] 
  []
 
 
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 441--442
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 564--565
 [][][][] 
  []
 
-[11] [12] [13] [14] [15] [16] [17] [18] [19] [20] (Week_2_V1_1140pm.aux)
+
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 567--568
+[][][][] 
+ []
+
+[15] [16] [17] [18] [19] [20] [21] [22] [23] [24] (Week_2_V1_1140pm.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
  ***********
 Package rerunfilecheck Info: File `Week_2_V1_1140pm.out' has not changed.
-(rerunfilecheck)             Checksum: 692B6760276F76E2E7A88A3BA5898506;8946.
+(rerunfilecheck)             Checksum: 98C16484695B6EB339868FC3D3927930;9880.
  ) 
 Here is how much of TeX's memory you used:
- 39162 strings out of 474485
- 931638 string characters out of 5737090
+ 39197 strings out of 474485
+ 932255 string characters out of 5737090
  2391542 words of memory out of 5000000
- 60429 multiletter control sequences out of 15000+600000
- 573765 words of font info for 70 fonts, out of 8000000 for 9000
+ 60440 multiletter control sequences out of 15000+600000
+ 576879 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,20n,93p,785b,3136s stack positions out of 10000i,1000n,20000p,200000b,200000s
  <C:\Users\Enrique A. Raudales\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/
 ec/dpi600\ectt1000.pk> <C:\Users\Enrique A. Raudales\AppData\Local\MiKTeX\fonts
 /pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\Enrique A. Raudales\AppDat
-a\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200.pk> <C:\Users\Enriqu
-e A. Raudales\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0600.
+a\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0600.pk> <C:\Users\Enriqu
+e A. Raudales\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx0800.
 pk> <C:\Users\Enrique A. Raudales\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen
-/ec/dpi600\ectt1200.pk> <C:\Users\Enrique A. Raudales\AppData\Local\MiKTeX\font
-s/pk/ljfour/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\Enrique A. Raudales\AppDa
-ta\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\Enriq
-ue A. Raudales\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200
+/ec/dpi600\ecbx1000.pk> <C:\Users\Enrique A. Raudales\AppData\Local\MiKTeX\font
+s/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\Enrique A. Raudales\AppDa
+ta\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt1200.pk> <C:\Users\Enriq
+ue A. Raudales\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1200
 .pk> <C:\Users\Enrique A. Raudales\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappe
-n/ec/dpi600\ecbx1728.pk> <C:\Users\Enrique A. Raudales\AppData\Local\MiKTeX\fon
-ts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\Enrique A. Raudales\AppD
-ata\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1440.pk> <C:\Users\Enri
-que A. Raudales\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecti144
+n/ec/dpi600\ecrm0800.pk> <C:\Users\Enrique A. Raudales\AppData\Local\MiKTeX\fon
+ts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\Enrique A. Raudales\AppD
+ata\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk> <C:\Users\Enri
+que A. Raudales\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm120
 0.pk> <C:\Users\Enrique A. Raudales\AppData\Local\MiKTeX\fonts/pk/ljfour/jknapp
-en/ec/dpi600\ecbx2074.pk><C:/Users/Enrique A. Raudales/AppData/Local/Programs/M
-iKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Users/Enrique A. Raudales/A
-ppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/User
-s/Enrique A. Raudales/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts
-/cm/cmmi8.pfb><C:/Users/Enrique A. Raudales/AppData/Local/Programs/MiKTeX/fonts
-/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/Enrique A. Raudales/AppData/Local
-/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/Enrique A. R
-audales/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb
-><C:/Users/Enrique A. Raudales/AppData/Local/Programs/MiKTeX/fonts/type1/public
-/amsfonts/cm/cmsy8.pfb><C:/Users/Enrique A. Raudales/AppData/Local/Programs/MiK
-TeX/fonts/type1/public/eurosym/feymr10.pfb>
-Output written on Week_2_V1_1140pm.pdf (21 pages, 433137 bytes).
+en/ec/dpi600\ecrm1440.pk> <C:\Users\Enrique A. Raudales\AppData\Local\MiKTeX\fo
+nts/pk/ljfour/jknappen/ec/dpi600\ecti1440.pk> <C:\Users\Enrique A. Raudales\App
+Data\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx2074.pk><C:/Users/Enri
+que A. Raudales/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cm
+ex10.pfb><C:/Users/Enrique A. Raudales/AppData/Local/Programs/MiKTeX/fonts/type
+1/public/amsfonts/cm/cmmi12.pfb><C:/Users/Enrique A. Raudales/AppData/Local/Pro
+grams/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/Enrique A. Raud
+ales/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:
+/Users/Enrique A. Raudales/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmr8.pfb><C:/Users/Enrique A. Raudales/AppData/Local/Programs/MiKTeX/f
+onts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Enrique A. Raudales/AppData/
+Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/Enriqu
+e A. Raudales/AppData/Local/Programs/MiKTeX/fonts/type1/public/eurosym/feymr10.
+pfb>
+Output written on Week_2_V1_1140pm.pdf (25 pages, 465392 bytes).
 PDF statistics:
- 1483 PDF objects out of 1728 (max. 8388607)
- 504 named destinations out of 1000 (max. 500000)
- 405 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1578 PDF objects out of 1728 (max. 8388607)
+ 522 named destinations out of 1000 (max. 500000)
+ 437 words of extra memory for PDF output out of 10000 (max. 10000000)
 
