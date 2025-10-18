@@ -1,121 +1,112 @@
 function results = H1_Radial_Analysis()
 % =========================================================================
-% FUNCTION: Main Radial Network Analysis (V3 - Phase Selection)
+% FUNCTION: Main Radial Network Analysis (V4 - With Optimization)
 % =========================================================================
-% Description:
-% This is the main analysis function for the Radial Network module. It
-% handles all user input, including the system phase type, and calculates
-% the voltage profile using the method of electrical moments.
 % MODIFIED:
-% - Asks user to select between single-phase and three-phase systems.
-% - Applies the correct phase factor (K=2 for single-phase, K=1 for
-%   three-phase line-to-neutral) to the voltage drop calculation.
+% - Integrated calls to new functions for cross-section determination and
+%   network optimization.
+% - Added a new main menu to select between "Analysis" mode (for a fixed
+%   cross-section) and "Design/Optimize" mode (to find the best section).
+% - Added menu centering for better UI.
 % =========================================================================
 
-results = []; % Initialize
-% UPDATED: Corrected the text for Student C's scenario
-scenarioChoice = centeredMenu3('Select Radial Network Scenario:', ...
-    'Industrial Estate (Concentrated Loads) - Student A', ...
-    'Residential Area (Distributed Loads) - Student B', ...
-    'Street Lighting (Uniform Loads) - Student C');
-if scenarioChoice == 0, return; end
+clc;
+results = []; 
+
+% --- Main Operation Mode Selection ---
+modeChoice = centeredMenu('Select Operation Mode:', ...
+    'Analyze Network (with a known cross-section)', ...
+    'Design & Optimize Network (find best cross-section)');
+if modeChoice == 0, return; end
 
 % --- Get common inputs ---
+scenarioChoice = centeredMenu('Select Radial Network Scenario:', ...
+    'Industrial Estate (Concentrated Loads)', ...
+    'Residential Area (Distributed Loads)', ...
+    'Street Lighting (Uniform Loads)');
+if scenarioChoice == 0, return; end
+
 U_source = input('Enter source line-to-neutral voltage [V] (e.g., 230): ');
-
-% --- NEW: Ask for phase type ---
-lineTypeChoice = centeredMenu3('Select System Type:', 'Single-Phase', 'Three-Phase');
-if lineTypeChoice == 0, return; end
-if lineTypeChoice == 1
-    lineType = 'single-phase';
-    phase_factor = 2; % K=2 for single-phase
-else
-    lineType = 'three-phase';
-    phase_factor = 1 % K=1 for three-phase (line-to-neutral voltage drop)
-end
-
-% Material Selection Menu
-materialChoice = centeredMenu3('Select Conductor Material:', 'Copper', 'Aluminum');
-if materialChoice == 0, return; end
+lineTypeChoice = centeredMenu('Select System Type:', 'Single-Phase', 'Three-Phase');
+if lineTypeChoice == 1, phase_factor = 2; else, phase_factor = 1; end
+materialChoice = centeredMenu('Select Conductor Material:', 'Copper', 'Aluminum');
 if materialChoice == 1, materialName = 'Copper'; else, materialName = 'Aluminum'; end
+
 materialProps = getMaterialProperties(materialName);
-sigma = materialProps.sigma;
+loads = getLoads(scenarioChoice);
 
-crossSection = input('Enter conductor cross-section [mm^2] (e.g., 95): ');
-nodes = [];
-switch scenarioChoice
-    case 1 % Concentrated Loads
-        results.scenarioName = 'Industrial Estate';
-        num_loads = input('Enter the number of concentrated loads: ');
-        for i = 1:num_loads
-            fprintf('--- Load %d ---\n', i);
-            nodes(i).length = input(['Enter length of segment leading to load ' num2str(i) ' [m]: ']);
-            nodes(i).load = input(['Enter current of load ' num2str(i) ' [A]: ']);
-        end
+% --- Store base results ---
+base_results.U_source = U_source;
+base_results.phase_factor = phase_factor;
+base_results.materialName = materialName;
+base_results.sigma = materialProps.sigma;
+base_results.loads = loads;
+base_results.scenarioName = getScenarioName(scenarioChoice);
 
-    case 2 % Distributed Loads
-        results.scenarioName = 'Residential Area';
-        total_length = input('Enter total length of the residential line [m]: ');
-        total_current = input('Enter total distributed current [A]: ');
-        num_segments = 20; % Model as 20 small point loads for accuracy
-        for i = 1:num_segments
-            nodes(i).length = total_length / num_segments;
-            nodes(i).load = total_current / num_segments;
-        end
-
-    case 3 % Street Lighting (Uniform/Distributed Loads)
-        results.scenarioName = 'Street Lighting';
-        total_length = input('Enter total length of the street lighting circuit [m]: ');
-        total_current = input('Enter total uniformly distributed current [A]: ');
-        num_segments = 20; % Model as 20 small point loads for accuracy
-        for i = 1:num_segments
-            nodes(i).length = total_length / num_segments;
-            nodes(i).load = total_current / num_segments;
-        end
-end
-
-% --- Calculations using Electrical Moments ---
-num_nodes = length(nodes);
-% 1. Calculate moments for each individual load relative to its start point
-for i = 1:num_nodes
-    nodes(i).moment = nodes(i).load * nodes(i).length;
-end
-
-% 2. Calculate voltage drop at each node
-for i = 1:num_nodes
-    % Calculate cumulative moment for reporting
-    moment_sum = 0;
-    dist_from_node_i = 0;
-    for j = i:num_nodes
-        dist_from_node_i = dist_from_node_i + nodes(j).length;
-        moment_sum = moment_sum + nodes(j).load * dist_from_node_i;
+% --- Execute selected mode ---
+if modeChoice == 1 % ANALYSIS MODE
+    crossSection = input('Enter the conductor cross-section to analyze [mm^2]: ');
+    base_results.crossSection = crossSection;
+    
+    % Calculate voltage profile for the given section
+    voltage_at_node = base_results.U_source;
+    current_in_segment = sum([base_results.loads.current]);
+    for k = 1:length(base_results.loads)
+         drop_segment = (base_results.phase_factor / (base_results.sigma * crossSection)) * current_in_segment * base_results.loads(k).length;
+         voltage_at_node = voltage_at_node - drop_segment;
+         base_results.loads(k).voltage = voltage_at_node;
+         current_in_segment = current_in_segment - base_results.loads(k).current;
     end
-    nodes(i).cumulativeMoment = moment_sum;
+    results = base_results;
     
-    % The total drop at a node is the sum of drops in all preceding segments
-    % drop_segment = (K / (sigma * s)) * I_segment * L_segment
-    current_in_segment = sum([nodes(i:end).load]);
-    drop_segment = (phase_factor / (sigma * crossSection)) * current_in_segment * nodes(i).length;
-    
-    if i == 1
-        nodes(i).voltageDrop = drop_segment;
+    % Optionally, run cross-section check for context
+    H3_DetermineCrossSection(results, 5); % Check against a 5% drop
+
+else % DESIGN & OPTIMIZE MODE
+    results = H4_OptimizeRadialNetwork(base_results);
+end
+
+% Plot profile if a valid result was found
+if ~isempty(results)
+    H2_PlotRadialProfile(results);
+end
+
+end
+
+% --- Helper sub-functions ---
+function loads = getLoads(~)
+    num_loads = input('Enter the number of loads/nodes: ');
+    loads(num_loads) = struct('length', 0, 'current', 0, 'voltage', 0, 'distance', 0);
+    total_dist = 0;
+    for i = 1:num_loads
+        fprintf('--- Node %d ---\n', i);
+        loads(i).length = input(['Enter length of segment leading to node ' num2str(i) ' [m]: ']);
+        loads(i).current = input(['Enter current of load at node ' num2str(i) ' [A]: ']);
+        total_dist = total_dist + loads(i).length;
+        loads(i).distance = total_dist;
+    end
+end
+
+function name = getScenarioName(choice)
+    names = {'Industrial Estate', 'Residential Area', 'Street Lighting'};
+    name = names{choice};
+end
+
+function props = getMaterialProperties(materialName)
+    if strcmpi(materialName, 'Copper')
+        props.sigma = 56;
     else
-        nodes(i).voltageDrop = nodes(i-1).voltageDrop + drop_segment;
+        props.sigma = 35;
     end
-    nodes(i).voltage = U_source - nodes(i).voltageDrop;
 end
 
-% --- Finalize results for reporting and Plot ---
-results.lineType = lineType;
-results.U_source = U_source;
-results.materialName = materialName;
-results.sigma = sigma;
-results.resistivity = 1/sigma;
-results.crossSection = crossSection;
-results.nodes = nodes;
-results.totalVoltageDrop = nodes(end).voltageDrop;
-results.totalVoltageDropPercent = (results.totalVoltageDrop / U_source) * 100;
-H2_PlotRadialProfile(results);
+function choice = centeredMenu(title, varargin)
+    % Creates and centers a menu dialog box
+    fig = figure('Name', title, 'NumberTitle', 'off', 'MenuBar', 'none', ...
+                 'Units', 'pixels', 'Position', [0 0 400 150], 'Visible', 'off');
+    movegui(fig, 'center');
+    set(fig, 'Visible', 'on');
+    choice = menu(title, varargin{:});
+    close(fig);
 end
-
 

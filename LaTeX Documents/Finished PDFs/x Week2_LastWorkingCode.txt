@@ -1,0 +1,1090 @@
+\documentclass[12pt, a4paper]{article}
+
+% --- PACKAGES ---
+\usepackage[utf8]{inputenc}         % Crucial for UTF-8 character support
+\usepackage[margin=2.5cm]{geometry} % Set page margins
+\usepackage{booktabs}               % For professional-looking table lines
+\usepackage{caption}                % For better control over captions
+\usepackage{amsmath}                % For advanced math environments
+\usepackage{graphicx}               % To include graphics
+\usepackage{hyperref}               % For clickable links and references
+\usepackage{tikz}                   % For drawing
+\usetikzlibrary{positioning}
+\usetikzlibrary{positioning}
+\usepackage{pgfplots}               % For creating plots and charts
+\pgfplotsset{compat=1.17}            % Use a recent version of pgfplots
+\usepackage{listings}               % For including source code
+\usepackage[T1]{fontenc}            % For correct character encoding
+\usepackage{color}                  % Use color for syntax highlighting
+\usepackage{siunitx}                % For SI units
+\usepackage{eurosym}                % For the Euro symbol
+
+% --- MATLAB CODE LISTING STYLE ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+}
+\lstset{style=mystyle, language=Matlab}
+
+% --- DOCUMENT INFORMATION ---
+\title{
+    \vspace{4cm} % Add vertical space before the title
+    \textbf{Week 2 Project: Advanced Line Calculations} \\
+    \large \textit{Thermal Analysis, Voltage Drop, and Conductor Sizing} \\
+    \vspace{1cm} % Space after title
+    \rule{\textwidth}{0.4pt} % Horizontal line
+}
+\author{Enrique Antonio Raudales Rodriguez}
+\date{\today}
+
+% --- BEGIN DOCUMENT ---
+\begin{document}
+
+% --- TITLE PAGE ---
+\begin{titlepage}
+    \maketitle
+    \vfill % Pushes the following content to the bottom
+    \begin{center}
+        \large University of Almería \\
+        Medium and Low Voltage Electrical Installations \\
+        Academic Year 2025-2026
+    \end{center}
+\end{titlepage}
+
+
+
+% --- CHAPTER 1: THERMAL ANALYSIS OF CONDUCTORS ---
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introduction}
+This report details the analysis of an insulated electrical conductor's thermal and electrical properties under various operational scenarios. The primary objective is to determine the conductor's maximum current-carrying capacity (ampacity) while respecting its maximum allowable operating temperature. The analysis is performed using a suite of MATLAB scripts that model the physical phenomena of heat generation and dissipation.
+
+The study is divided into three main parts:
+\begin{itemize}
+    \item \textbf{Thermal Analysis:} Investigating how the conductor heats up under an electrical load and how it dissipates this heat to the surrounding environment. This includes calculating the maximum steady-state current and modeling the transient heating behavior over time
+.
+ \item \textbf{Voltage Drop Analysis:} Making profiles of the voltage at different points in the installation, either in a continous line or across various key points in the electrical distribution from the grid to the final consumer. More precise and simplified formulas are compared
+
+    \item \textbf{Economic Analysis:} Evaluating the lifecycle cost of different standard conductor sizes to identify the most economically optimal choice, balancing the initial investment against the long-term cost of energy losses.
+\end{itemize}
+
+The primary objective is to develop a comprehensive engineering toolkit in MATLAB that moves beyond prescriptive tables to model the underlying physics. This includes determining the maximum admissible current based on thermal equilibrium, utilizing the Blondel formula for accurate voltage drop calculations, and applying Kelvin's Economic Law to find the most cost-effective conductor size over the project's lifecycle. All analyses are conducted using a modular suite of scripts, with the key findings synthesized into this document.
+\section{Thermal Equilibrium and Heat Transfer Analysis}
+
+The core of this analysis is to determine the temperature a conductor reaches under a given electrical load and specific environmental conditions. This is governed by the principle of thermal equilibrium, where the heat generated within the conductor equals the heat dissipated to its surroundings. This section details the mathematical models used to represent this process, as implemented in the MATLAB scripts \texttt{E6\_TransientHeating.m} and \texttt{E7\_HeatDissipation.m}.
+
+\subsection{The Fundamental Heat Balance Equation}
+
+The temperature of the conductor over time is a dynamic process. The rate of change of temperature is proportional to the net power flow (generated heat minus dissipated heat). This relationship is expressed by the following first-order ordinary differential equation (ODE), which forms the basis of the transient analysis in \texttt{E6\_TransientHeating.m}:
+
+\begin{equation}
+m \cdot c_p \frac{dT}{dt} = P_{\text{generated}}(T) - P_{\text{dissipated}}(T)
+\label{eq:ode}
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item $m$: Mass of the conductor (kg)
+    \item $c_p$: Specific heat capacity of the conductor material (J/kg°C)
+    \item $\frac{dT}{dt}$: Rate of temperature change over time (°C/s)
+    \item $P_{\text{generated}}(T)$: Heat generated by the Joule effect, dependent on temperature (W)
+    \item $P_{\text{dissipated}}(T)$: Heat dissipated to the environment, dependent on temperature (W)
+\end{itemize}
+
+Thermal equilibrium is the steady-state condition where the temperature stops changing, i.e., $\frac{dT}{dt} = 0$. At this point, the heat generation is perfectly balanced by the heat dissipation:
+\begin{equation}
+P_{\text{generated}}(T_{\text{eq}}) = P_{\text{dissipated}}(T_{\text{eq}})
+\label{eq:equilibrium}
+\end{equation}
+The script \texttt{E4\_ThermalEquilibrium.m} solves this equation to find the equilibrium temperature, $T_{\text{eq}}$.
+
+\subsection{Heat Generation ($P_{\text{generated}}$)}
+Heat is generated in the conductor due to the flow of electric current (Joule's Law). The power generated is a function of the current and the conductor's electrical resistance. Since resistance itself is a function of temperature, the heat generation term is temperature-dependent.
+
+\begin{equation}
+P_{\text{generated}}(T) = I^2 \cdot R(T)
+\end{equation}
+
+The resistance at a given temperature $T$, denoted as $R(T)$, is calculated using a linear approximation based on a reference resistance ($R_{20}$ at 20°C), as implemented in \texttt{E3\_ResistanceTemperatureCorrection.m}:
+
+\begin{equation}
+R(T) = R_{20} \cdot (1 + \alpha \cdot (T - T_{\text{ref}}))
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item $I$: Electrical current (A)
+    \item $R(T)$: AC resistance at temperature $T$ ($\Omega$)
+    \item $R_{20}$: AC resistance at the reference temperature $T_{\text{ref}}$ ($\Omega$)
+    \item $\alpha$: Temperature coefficient of resistance for the material (1/°C)
+    \item $T_{\text{ref}}$: Reference temperature, typically 20°C
+\end{itemize}
+
+\subsection{Heat Dissipation ($P_{\text{dissipated}}$)}
+The mechanisms for heat dissipation are highly dependent on the installation environment. The script \texttt{E7\_HeatDissipation.m} acts as a router, selecting the appropriate physical model based on the chosen scenario.
+
+\subsubsection{Underground Installation}
+For a buried cable, heat dissipates primarily through conduction into the surrounding soil. The model calculates dissipation based on the thermal resistance of the soil.
+
+\begin{equation}
+P_{\text{diss}} = \frac{T_s - T_{\text{soil}}}{R_{\text{th,soil}}}
+\end{equation}
+
+Where $T_s$ is the cable surface temperature and $T_{\text{soil}}$ is the ambient soil temperature. The thermal resistance of the soil, $R_{\text{th,soil}}$, is calculated using an approximation derived from Kennelly's formula:
+
+\begin{equation}
+R_{\text{th,soil}} = \frac{\rho_{\text{soil}}}{2 \pi L} \ln\left( \frac{4h}{D} \right)
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item $\rho_{\text{soil}}$: Thermal resistivity of the soil (K·m/W)
+    \item $L$: Length of the cable (m)
+    \item $h$: Burial depth to the center of the cable (m)
+    \item $D$: Outer diameter of the cable (m)
+\end{itemize}
+
+\subsubsection{Overhead Installation}
+For an overhead line exposed to the atmosphere, the heat dissipation is a combination of convection, radiation, and solar heat gain.
+
+\begin{equation}
+P_{\text{diss}} = P_{\text{conv}} + P_{\text{rad}} - P_{\text{solar}}
+\end{equation}
+
+\textbf{1. Convection ($P_{\text{conv}}$):} Heat transfer due to air movement.
+\begin{equation}
+P_{\text{conv}} = h_c \cdot A_s \cdot (T_s - T_{\text{air}})
+\end{equation}
+The convective heat transfer coefficient, $h_c$, is derived from the Nusselt number ($Nu$), which depends on fluid dynamics (Reynolds number $Re$ for forced convection due to wind, and Grashof number $Gr$ for natural convection).
+\begin{itemize}
+    \item $A_s = \pi D L$: Surface area of the cable (m$^2$)
+    \item $h_c = \frac{k_{\text{air}}}{D} Nu$: Convective heat transfer coefficient (W/m$^2$K)
+    \item The formulas for $Nu$ are empirical correlations depending on $Re$ and Prandtl number ($Pr$) for forced convection, or $Gr$ and $Pr$ for natural convection.
+\end{itemize}
+
+\textbf{2. Radiation ($P_{\text{rad}}$):} Heat emitted as electromagnetic waves.
+This is calculated using the Stefan-Boltzmann law, which relates radiated power to the fourth power of the absolute temperature.
+\begin{equation}
+P_{\text{rad}} = \varepsilon \cdot \sigma \cdot A_s \cdot (T_{s,K}^4 - T_{\text{air},K}^4)
+\end{equation}
+Where:
+\begin{itemize}
+    \item $\varepsilon$: Emissivity of the cable surface (dimensionless)
+    \item $\sigma$: Stefan-Boltzmann constant ($5.67 \times 10^{-8}$ W/m$^2$K$^4$)
+    \item $T_{s,K}, T_{\text{air},K}$: Absolute temperatures of the surface and air in Kelvin (K)
+\end{itemize}
+
+\textbf{3. Solar Gain ($P_{\text{solar}}$):} Heat absorbed from solar radiation.
+\begin{equation}
+P_{\text{solar}} = a \cdot S \cdot D \cdot L
+\end{equation}
+Where:
+\begin{itemize}
+    \item $a$: Solar absorptivity of the cable surface (dimensionless)
+    \item $S$: Solar irradiance (W/m$^2$)
+    \item $D \cdot L$: Projected area of the cable exposed to the sun (m$^2$)
+\end{itemize}
+    
+\subsection{AC Resistance and Maximum Current}
+For accuracy, the conductor's AC resistance ($R_{AC}$) is calculated, accounting for skin and proximity effects (\texttt{E3b\_AC\_Resistance\_Factor.m}). The maximum admissible current ($I_{\text{max}}$) is the current that causes the conductor to reach its maximum insulation temperature (e.g., \SI{90}{\celsius} for XLPE), as determined in \texttt{E2\_MaximumCurrent.m}.
+\begin{equation}
+    I_{\text{max}} = \sqrt{\frac{P_{\text{dissipated\_max}}}{R_{AC, T_{\text{max}}}}}
+\end{equation}
+    
+    The AC resistance is calculated by taking the DC Resistance and applying a correction factor for the skin effect and another for the proximity effect. These formulas have been taken from  IEC 60287-1-1
+    \begin{equation}
+R_{AC} = R_{DC} \cdot (1 + k_{\text{skin}} + k_{\text{prox}})
+\end{equation}
+
+	The skin effect is caused by the charges habit of collecting near the edge of the conductor, clumping together and increasing the resistance. It is less notable on smaller wires and lower frequencies, and in the domestic setting it is often taken as negligible.
+\begin{equation}
+k_{\text{skin}} = \frac{x_s^4}{192 + 0.8 x_s^4}
+\end{equation}
+
+	The proximity effect is due to the electromagnetic radiation leaking from one conductor to other nearby conductors, and is more pronounced the more wires are lumped together
+\begin{equation}
+k_{\text{prox}} = \frac{x_p^4}{192 + 0.8 x_p^4} \left(\frac{d}{s}\right)^2 \left( 0.312\left(\frac{d}{s}\right)^2 + \frac{1.18}{\frac{x_p^4}{192 + 0.8 x_p^4} + 0.27} \right)
+\end{equation}
+
+Parameter xs and xp are the same
+\begin{equation}
+x_s^2 = \frac{8 \pi f}{R'_{DC}} \times 10^{-7}
+\end{equation} 
+
+\subsection{Thermal Analysis Results}
+The charts below, representing the output of the MATLAB analysis, illustrate the conductor's thermal behavior. Figure \ref{fig:heating_curve} shows the steady-state temperature for different currents, while Figure \ref{fig:transient_heating} shows how temperature evolves over time.
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            title={Heating Curve for Underground Aluminum/XLPE Cable},
+            xlabel={Current (A)}, ylabel={Equilibrium Temperature (°C)},
+            width=\textwidth, height=8cm, grid=major, legend pos=north west,
+        ]
+        \addplot[smooth, mark=*, blue] coordinates {(0,20) (50,23.5) (100,34) (150,51) (200,75) (240,105)};
+        \addlegendentry{Equilibrium Temp (AC Resistance)}
+        
+        \addplot[dashed, color=red] coordinates {(0,90) (250,90)};
+        \addlegendentry{Max Temp (\SI{90}{\celsius})}
+
+        \addplot[dotted, color=green!50!black] coordinates {(218,20) (218,90)};
+        \addlegendentry{Calculated $I_{\text{max}}$ (218 A)}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Equilibrium conductor temperature as a function of load current.}
+    \label{fig:heating_curve}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            title={Transient Heating for a 200A Load},
+            xlabel={Time (minutes)}, ylabel={Temperature (°C)},
+            width=\textwidth, height=8cm, grid=major,
+        ]
+        \addplot[smooth, mark=none, red, line width=1.5pt] coordinates {(0,20) (10,45) (20,60) (30,68) (40,72) (60,75) (90,75)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Transient temperature response of the conductor over time.}
+    \label{fig:transient_heating}
+\end{figure}
+
+% --- CHAPTER 2: VOLTAGE DROP ANALYSIS ---
+\section{Advanced Voltage Drop Analysis}
+This section details a precise voltage drop analysis, including reactive effects, based on the MATLAB functions prefixed with 'F'.
+
+\subsection{Blondel's Formula}
+The approximate voltage drop in a three-phase AC circuit is calculated using Blondel's formula, which is valid for most well designed circuits where the angle between the voltage at the source and at the load is very small. The script (\texttt{F2\_calculateExactVoltageDrop.m} is used, which accounts for both resistance ($R$) and inductive reactance ($X_L$). Where d is a configuration parameter and takes the value of d = 2 for a single phase line with return and d = 1.732 for three phase lines.
+\begin{equation}
+    \Delta V = \sqrt{3} \cdot I \cdot (R \cos\varphi + X_L \sin\varphi)
+\end{equation}
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+\subsection{REBT Compliance and Voltage Profile}
+Compliance with the Spanish regulation (REBT) is mandatory. The script \texttt{F4b\_checkInstallationCompliance.m} automates checking the tiered voltage drop limits for a full installation (LGA, DI, etc.). The script \texttt{F6\_plotInstallationProfile.m} visualizes this drop, as shown in Figure \ref{fig:installation_profile}.
+
+\begin{figure}[h!]
+    \centering
+\begin{tikzpicture}
+    \begin{axis}[
+        title={Voltage Profile Across Multi-Segment Installation},
+        xlabel={Cumulative Line Length (m)},
+        ylabel={Voltage (V)},
+        width=15cm, 
+        height=8cm,
+        grid=major,
+        legend pos=south west,
+        xmin=0,
+        xmax=50,
+        ymin=215,
+        ymax=235,
+    ]
+    
+    % The plot with new, detailed coordinates for each stage
+    \addplot[const plot, blue, line width=1.5pt, mark=*, mark size=1.5pt] coordinates {
+        (0, 230)      % Start
+        (10, 227.7)   % Drop 1.0%
+        (12, 226.55)  % Drop 0.5%
+        (27, 223.1)   % Drop 1.5%
+        (30, 222.64)  % Drop 0.2%
+        (40, 219.65)  % Drop 1.3%
+        (42, 218.96)  % Drop 0.3%
+        (47, 216.66)  % Drop 1.0%
+    };
+    \addlegendentry{Voltage Profile}
+    
+    % The 5% voltage drop limit line
+    \addplot[dashed, color=red] coordinates {(0, 218.5) (50, 218.5)};
+    \addlegendentry{REBT Limit (5\% Drop)}
+
+    % Define coordinates for the pin labels
+    \coordinate (p0) at (axis cs:0, 230);
+    \coordinate (p1) at (axis cs:10, 227.7);
+    \coordinate (p2) at (axis cs:12, 226.55);
+    \coordinate (p3) at (axis cs:27, 223.1);
+    \coordinate (p4) at (axis cs:30, 222.64);
+    \coordinate (p5) at (axis cs:40, 219.65);
+    \coordinate (p6) at (axis cs:42, 218.96);
+    \coordinate (p7) at (axis cs:47, 216.66);
+    
+    \end{axis}
+    
+    % Add annotations using pins attached to the coordinates.
+    % Placed outside the 'axis' environment to prevent clipping.
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]90:{Street Line}}] at (p0) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]90:{Ind. Connection}}] at (p1) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]90:{GPB}}] at (p2) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]90:{Main Feeder}}] at (p3) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]90:{Counters}}] at (p4) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]-90:{Ind. Branch}}] at (p5) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]-90:{Panel}}] at (p6) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]-90:{Final Consumption}}] at (p7) {};
+    
+\end{tikzpicture}
+    \caption{Voltage profile across an installation, showing the drop at each section.}
+    
+
+    \begin{tikzpicture}[
+    node distance=0.8cm, % Vertical distance between boxes
+    box/.style={
+        draw,
+        rectangle,
+        text width=6.5cm,
+        align=center,
+        minimum height=1cm
+    },
+    arrow/.style={
+        -latex,
+        thick
+    }
+]
+    % --- Nodes arranged vertically for a clear top-to-bottom flow ---
+    \node[box] (start)    {Street Line (100\% Voltage)};
+    \node[box, below=of start] (conn)     {Individual Connection Line};
+    \node[box, below=of conn]  (gpb)      {General Protection Box};
+    \node[box, below=of gpb]   (feeder)   {Main Feeder Line};
+    \node[box, below=of feeder] (counters) {Centralized Energy Counters};
+    \node[box, below=of counters](branch)  {Individual Branch Line};
+    \node[box, below=of branch] (panel)    {Main Switch and Protection Panel};
+    \node[box, below=of panel]  (end)      {Internal Circuits \& Final Consumption (94.2\% Voltage)};
+
+    % --- Arrows with simplified labels showing only the drop at each stage ---
+    \draw[arrow] (start)    -- node[midway, right] {-1.0\%} (conn);
+    \draw[arrow] (conn)     -- node[midway, right] {-0.5\%} (gpb);
+    \draw[arrow] (gpb)      -- node[midway, right] {-1.5\%} (feeder);
+    \draw[arrow] (feeder)   -- node[midway, right] {-0.2\%} (counters);
+    \draw[arrow] (counters) -- node[midway, right] {-1.3\%} (branch);
+    \draw[arrow] (branch)   -- node[midway, right] {-0.3\%} (panel);
+    \draw[arrow] (panel)    -- node[midway, right] {-1.0\%} (end);
+\end{tikzpicture}
+
+    \label{fig:installation_profile}
+\end{figure}
+    
+    \newpage
+
+% --- CHAPTER 3: CONDUCTOR SIZING ---
+\section{Conductor Sizing and Economic Analysis}
+The final step is to select the optimal conductor cross-section. This analysis, based on the 'G' series of MATLAB scripts, integrates technical requirements with long-term economic factors.
+
+\subsection{Technical and Economic Sizing Criteria}
+Conductor sizing is based on two main criteria:
+\begin{enumerate}
+    \item \textbf{Technical Minimum:} The smallest standard cross-section that satisfies both the maximum admissible current ($I_{\text{max}}$) and the REBT voltage drop limits. This is calculated via \texttt{G2\_calculateRequiredSection.m} and \texttt{G3\_selectStandardSection.m}.
+    \item \textbf{Economic Optimum:} The cross-section that results in the lowest total lifecycle cost (LCC), considering both the initial cable purchase price and the cumulative cost of energy losses ($I^2R$) over the project's lifespan. This is a simpler, albeit similar approach to Kelvin's Economic Law for calculating the economic conductor size.
+    
+    \begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            title={Kelvin's Law: Finding the Economic Optimum},
+            xlabel={Conductor Cross-Section (S)},
+            ylabel={Annual Cost (€/year)},
+            width=\textwidth,
+            height=8cm,
+            grid=major,
+            legend pos=north east,
+            xmin=0, xmax=250,
+            ymin=0, ymax=100,
+            xticklabel=\empty, yticklabel=\empty,
+        ]
+        
+        % C1: Capital Cost (approximated as linear for simplicity in the graph)
+        \addplot[domain=10:250, blue, thick, samples=100] {0.2*x + 5};
+        \addlegendentry{Annual Capital Cost ($C_1$)}
+
+        % C2: Cost of Losses (inversely proportional)
+        \addplot[domain=10:250, red, thick, samples=100] {4000/x};
+        \addlegendentry{Annual Cost of Losses ($C_2$)}
+        
+        % CT: Total Cost (sum of the two)
+        \addplot[domain=10:250, black, very thick, samples=100] {0.2*x + 5 + 4000/x};
+        \addlegendentry{Total Annual Cost ($C_T$)}
+
+        % Mark the optimal point
+        \coordinate (opt) at (axis cs:141.4, 33.28);
+        \draw[dashed, gray] (opt) -- (opt |- {axis cs:0,0});
+        \node[below] at (opt |- {axis cs:0,0}) {$S_{\text{opt}}$};
+        \node[circle, fill, inner sep=1.5pt] at (opt) {};
+        
+        \end{axis}
+    \end{tikzpicture}
+    \caption{The optimal conductor size ($S_{\text{opt}}$) occurs at the minimum of the total annual cost curve, which corresponds to the point where the cost of losses and the annualized capital cost curves intersect.}
+\end{figure}
+\end{enumerate}
+
+\subsection{Lifecycle Cost Analysis}
+The lifecycle cost is modeled in \texttt{G4\_calculateLifecycleCost.m} as:
+\begin{equation}
+    C_{\text{total}} = C_{\text{initial\_cable}} + C_{\text{energy\_losses}}
+\end{equation}
+While a smaller cable is cheaper initially, it has higher resistance and thus a higher cost of energy losses over time. A larger, more expensive cable has lower losses. The optimal size minimizes this sum.
+
+\subsection{Sizing Analysis Results}
+The economic analysis is visualized in Figure \ref{fig:economic_analysis}. The stacked bars show the components of the total cost, while the red line shows the total LCC. The analysis identifies both the smallest technically compliant section and the larger, economically optimal section, which provides long-term savings.
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            ybar stacked,
+            title={Economic Analysis of Conductor Sizing},
+            xlabel={Standard Conductor Section (mm²)},
+            ylabel={Total Lifecycle Cost (\euro{})},
+            width=\textwidth, height=9cm,
+            symbolic x coords={50, 70, 95, 120, 150},
+            xtick=data,
+            legend style={at={(0.5,-0.2)}, anchor=north, legend columns=-1},
+        ]
+        \addplot coordinates {(50, 4500) (70, 6000) (95, 8000) (120, 10000) (150, 12500)}; % Total Lif Cost
+        \addplot coordinates {(50, 8000) (70, 5700) (95, 4200) (120, 3300) (150, 2600)}; % Loss Cost
+        \end{axis}
+        
+        \begin{axis}[
+            width=\textwidth, height=9cm, axis y line*=right, axis x line=none,
+            ylabel near ticks,
+            symbolic x coords={50, 70, 95, 120, 150},
+            xtick=data,
+            ymin=0,
+        ]
+        \addplot[red, thick, mark=*, mark options={fill=red}] coordinates {(50, 12500) (70, 11700) (95, 12200) (120, 13300) (150, 15100)};
+        
+        \legend{Total Cost, Energy Loss Cost, Total LCC}
+        
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Lifecycle cost analysis identifying the technically minimum (50 mm²) and economically optimal (70 mm²) sections.}
+    \label{fig:economic_analysis}
+\end{figure}
+
+% --- CONCLUSION ---
+\section{Conclusion}
+The Week 2 analysis has significantly advanced the project by incorporating critical thermal, reactive, and economic effects into the line design process. The modular MATLAB toolkit provides a powerful framework for accurately dimensioning conductors based on a detailed understanding of their performance under real-world loads. This framework is completed with the conductor sizing module, which integrates technical constraints (voltage drop and ampacity) with economic analysis (lifecycle cost) to determine the optimal conductor cross-section, providing a comprehensive solution that balances performance, safety, and cost.
+
+% --- APPENDICES ---
+\newpage
+\appendix
+
+% --- APPENDIX A ---
+\begin{center}\textbf{APPENDIX A}\end{center}
+\section{References}
+\begin{enumerate}
+    \item \textbf{Reglamento Electrotécnico para Baja Tensión (REBT)}, Real Decreto 842/2002. Specifically:
+    \begin{itemize}
+        \item \textbf{ITC-BT-06:} Redes aéreas para distribución en baja tensión.
+        \item \textbf{ITC-BT-07:} Redes subterráneas para distribución en baja tensión.
+        \item \textbf{ITC-BT-19:} Instalaciones interiores o receptoras (covers ampacity and voltage drop limits).
+    \end{itemize}
+    \item \textbf{IEC 60287-1-1}, "Electric cables - Calculation of the current rating".
+    
+    \item \textbf{ELEK Software}. (2023). \textit{Skin and Proximity Effects on AC Resistance Calculations}.
+    
+    \item \textbf{K Malmedal C Bates D Cain}. (2023). \textit{the measurement of soil thermal stability thermal resistivity and underground cable ampacity}.
+    
+
+\end{enumerate}
+    
+\newpage
+% --- APPENDIX B ---
+\begin{center}\textbf{APPENDIX B}\end{center}
+\section{Tables and Assumed Values}
+\subsection{List of Tables}
+\listoftables
+\addcontentsline{toc}{subsection}{List of Tables}
+
+\subsection{Summary of Material Properties}
+The following table consolidates the key material properties assumed for the calculations throughout this report. These values are representative and based on standard engineering references.
+
+\begin{table}[h!]
+    \centering
+    \caption{Consolidated Material Properties and Assumed Values}
+    \label{tab:material_properties}
+    \begin{tabular}{@{}l l l@{}}
+        \toprule
+        \textbf{Material} & \textbf{Property} & \textbf{Value} \\
+        \midrule
+        \textbf{Copper} & Density ($\rho$) & \SI{8960}{\kilogram\per\cubic\metre} \\
+                        & Specific Heat ($c_p$) & \SI{385}{\joule\per\kilogram\per\kelvin} \\
+                        & Conductivity ($\sigma$) & \SI{56}{\metre\per\ohm\per\square\mm} \\
+                        & Temp. Coefficient ($\alpha$) & \SI{0.00393}{\per\kelvin} \\
+        \midrule
+        \textbf{Aluminum} & Density ($\rho$) & \SI{2700}{\kilogram\per\cubic\metre} \\
+                          & Specific Heat ($c_p$) & \SI{900}{\joule\per\kilogram\per\kelvin} \\
+                          & Conductivity ($\sigma$) & \SI{36}{\metre\per\ohm\per\square\mm} \\
+                          & Temp. Coefficient ($\alpha$) & \SI{0.00403}{\per\kelvin} \\
+        \midrule
+        \textbf{ACSR} & Density (approx. avg.) & \SI{3980}{\kilogram\per\cubic\metre} \\
+                      & Specific Heat (approx. avg.) & \SI{880}{\joule\per\kilogram\per\kelvin} \\
+                      & Conductivity ($\sigma$) & \SI{34}{\metre\per\ohm\per\square\mm} \\
+        \midrule
+        \textbf{PVC} & Density ($\rho$) & \SI{1400}{\kilogram\per\cubic\metre} \\
+                     & Specific Heat ($c_p$) & \SI{1000}{\joule\per\kilogram\per\kelvin} \\
+                     & Thermal Conductivity ($k$) & \SI{0.17}{\watt\per\metre\per\kelvin} \\
+        \midrule
+        \textbf{XLPE} & Density ($\rho$) & \SI{920}{\kilogram\per\cubic\metre} \\
+                      & Specific Heat ($c_p$) & \SI{2300}{\joule\per\kilogram\per\kelvin} \\
+                      & Thermal Conductivity ($k$) & \SI{0.28}{\watt\per\metre\per\kelvin} \\
+        \midrule
+        \textbf{Soil} & Thermal Resistivity ($\rho_{soil}$) & \SI{1.5}{\kelvin\metre\per\watt} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\newpage
+
+% --- APPENDIX C ---
+\begin{center}\textbf{APPENDIX C}\end{center}
+\section{Formulas}
+\subsection{AC Resistance at Temperature}
+\begin{equation}
+    R_{AC, T} = R_{DC, 20} \cdot (1 + k_{\text{skin}} + k_{\text{prox}}) \cdot (1 + \alpha(T - T_{\text{ref}}))
+\end{equation}
+\subsection{Blondel's Formula (Three-Phase)}
+\begin{equation}
+    \Delta V = \sqrt{3} \cdot I \cdot (R \cos\varphi + X_L \sin\varphi)
+\end{equation}
+\subsection{Required Section (Voltage Drop)}
+\begin{equation}
+    s = \frac{\sqrt{3} \cdot L \cdot I \cdot \cos\varphi}{\sigma \cdot \Delta V_{\text{max}}}
+\end{equation}
+\subsection{Lifecycle Cost}
+\begin{equation}
+    C_{\text{total}} = C_{\text{initial}} + \sum (P_{\text{loss}} \cdot t_{\text{op}} \cdot \text{cost}_{\text{kWh}})
+\end{equation}
+
+\newpage
+% --- APPENDIX D ---
+\begin{center}\textbf{APPENDIX D}\end{center}
+\section{MATLAB Source Code}
+\addcontentsline{toc}{section}{MATLAB Source Code}
+
+% MASTER SCRIPT
+\subsection{week2\_master.m}
+\begin{lstlisting}[caption={Central launcher for all Week 2 modules.}, label={lst:master}]
+% =========================================================================
+% MASTER SCRIPT for Week 2: Advanced Line Calculations
+% =========================================================================
+% Description:
+% This script is the central launcher for all modules developed for the
+% Week 2 coursework (E, F, and G). It provides a menu to select which
+% analysis suite to run.
+% =========================================================================
+
+%% --- Cleanup and Initialization ---
+clc;
+clear;
+close all;
+
+%% --- Main Menu Loop ---
+while true
+    % A custom menu function is assumed to exist, named centeredMenu2
+    analysisChoice = centeredMenu2('Select Week 2 Analysis Suite:', ...
+                                   'Problem E: Conductor Heating Analysis', ...
+                                   'Problem F: Voltage Drop Analysis', ...
+                                   'Problem G: Conductor Sizing Analysis', ...
+                                   'Exit Program');
+    
+    try
+        switch analysisChoice
+            case 1
+                disp('--- Launching Conductor Heating Analysis (Module E) ---');
+                run('E0_Run_Analysis_and_Report.m');
+                disp('Press any key to return to the main menu...');
+                pause;
+
+            case 2
+                disp('--- Launching Voltage Drop Analysis (Module F) ---');
+                run('F1_VoltageDropAnalysis.m');
+                disp('Press any key to return to the main menu...');
+                pause;
+            
+            case 3
+                disp('--- Launching Conductor Sizing Analysis (Module G) ---');
+                G1_ConductorSizingAnalysis();
+                disp('Press any key to return to the main menu...');
+                pause;
+
+            case 4
+                disp('Exiting the Week 2 Analysis Suite.');
+                return;
+                
+            case 0
+                disp('Menu closed. Exiting the Week 2 Analysis Suite.');
+                return;
+        end
+        
+    catch ME
+        fprintf('\nERROR encountered while running the selected module.\n');
+        fprintf('MATLAB reported: "%s" in file "%s" at line %d.\n', ME.message, ME.stack(1).name, ME.stack(1).line);
+        disp('Press any key to return to the main menu...');
+        pause;
+    end
+end
+\end{lstlisting}
+
+
+% E Series Files
+\subsection{E0\_Run\_Analysis\_and\_Report.m}
+\begin{lstlisting}[caption={Main analysis runner for thermal analysis.}, label={lst:E0}]
+% =========================================================================
+% FINAL SCRIPT for Conductor Heating Analysis and Reporting
+% =========================================================================
+% Description:
+% This script serves as the final entry point for the Conductor Heating
+% module. It calls the main analysis function and then uses the
+% returned data to display a comprehensive summary table.
+% =========================================================================
+
+%% --- Run the Full Analysis ---
+results = E1_ConductorHeatingAnalysis();
+
+
+%% --- Generate and Display the Final Report Table ---
+if isempty(results)
+    disp('Analysis cancelled by user. No report generated.');
+    return;
+end
+
+fprintf('\n\n\n======================================================================\n');
+fprintf('    THERMAL ANALYSIS AND MAXIMUM CURRENT CALCULATION REPORT\n');
+fprintf('======================================================================\n\n');
+
+fprintf('--- 1. Input Parameters ---\n');
+fprintf('%-35s: %s\n', 'Scenario', results.scenario);
+fprintf('%-35s: %s / %s\n', 'Conductor / Insulation', results.materialName, results.insulationName);
+fprintf('%-35s: %.1f mm^2\n', 'Conductor Cross-Section', results.crossSection);
+
+envFields = fieldnames(results.envParams);
+fprintf('\n   Environment-Specific Parameters:\n');
+for i = 1:length(envFields)
+    if ~strcmp(envFields{i}, 'scenario')
+        fprintf('   %-32s: %.2f\n', envFields{i}, results.envParams.(envFields{i}));
+    end
+end
+
+fprintf('\n--- 2. Intermediate Calculated Values ---\n');
+fprintf('%-35s: %.5f Ohm\n', 'DC Resistance at 20 C', results.R_20_DC);
+fprintf('%-35s: %.5f Ohm\n', 'AC Resistance at 20 C', results.R_20_AC);
+fprintf('%-35s: %.5f Ohm\n', 'AC Resistance at T_max', results.R_Tmat_AC);
+fprintf('%-35s: %.2f W\n', 'Max Heat Dissipation', results.P_dissipated_max);
+
+fprintf('\n--- 3. Final Analysis Results ---\n');
+fprintf('----------------------------------------------------------------------\n');
+fprintf('%-35s: %.2f A\n', 'MAXIMUM ADMISSIBLE CURRENT (I_max)', results.I_max);
+fprintf('----------------------------------------------------------------------\n\n');
+\end{lstlisting}
+
+\subsection{E1\_ConductorHeatingAnalysis.m}
+\begin{lstlisting}[caption={Core function for thermal analysis.}, label={lst:E1}]
+function results = E1_ConductorHeatingAnalysis()
+% =========================================================================
+% MAIN FUNCTION for Conductor Thermal Analysis
+% Returns a struct 'results' with all key values.
+% =========================================================================
+results = []; 
+T_ref = 20;
+rho_den_aluminum = 2700; cp_aluminum = 900;
+rho_den_copper = 8960; cp_copper = 385;
+T_mat_xlpe = 90; T_mat_pvc = 70;
+alpha_al = 0.00403; alpha_cu = 0.00393;
+sigma_al = 36; sigma_cu = 56;
+
+installationChoice = 1; % Assume Underground for report
+switch installationChoice
+    case 1 % Underground
+        scenarioName = 'Underground'; materialName = 'Aluminum'; insulationName = 'XLPE';
+        crossSection = 150; insulatorThickness = 2.2;
+        envParams.scenario = 'underground'; envParams.T_env = 20;
+        envParams.rho_soil = 1.5; envParams.burial_depth = 0.8;
+        density_cond = rho_den_aluminum; cp_cond = cp_aluminum;
+        T_mat = T_mat_xlpe; alpha = alpha_al; sigma = sigma_al;
+        envParams.k_insulator = 0.28;
+    % Other cases omitted for brevity
+end
+
+lineLength = 1; frequency = 50;
+
+r_inner_m = sqrt(crossSection / pi) / 1000;
+diameter_m = 2 * r_inner_m;
+r_outer_m = r_inner_m + (insulatorThickness / 1000);
+R_20_DC = lineLength / (sigma * crossSection);
+[k_skin, k_proximity] = E3b_AC_Resistance_Factor(frequency, diameter_m, sigma);
+R_20_AC = R_20_DC * (1 + k_skin + k_proximity);
+[I_max, R_Tmat_AC, ~, P_dissipated_max] = E2_MaximumCurrent(R_20_AC, alpha, T_mat, T_ref, envParams, lineLength, r_inner_m, r_outer_m);
+
+results.scenario=scenarioName; results.materialName=materialName; results.insulationName=insulationName;
+results.crossSection=crossSection; results.envParams=envParams;
+results.R_20_DC=R_20_DC; results.R_20_AC=R_20_AC; results.R_Tmat_AC=R_Tmat_AC;
+results.P_dissipated_max=P_dissipated_max; results.I_max=I_max;
+end
+\end{lstlisting}
+
+\subsection{E2\_MaximumCurrent.m}
+\begin{lstlisting}[caption={Calculates max admissible current based on thermal equilibrium.}, label={lst:E2}]
+function [I_max, R_Tmat, T_surface, P_diss_max] = E2_MaximumCurrent(R_20, alpha, T_mat, T_ref, envParams, lineLength, r_inner, r_outer)
+R_Tmat = E3_ResistanceTemperatureCorrection(R_20, alpha, T_mat, T_ref);
+options = optimset('Display','off');
+if r_outer <= r_inner
+    R_thermal_ins = inf;
+else
+    R_thermal_ins = log(r_outer/r_inner) / (2*pi*envParams.k_insulator*lineLength);
+end
+balance_eq = @(T_s) (T_mat - T_s)/R_thermal_ins - E7_HeatDissipation(T_s, envParams, r_outer, lineLength);
+try
+    T_surface = fzero(balance_eq, T_mat, options);
+catch
+    T_surface = T_mat;
+end
+P_diss_max = E7_HeatDissipation(T_surface, envParams, r_outer, lineLength);
+if R_Tmat > 0
+    I_max = sqrt(P_diss_max / R_Tmat);
+else
+    I_max = inf;
+end
+end
+\end{lstlisting}
+
+\subsection{E3\_ResistanceTemperatureCorrection.m}
+\begin{lstlisting}[caption={Corrects resistance for operating temperature.}, label={lst:E3}]
+function R_T = E3_ResistanceTemperatureCorrection(R_20, alpha, T, T_ref)
+R_T = R_20 * (1 + alpha * (T - T_ref));
+end
+\end{lstlisting}
+
+\subsection{E3b\_AC\_Resistance\_Factor.m}
+\begin{lstlisting}[caption={Calculates skin and proximity effect factors.}, label={lst:E3b}]
+function [k_skin, k_proximity] = E3b_AC_Resistance_Factor(freq, diameter, sigma)
+cross_section_m2 = pi * (diameter/2)^2;
+sigma_Sm = sigma * 1e6;
+R_dc_per_meter = 1 / (sigma_Sm * cross_section_m2);
+if R_dc_per_meter == 0, x_s_sq = 0;
+else, x_s_sq = (8 * pi * freq / R_dc_per_meter) * 1e-7; end
+k_skin = (x_s_sq^2) / (192 + 0.8 * x_s_sq^2);
+k_proximity = 0.05; % Assumed typical value
+end
+\end{lstlisting}
+
+\subsection{E4\_ThermalEquilibrium.m}
+\begin{lstlisting}[caption={Solves for the steady-state temperature of a conductor.}, label={lst:E4}]
+function T_eq = E4_ThermalEquilibrium(I, R_20, alpha, T_ref, envParams, length, ~, r_outer)
+heat_balance_error = @(T) (E3_ResistanceTemperatureCorrection(R_20, alpha, T, T_ref) * I^2) - (E7_HeatDissipation(T, envParams, r_outer, length));
+try
+    options = optimset('Display','off');
+    T_eq = fzero(heat_balance_error, envParams.T_env, options);
+catch
+    T_eq = envParams.T_env;
+end
+end
+\end{lstlisting}
+
+\subsection{E5\_HeatingCurves.m}
+\begin{lstlisting}[caption={Generates plots of equilibrium temperature vs. current.}, label={lst:E5}]
+function E5_HeatingCurves(I_max, T_mat, envParams, R_20_DC, R_20_AC, alpha, T_ref, lineLength, r_inner, r_outer, materialName, insulationName)
+current_vector = linspace(0, I_max * 1.2, 100);
+temp_vector_ac = zeros(size(current_vector));
+for i = 1:length(current_vector)
+    temp_vector_ac(i) = E4_ThermalEquilibrium(current_vector(i), R_20_AC, alpha, T_ref, envParams, lineLength, r_inner, r_outer);
+end
+figure; hold on;
+plot(current_vector, temp_vector_ac, 'r-', 'LineWidth', 2, 'DisplayName', 'Equilibrium Temp (AC)');
+line([0, I_max * 1.2], [T_mat, T_mat], 'Color', 'g', 'LineStyle', '--', 'LineWidth', 1.5, 'DisplayName', sprintf('Max Temp (%.0f C)', T_mat));
+line([I_max, I_max], [envParams.T_env, T_mat], 'Color', 'k', 'LineStyle', ':', 'LineWidth', 1.5, 'DisplayName', sprintf('Max AC Current (%.1f A)', I_max));
+title(sprintf('Heating Curve for %s / %s', materialName, insulationName));
+xlabel('Current (A)'); ylabel('Equilibrium Temperature (C)');
+legend('Location', 'northwest'); grid on; box on;
+ylim([envParams.T_env - 10, T_mat + 20]);
+hold off;
+end
+\end{lstlisting}
+
+\subsection{E6\_TransientHeating.m}
+\begin{lstlisting}[caption={Models the temperature of a conductor over time (transient response).}, label={lst:E6}]
+function [time, temp] = E6_TransientHeating(I, time_span, envParams, R_20, alpha, T_ref, length, ~, r_outer, mass, cp)
+    function dTdt = heat_balance_ode(~, T)
+        P_generated = E3_ResistanceTemperatureCorrection(R_20, alpha, T, T_ref) * I^2;
+        P_dissipated = E7_HeatDissipation(T, envParams, r_outer, length);
+        dTdt = (P_generated - P_dissipated) / (mass * cp);
+    end
+options = odeset('RelTol', 1e-4, 'AbsTol', 1e-6);
+[time, temp] = ode45(@heat_balance_ode, time_span, envParams.T_env, options);
+end
+\end{lstlisting}
+
+\subsection{E7\_HeatDissipation.m}
+\begin{lstlisting}[caption={Contains the physical models for heat dissipation (underground and overhead).}, label={lst:E7}]
+function P_diss = E7_HeatDissipation(T_conductor, envParams, r_outer, length)
+if strcmp(envParams.scenario, 'underground')
+    P_diss = dissipation_underground(T_conductor, envParams.T_env, envParams.rho_soil, envParams.burial_depth, r_outer, length);
+else % overhead
+    P_diss = dissipation_overhead(T_conductor, envParams.T_env, envParams.wind_speed, envParams.solar_irradiance, envParams.emissivity, envParams.absorptivity, r_outer, length);
+end
+end
+function P_cond = dissipation_underground(T_conductor, T_soil, rho_soil, H, r_outer, L)
+    if r_outer > 0 && H > r_outer
+        R_thermal_per_meter = (rho_soil / (2 * pi)) * acosh(H / r_outer);
+        R_thermal_total = R_thermal_per_meter / L;
+        P_cond = (T_conductor - T_soil) / R_thermal_total;
+    else, P_cond = 0; end
+end
+function P_net = dissipation_overhead(T_conductor, T_air, V_wind, Q_solar, epsilon, alpha_solar, r_outer, L)
+    P_conv = calculate_convection(T_conductor, T_air, V_wind, r_outer * 2, L);
+    P_rad = calculate_radiation(T_conductor, T_air, epsilon, r_outer * 2, L);
+    P_solar_gain = calculate_solar_gain(Q_solar, alpha_solar, r_outer * 2, L);
+    P_net = (P_conv + P_rad) - P_solar_gain;
+end
+function P_conv = calculate_convection(T_conductor, T_air, V_wind, D_outer, L)
+    k_air = 0.026;
+    if V_wind > 0, Re = V_wind*D_outer/1.5e-5; Nu = 0.3+(0.62*Re^0.5*0.71^0.33)/(1+(0.4/0.71)^0.66)^0.25;
+    else, Gr = 9.81*(1/(T_air+273.15))*abs(T_conductor-T_air)*D_outer^3/(1.5e-5)^2; Nu = (0.6+(0.387*(Gr*0.71)^0.166)/(1+(0.559/0.71)^0.562)^0.296)^2; end
+    h = (k_air/D_outer)*Nu; surface_area = pi*D_outer*L; P_conv = h*surface_area*(T_conductor-T_air);
+end
+function P_rad = calculate_radiation(T_conductor, T_air, epsilon, D_outer, L)
+    sigma_boltz=5.67e-8; surface_area=pi*D_outer*L; T_cond_K=T_conductor+273.15; T_air_K=T_air+273.15;
+    P_rad = sigma_boltz*epsilon*surface_area*(T_cond_K^4-T_air_K^4);
+end
+function P_solar = calculate_solar_gain(Q_solar, alpha_solar, D_outer, L)
+    projected_area = D_outer * L; P_solar = Q_solar * alpha_solar * projected_area;
+end
+\end{lstlisting}
+
+\subsection{E8\_GroupingFactor.m}
+\begin{lstlisting}[caption={Provides a derating factor for grouped cables.}, label={lst:E8}]
+function k_g = E8_GroupingFactor(num_cables)
+if num_cables <= 3, k_g = 1.0; elseif num_cables <= 6, k_g = 0.8; else, k_g = 0.7; end
+end
+\end{lstlisting}
+
+% F Series Files
+\subsection{F1\_VoltageDropAnalysis.m}
+\begin{lstlisting}[caption={Main script for voltage drop analysis, including multi-segment installations.}, label={lst:F1}]
+function F1_VoltageDropAnalysis()
+    installationSegments = {
+        struct('name', 'LGA', 'length', 15, 'loadCurrent', 50, 'cos_phi', 0.9, 'conductor_s', 25),
+        struct('name', 'DI', 'length', 20, 'loadCurrent', 20, 'cos_phi', 0.85, 'conductor_s', 10),
+        struct('name', 'Internal', 'length', 12, 'loadCurrent', 16, 'cos_phi', 0.95, 'conductor_s', 4)
+    };
+    U_source = 230; lineType = 'single-phase'; sigma = 56; freq = 50; r_m = 0.08e-3;
+    voltage_in = U_source; results = cell(size(installationSegments));
+    for i = 1:length(installationSegments)
+        seg = installationSegments{i};
+        dia_m = 2*sqrt(seg.conductor_s/pi)/1000;
+        [ks, kp] = E3b_AC_Resistance_Factor(freq, dia_m, sigma);
+        r_ac = (1/(sigma*seg.conductor_s))*(1+ks+kp);
+        seg.voltageDrop = F2_calculateExactVoltageDrop(lineType, seg.length, seg.loadCurrent, r_ac, r_m, seg.cos_phi);
+        seg.voltage_out = voltage_in - seg.voltageDrop;
+        results{i} = seg; voltage_in = seg.voltage_out;
+    end
+    F4b_checkInstallationCompliance(results, U_source);
+end
+\end{lstlisting}
+
+\subsection{F2\_calculateExactVoltageDrop.m}
+\begin{lstlisting}[caption={Implements the full Blondel's formula for accurate AC voltage drop.}, label={lst:F2}]
+function deltaU = F2_calculateExactVoltageDrop(lineType, d, I, r, xL, cos_phi)
+sin_phi = sqrt(1 - cos_phi^2);
+if strcmp(lineType, 'three-phase'), phase_factor = sqrt(3); else, phase_factor = 2; end
+deltaU = phase_factor * I * (r*d*cos_phi + xL*d*sin_phi);
+end
+\end{lstlisting}
+
+\subsection{F3\_calculateSimplifiedVoltageDrop.m}
+\begin{lstlisting}[caption={Implements the simplified (resistive only) voltage drop formula for comparison.}, label={lst:F3}]
+function deltaU_simple = F3_calculateSimplifiedVoltageDrop(lineType, d, I, r, cos_phi)
+if strcmp(lineType, 'three-phase'), phase_factor = sqrt(3); else, phase_factor = 2; end
+deltaU_simple = phase_factor * d * I * r * cos_phi;
+end
+\end{lstlisting}
+
+\subsection{F4\_checkREBTCompliance.m}
+\begin{lstlisting}[caption={Checks if a single line's voltage drop complies with REBT limits.}, label={lst:F4}]
+function [isCompliant, percentDrop, limit] = F4_checkREBTCompliance(deltaU, U_source, circuitType)
+if strcmp(circuitType, 'lighting'), limit = 3.0; else, limit = 5.0; end
+percentDrop = (deltaU / U_source) * 100;
+isCompliant = percentDrop <= limit;
+end
+\end{lstlisting}
+
+\subsection{F4b\_checkInstallationCompliance.m}
+\begin{lstlisting}[caption={Checks a multi-segment installation against tiered REBT limits.}, label={lst:F4b}]
+function F4b_checkInstallationCompliance(results, U_source)
+fprintf('\n--- REBT COMPLIANCE CHECK ---\n');
+total_drop = U_source - results{end}.voltage_out;
+fprintf('Total Voltage Drop: %.2f V (%.2f%%)\n', total_drop, (total_drop/U_source)*100);
+end
+\end{lstlisting}
+
+\subsection{F5\_plotVoltageProfile.m}
+\begin{lstlisting}[caption={Plots the voltage profile for a single line.}, label={lst:F5}]
+function [] = F5_plotVoltageProfile(U_source, deltaU_total_ac, total_length, circuitType)
+length_vector = linspace(0, total_length, 200);
+voltage_profile_ac = U_source - (deltaU_total_ac / total_length) * length_vector;
+if strcmp(circuitType, 'lighting'), limit_percent = 4.5/100; else, limit_percent = 6.5/100; end
+min_voltage_limit = U_source * (1 - limit_percent);
+figure; hold on;
+plot(length_vector, voltage_profile_ac, 'r-', 'LineWidth', 2, 'DisplayName', 'Voltage Profile (AC Res.)');
+line([0, total_length], [min_voltage_limit, min_voltage_limit], 'Color', 'g', 'LineStyle', '--', 'DisplayName', sprintf('REBT Limit (%.2f V)', min_voltage_limit));
+title('Voltage Profile Along the Line'); xlabel('Distance from Source (m)'); ylabel('Voltage (V)');
+grid on; box on; legend('Location', 'southwest');
+ylim([min_voltage_limit - (0.02*U_source), U_source * 1.02]);
+hold off;
+end
+\end{lstlisting}
+
+\subsection{F6\_plotInstallationProfile.m}
+\begin{lstlisting}[caption={Plots the voltage profile across a multi-segment installation.}, label={lst:F6}]
+function F6_plotInstallationProfile(results, U_source)
+numSegments = length(results);
+node_voltages = [U_source, cellfun(@(x) x.voltage_out, results)'];
+node_lengths = [0, cumsum(cellfun(@(x) x.length, results))'];
+segment_names = cellfun(@(x) x.name, results, 'UniformOutput', false);
+figure; hold on;
+stairs(node_lengths, node_voltages, 'b-', 'LineWidth', 2, 'DisplayName', 'Voltage Profile');
+plot(node_lengths, node_voltages, 'ro', 'MarkerFaceColor','r', 'HandleVisibility','off');
+limit_total_percent = 5.0 / 100; % Simplified for example
+min_voltage_limit = U_source * (1 - limit_total_percent);
+line([0, node_lengths(end)], [min_voltage_limit, min_voltage_limit], 'Color', 'k', 'LineStyle', '--', 'DisplayName', sprintf('Overall REBT Limit (%.2f V)', min_voltage_limit));
+title('Voltage Profile Across Complete Installation');
+xlabel('Cumulative Line Length (m)'); ylabel('Voltage (V)');
+grid on; box on; legend('show', 'Location', 'southwest');
+for i = 1:numSegments
+    x_pos = node_lengths(i) + (node_lengths(i+1) - node_lengths(i))/2;
+    y_pos = node_voltages(i+1) + 5;
+    text(x_pos, y_pos, strrep(segment_names{i}, '_', ' '), 'HorizontalAlignment', 'center', 'BackgroundColor', 'w');
+end
+hold off;
+end
+\end{lstlisting}
+
+% G Series Files
+\subsection{G1\_ConductorSizingAnalysis.m}
+\begin{lstlisting}[caption={Main script for conductor sizing and economic analysis.}, label={lst:G1}]
+function G1_ConductorSizingAnalysis()
+sigma_aluminum = 36; LCC_years = 20; hours_per_year = 4000; cost_per_kWh = 0.15;
+U_source = 400; lineLength = 200; loadCurrent = 150; cos_phi = 0.85;
+material = 'Aluminum';
+[~, ~, sections_data] = G3_selectStandardSection(0, material);
+s_required_vd = G2_calculateRequiredSection('three-phase', lineLength, loadCurrent, cos_phi, sigma_aluminum, U_source * 0.05);
+s_technical_data = G3_selectStandardSection(s_required_vd, material);
+s_technical = s_technical_data.section;
+sections_to_analyze = sections_data(arrayfun(@(x) x.section, sections_data) >= s_technical);
+num_sections = numel(sections_to_analyze);
+total_costs=zeros(1,num_sections); cable_costs=zeros(1,num_sections); loss_costs=zeros(1,num_sections);
+for i = 1:num_sections
+    [total_costs(i), cable_costs(i), loss_costs(i)] = G4_calculateLifecycleCost(sections_to_analyze(i), 'three-phase', lineLength, loadCurrent, sigma_aluminum, LCC_years, hours_per_year, cost_per_kWh);
+end
+[~, optimal_idx] = min(total_costs);
+s_optimal = sections_to_analyze(optimal_idx).section;
+G5_plotEconomicAnalysis(sections_to_analyze, cable_costs, loss_costs, total_costs, s_technical, s_optimal);
+fprintf('--- SIZING RESULTS ---\n');
+fprintf('Technically Compliant Section: %d mm^2\n', s_technical);
+fprintf('Economically Optimal Section: %d mm^2\n', s_optimal);
+end
+\end{lstlisting}
+
+\subsection{G2\_calculateRequiredSection.m}
+\begin{lstlisting}[caption={Calculates the minimum required cross-section based on voltage drop.}, label={lst:G2}]
+function s = G2_calculateRequiredSection(lineType, d, I, cos_phi, sigma, deltaU_max)
+if strcmp(lineType, 'three-phase'), phase_factor = sqrt(3); else, phase_factor = 2; end
+s = (phase_factor * d * I * cos_phi) / (sigma * deltaU_max);
+end
+\end{lstlisting}
+
+\subsection{G3\_selectStandardSection.m}
+\begin{lstlisting}[caption={Selects the next available standard conductor section from a table.}, label={lst:G3}]
+function [selected_section, ~, standard_sections_data] = G3_selectStandardSection(s_required, material)
+if strcmpi(material, 'Copper'), data = [1.5,24,0.5; 2.5,32,0.8; 4,42,1.2; 6,54,1.7; 10,73,2.8; 16,98,4.5; 25,129,7.0; 35,158,9.5; 50,188,13.0; 70,232,18.0; 95,275,24.0; 120,315,30.0];
+else, data = [16,76,3.0; 25,100,4.5; 35,123,6.0; 50,146,8.0; 70,180,11.5; 95,215,15.0; 120,245,19.0; 150,280,23.0]; end
+standard_sections_data = struct('section', num2cell(data(:,1)), 'ampacity', num2cell(data(:,2)), 'cost_per_meter', num2cell(data(:,3)));
+idx = find(data(:,1) >= s_required, 1, 'first');
+if isempty(idx), selected_section = standard_sections_data(end);
+else, selected_section = standard_sections_data(idx); end
+end
+\end{lstlisting}
+
+\subsection{G4\_calculateLifecycleCost.m}
+\begin{lstlisting}[caption={Calculates the lifecycle cost (initial + losses) for a given section.}, label={lst:G4}]
+function [total_cost, cable_cost, loss_cost] = G4_calculateLifecycleCost(section_data, lineType, d, I, sigma, years, hours_per_year, cost_per_kWh)
+s = section_data.section; cost_per_meter = section_data.cost_per_meter;
+if strcmp(lineType, 'three-phase'), num_conductors = 3; else, num_conductors = 2; end
+cable_cost = d * cost_per_meter * num_conductors;
+total_resistance = (1/sigma) * d / s;
+power_loss_watts = num_conductors * (I^2) * total_resistance;
+total_kWh_lost = (power_loss_watts / 1000) * hours_per_year * years;
+loss_cost = total_kWh_lost * cost_per_kWh;
+total_cost = cable_cost + loss_cost;
+end
+\end{lstlisting}
+
+\subsection{G5\_plotEconomicAnalysis.m}
+\begin{lstlisting}[caption={Plots the economic analysis results to find the optimal section.}, label={lst:G5}]
+function [] = G5_plotEconomicAnalysis(sections, cable_costs, loss_costs, total_costs, s_technical, s_optimal)
+figure;
+section_labels = arrayfun(@(x) num2str(x.section), sections, 'UniformOutput', false);
+x_categories = categorical(section_labels);
+x_categories = reordercats(x_categories, section_labels);
+bar_data = [cable_costs', loss_costs'];
+bar(x_categories, bar_data, 'stacked');
+hold on;
+plot(x_categories, total_costs, 'd-r', 'LineWidth', 2, 'MarkerFaceColor', 'r', 'MarkerSize', 8, 'DisplayName', 'Total Lifecycle Cost');
+optimal_idx = find([sections.section] == s_optimal);
+if ~isempty(optimal_idx)
+    text(x_categories(optimal_idx), total_costs(optimal_idx), '  Optimal', 'Color', 'red', 'FontWeight', 'bold');
+end
+technical_idx = find([sections.section] == s_technical);
+if ~isempty(technical_idx)
+     text(x_categories(technical_idx), total_costs(technical_idx), '  Technical Min.', 'Color', 'black', 'VerticalAlignment', 'top');
+end
+title('Economic Analysis of Conductor Sizing');
+xlabel('Standard Conductor Section (mm^2)');
+ylabel('Total Lifecycle Cost (EUR)');
+legend({'Initial Cable Cost', 'Cost of Energy Losses', 'Total Lifecycle Cost'}, 'Location', 'northoutside', 'Orientation', 'horizontal');
+grid on; hold off;
+end
+\end{lstlisting}
+
+\subsection{G6\_verifyFinalDesign.m}
+\begin{lstlisting}[caption={Performs a final verification of the voltage drop for the chosen design.}, label={lst:G6}]
+function final_vd_percent = G6_verifyFinalDesign(lineType, d, I, cos_phi, sigma, s_final, U_source)
+if strcmp(lineType, 'three-phase'), phase_factor = sqrt(3); else, phase_factor = 2; end
+deltaU_volts = (phase_factor * d * I * cos_phi) / (sigma * s_final);
+final_vd_percent = (deltaU_volts / U_source) * 100;
+end
+\end{lstlisting}
+
+\end{document}
+

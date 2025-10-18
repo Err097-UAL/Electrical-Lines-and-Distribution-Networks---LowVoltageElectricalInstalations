@@ -9,6 +9,8 @@
 \usepackage{graphicx}               % To include graphics
 \usepackage{hyperref}               % For clickable links and references
 \usepackage{tikz}                   % For drawing
+\usetikzlibrary{positioning}
+\usetikzlibrary{positioning}
 \usepackage{pgfplots}               % For creating plots and charts
 \pgfplotsset{compat=1.17}            % Use a recent version of pgfplots
 \usepackage{listings}               % For including source code
@@ -68,13 +70,6 @@
         Academic Year 2025-2026
     \end{center}
 \end{titlepage}
-
-% --- TABLE OF CONTENTS ---
-\newpage
-\tableofcontents
-\newpage
-
-% --- INTRODUCTION ---
 
 
 
@@ -161,7 +156,7 @@ P_{\text{diss}} = \frac{T_s - T_{\text{soil}}}{R_{\text{th,soil}}}
 Where $T_s$ is the cable surface temperature and $T_{\text{soil}}$ is the ambient soil temperature. The thermal resistance of the soil, $R_{\text{th,soil}}$, is calculated using an approximation derived from Kennelly's formula:
 
 \begin{equation}
-R_{\text{th,soil}} = \frac{\rho_{\text{soil}}}{2 \pi L} \ln\left( \frac{2h}{D} + \sqrt{\left(\frac{2h}{D}\right)^2 - 1} \right)
+R_{\text{th,soil}} = \frac{\rho_{\text{soil}}}{2 \pi L} \ln\left( \frac{4h}{D} \right)
 \end{equation}
 
 Where:
@@ -218,6 +213,26 @@ For accuracy, the conductor's AC resistance ($R_{AC}$) is calculated, accounting
 \begin{equation}
     I_{\text{max}} = \sqrt{\frac{P_{\text{dissipated\_max}}}{R_{AC, T_{\text{max}}}}}
 \end{equation}
+    
+    The AC resistance is calculated by taking the DC Resistance and applying a correction factor for the skin effect and another for the proximity effect. These formulas have been taken from  IEC 60287-1-1
+    \begin{equation}
+R_{AC} = R_{DC} \cdot (1 + k_{\text{skin}} + k_{\text{prox}})
+\end{equation}
+
+	The skin effect is caused by the charges habit of collecting near the edge of the conductor, clumping together and increasing the resistance. It is less notable on smaller wires and lower frequencies, and in the domestic setting it is often taken as negligible.
+\begin{equation}
+k_{\text{skin}} = \frac{x_s^4}{192 + 0.8 x_s^4}
+\end{equation}
+
+	The proximity effect is due to the electromagnetic radiation leaking from one conductor to other nearby conductors, and is more pronounced the more wires are lumped together
+\begin{equation}
+k_{\text{prox}} = \frac{x_p^4}{192 + 0.8 x_p^4} \left(\frac{d}{s}\right)^2 \left( 0.312\left(\frac{d}{s}\right)^2 + \frac{1.18}{\frac{x_p^4}{192 + 0.8 x_p^4} + 0.27} \right)
+\end{equation}
+
+Parameter xs and xp are the same
+\begin{equation}
+x_s^2 = \frac{8 \pi f}{R'_{DC}} \times 10^{-7}
+\end{equation} 
 
 \subsection{Thermal Analysis Results}
 The charts below, representing the output of the MATLAB analysis, illustrate the conductor's thermal behavior. Figure \ref{fig:heating_curve} shows the steady-state temperature for different currents, while Figure \ref{fig:transient_heating} shows how temperature evolves over time.
@@ -264,33 +279,125 @@ The charts below, representing the output of the MATLAB analysis, illustrate the
 This section details a precise voltage drop analysis, including reactive effects, based on the MATLAB functions prefixed with 'F'.
 
 \subsection{Blondel's Formula}
-The exact voltage drop in a three-phase AC circuit is calculated using Blondel's formula (\texttt{F2\_calculateExactVoltageDrop.m}), which accounts for both resistance ($R$) and inductive reactance ($X_L$).
+The approximate voltage drop in a three-phase AC circuit is calculated using Blondel's formula, which is valid for most well designed circuits where the angle between the voltage at the source and at the load is very small. The script (\texttt{F2\_calculateExactVoltageDrop.m} is used, which accounts for both resistance ($R$) and inductive reactance ($X_L$). Where d is a configuration parameter and takes the value of d = 2 for a single phase line with return and d = 1.732 for three phase lines.
 \begin{equation}
     \Delta V = \sqrt{3} \cdot I \cdot (R \cos\varphi + X_L \sin\varphi)
 \end{equation}
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 \subsection{REBT Compliance and Voltage Profile}
 Compliance with the Spanish regulation (REBT) is mandatory. The script \texttt{F4b\_checkInstallationCompliance.m} automates checking the tiered voltage drop limits for a full installation (LGA, DI, etc.). The script \texttt{F6\_plotInstallationProfile.m} visualizes this drop, as shown in Figure \ref{fig:installation_profile}.
 
 \begin{figure}[h!]
     \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-            title={Voltage Profile Across Multi-Segment Installation},
-            xlabel={Cumulative Line Length (m)}, ylabel={Voltage (V)},
-            width=\textwidth, height=8cm, grid=major, legend pos=south west,
-            xmin=0, xmax=50,
-        ]
-        \addplot[const plot, blue, line width=1.5pt] coordinates {(0,230) (15,227.5) (35,224) (47,222.5)};
-        \addlegendentry{Voltage Profile}
-        
-        \addplot[dashed, color=red] coordinates {(0, 218.5) (50, 218.5)};
-        \addlegendentry{Overall REBT Limit (5\%)}
-        \end{axis}
-    \end{tikzpicture}
+\begin{tikzpicture}
+    \begin{axis}[
+        title={Voltage Profile Across Multi-Segment Installation},
+        xlabel={Cumulative Line Length (m)},
+        ylabel={Voltage (V)},
+        width=15cm, 
+        height=8cm,
+        grid=major,
+        legend pos=south west,
+        xmin=0,
+        xmax=50,
+        ymin=215,
+        ymax=235,
+    ]
+    
+    % The plot with new, detailed coordinates for each stage
+    \addplot[const plot, blue, line width=1.5pt, mark=*, mark size=1.5pt] coordinates {
+        (0, 230)      % Start
+        (10, 227.7)   % Drop 1.0%
+        (12, 226.55)  % Drop 0.5%
+        (27, 223.1)   % Drop 1.5%
+        (30, 222.64)  % Drop 0.2%
+        (40, 219.65)  % Drop 1.3%
+        (42, 218.96)  % Drop 0.3%
+        (47, 216.66)  % Drop 1.0%
+    };
+    \addlegendentry{Voltage Profile}
+    
+    % The 5% voltage drop limit line
+    \addplot[dashed, color=red] coordinates {(0, 218.5) (50, 218.5)};
+    \addlegendentry{REBT Limit (5\% Drop)}
+
+    % Define coordinates for the pin labels
+    \coordinate (p0) at (axis cs:0, 230);
+    \coordinate (p1) at (axis cs:10, 227.7);
+    \coordinate (p2) at (axis cs:12, 226.55);
+    \coordinate (p3) at (axis cs:27, 223.1);
+    \coordinate (p4) at (axis cs:30, 222.64);
+    \coordinate (p5) at (axis cs:40, 219.65);
+    \coordinate (p6) at (axis cs:42, 218.96);
+    \coordinate (p7) at (axis cs:47, 216.66);
+    
+    \end{axis}
+    
+    % Add annotations using pins attached to the coordinates.
+    % Placed outside the 'axis' environment to prevent clipping.
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]90:{Street Line}}] at (p0) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]90:{Ind. Connection}}] at (p1) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]90:{GPB}}] at (p2) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]90:{Main Feeder}}] at (p3) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]90:{Counters}}] at (p4) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]-90:{Ind. Branch}}] at (p5) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]-90:{Panel}}] at (p6) {};
+    \node[pin={[pin edge={black, thin}, text=black, font=\small]-90:{Final Consumption}}] at (p7) {};
+    
+\end{tikzpicture}
     \caption{Voltage profile across an installation, showing the drop at each section.}
+    
+
+    \begin{tikzpicture}[
+    node distance=0.8cm, % Vertical distance between boxes
+    box/.style={
+        draw,
+        rectangle,
+        text width=6.5cm,
+        align=center,
+        minimum height=1cm
+    },
+    arrow/.style={
+        -latex,
+        thick
+    }
+]
+    % --- Nodes arranged vertically for a clear top-to-bottom flow ---
+    \node[box] (start)    {Street Line (100\% Voltage)};
+    \node[box, below=of start] (conn)     {Individual Connection Line};
+    \node[box, below=of conn]  (gpb)      {General Protection Box};
+    \node[box, below=of gpb]   (feeder)   {Main Feeder Line};
+    \node[box, below=of feeder] (counters) {Centralized Energy Counters};
+    \node[box, below=of counters](branch)  {Individual Branch Line};
+    \node[box, below=of branch] (panel)    {Main Switch and Protection Panel};
+    \node[box, below=of panel]  (end)      {Internal Circuits \& Final Consumption (94.2\% Voltage)};
+
+    % --- Arrows with simplified labels showing only the drop at each stage ---
+    \draw[arrow] (start)    -- node[midway, right] {-1.0\%} (conn);
+    \draw[arrow] (conn)     -- node[midway, right] {-0.5\%} (gpb);
+    \draw[arrow] (gpb)      -- node[midway, right] {-1.5\%} (feeder);
+    \draw[arrow] (feeder)   -- node[midway, right] {-0.2\%} (counters);
+    \draw[arrow] (counters) -- node[midway, right] {-1.3\%} (branch);
+    \draw[arrow] (branch)   -- node[midway, right] {-0.3\%} (panel);
+    \draw[arrow] (panel)    -- node[midway, right] {-1.0\%} (end);
+\end{tikzpicture}
+
     \label{fig:installation_profile}
 \end{figure}
+    
+    \newpage
 
 % --- CHAPTER 3: CONDUCTOR SIZING ---
 \section{Conductor Sizing and Economic Analysis}
@@ -300,7 +407,46 @@ The final step is to select the optimal conductor cross-section. This analysis, 
 Conductor sizing is based on two main criteria:
 \begin{enumerate}
     \item \textbf{Technical Minimum:} The smallest standard cross-section that satisfies both the maximum admissible current ($I_{\text{max}}$) and the REBT voltage drop limits. This is calculated via \texttt{G2\_calculateRequiredSection.m} and \texttt{G3\_selectStandardSection.m}.
-    \item \textbf{Economic Optimum:} The cross-section that results in the lowest total lifecycle cost (LCC), considering both the initial cable purchase price and the cumulative cost of energy losses ($I^2R$) over the project's lifespan. This follows Kelvin's Economic Law.
+    \item \textbf{Economic Optimum:} The cross-section that results in the lowest total lifecycle cost (LCC), considering both the initial cable purchase price and the cumulative cost of energy losses ($I^2R$) over the project's lifespan. This is a simpler, albeit similar approach to Kelvin's Economic Law for calculating the economic conductor size.
+    
+    \begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            title={Kelvin's Law: Finding the Economic Optimum},
+            xlabel={Conductor Cross-Section (S)},
+            ylabel={Annual Cost (€/year)},
+            width=\textwidth,
+            height=8cm,
+            grid=major,
+            legend pos=north east,
+            xmin=0, xmax=250,
+            ymin=0, ymax=100,
+            xticklabel=\empty, yticklabel=\empty,
+        ]
+        
+        % C1: Capital Cost (approximated as linear for simplicity in the graph)
+        \addplot[domain=10:250, blue, thick, samples=100] {0.2*x + 5};
+        \addlegendentry{Annual Capital Cost ($C_1$)}
+
+        % C2: Cost of Losses (inversely proportional)
+        \addplot[domain=10:250, red, thick, samples=100] {4000/x};
+        \addlegendentry{Annual Cost of Losses ($C_2$)}
+        
+        % CT: Total Cost (sum of the two)
+        \addplot[domain=10:250, black, very thick, samples=100] {0.2*x + 5 + 4000/x};
+        \addlegendentry{Total Annual Cost ($C_T$)}
+
+        % Mark the optimal point
+        \coordinate (opt) at (axis cs:141.4, 33.28);
+        \draw[dashed, gray] (opt) -- (opt |- {axis cs:0,0});
+        \node[below] at (opt |- {axis cs:0,0}) {$S_{\text{opt}}$};
+        \node[circle, fill, inner sep=1.5pt] at (opt) {};
+        
+        \end{axis}
+    \end{tikzpicture}
+    \caption{The optimal conductor size ($S_{\text{opt}}$) occurs at the minimum of the total annual cost curve, which corresponds to the point where the cost of losses and the annualized capital cost curves intersect.}
+\end{figure}
 \end{enumerate}
 
 \subsection{Lifecycle Cost Analysis}
@@ -326,7 +472,7 @@ The economic analysis is visualized in Figure \ref{fig:economic_analysis}. The s
             xtick=data,
             legend style={at={(0.5,-0.2)}, anchor=north, legend columns=-1},
         ]
-        \addplot coordinates {(50, 4500) (70, 6000) (95, 8000) (120, 10000) (150, 12500)}; % Initial Cost
+        \addplot coordinates {(50, 4500) (70, 6000) (95, 8000) (120, 10000) (150, 12500)}; % Total Lif Cost
         \addplot coordinates {(50, 8000) (70, 5700) (95, 4200) (120, 3300) (150, 2600)}; % Loss Cost
         \end{axis}
         
@@ -338,7 +484,9 @@ The economic analysis is visualized in Figure \ref{fig:economic_analysis}. The s
             ymin=0,
         ]
         \addplot[red, thick, mark=*, mark options={fill=red}] coordinates {(50, 12500) (70, 11700) (95, 12200) (120, 13300) (150, 15100)};
-        \legend{Initial Cost, Energy Loss Cost, Total LCC}
+        
+        \legend{Total Cost, Energy Loss Cost, Total LCC}
+        
         \end{axis}
     \end{tikzpicture}
     \caption{Lifecycle cost analysis identifying the technically minimum (50 mm²) and economically optimal (70 mm²) sections.}
@@ -367,10 +515,12 @@ The Week 2 analysis has significantly advanced the project by incorporating crit
     
     \item \textbf{ELEK Software}. (2023). \textit{Skin and Proximity Effects on AC Resistance Calculations}.
     
+    \item \textbf{K Malmedal C Bates D Cain}. (2023). \textit{the measurement of soil thermal stability thermal resistivity and underground cable ampacity}.
+    
 
 \end{enumerate}
     
-
+\newpage
 % --- APPENDIX B ---
 \begin{center}\textbf{APPENDIX B}\end{center}
 \section{Tables and Assumed Values}
@@ -415,7 +565,7 @@ The following table consolidates the key material properties assumed for the cal
         \bottomrule
     \end{tabular}
 \end{table}
-
+\newpage
 
 % --- APPENDIX C ---
 \begin{center}\textbf{APPENDIX C}\end{center}
@@ -437,6 +587,7 @@ The following table consolidates the key material properties assumed for the cal
     C_{\text{total}} = C_{\text{initial}} + \sum (P_{\text{loss}} \cdot t_{\text{op}} \cdot \text{cost}_{\text{kWh}})
 \end{equation}
 
+\newpage
 % --- APPENDIX D ---
 \begin{center}\textbf{APPENDIX D}\end{center}
 \section{MATLAB Source Code}
