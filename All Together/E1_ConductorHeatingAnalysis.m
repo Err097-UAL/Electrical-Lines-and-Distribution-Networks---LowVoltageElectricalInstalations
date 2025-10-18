@@ -40,7 +40,7 @@ end
 envParams.scenario = scenarioName;
 
 disp(['--- INPUT FOR: ' upper(scenarioName) ' INSTALLATION ---']);
-envParams.T_env = input('Enter ambient temperature [°C] (e.g., 15 for ground, 40 for air): ');
+envParams.T_env = input('Enter ambient temperature [°C] (e.g., 30 for ground, 40 for air): ');
 if strcmp(scenarioName, 'underground')
     envParams.rho_soil = input('Enter soil thermal resistivity [K*m/W] (e.g., 1.2): ');
     envParams.burial_depth = input('Enter burial depth to cable center [m] (e.g., 1): ');

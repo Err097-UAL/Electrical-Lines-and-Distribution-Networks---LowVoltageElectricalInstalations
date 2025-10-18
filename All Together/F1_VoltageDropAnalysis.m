@@ -72,7 +72,7 @@ function run_full_installation_analysis()
         
         r_dc = segmentData.resistivity / segmentData.crossSection;
         diameter_m = sqrt(4 * segmentData.crossSection / pi) / 1000;
-        [k_skin, k_prox] = A3b_AC_Resistance_Factor(frequency, diameter_m, segmentData.sigma);
+        [k_skin, k_prox] = E3b_AC_Resistance_Factor(frequency, diameter_m, segmentData.sigma);
         r_ac = r_dc * (1 + k_skin + k_prox);
         
         segmentData.voltageDrop = F2_calculateExactVoltageDrop(lineType, segmentData.length, loadCurrent, r_ac, segmentData.reactance_per_meter, cos_phi);

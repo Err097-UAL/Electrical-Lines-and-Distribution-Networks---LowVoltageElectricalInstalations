@@ -1,35 +1,49 @@
-\contentsline {chapter}{\numberline {1}Conductor Heating Analysis}{1}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Introduction}{1}{section.1.1}%
-\contentsline {section}{\numberline {1.2}Methodology}{1}{section.1.2}%
-\contentsline {subsection}{\numberline {1.2.1}Steady-State Analysis}{1}{subsection.1.2.1}%
-\contentsline {subsection}{\numberline {1.2.2}Transient Analysis}{2}{subsection.1.2.2}%
-\contentsline {section}{\numberline {1.3}Results}{2}{section.1.3}%
-\contentsline {chapter}{\numberline {2}Voltage Drop Analysis}{3}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Introduction}{3}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Methodology}{3}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}Blondel Formula}{3}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}AC Resistance}{3}{subsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.2.3}Installation Analysis}{4}{subsection.2.2.3}%
-\contentsline {section}{\numberline {2.3}Results}{4}{section.2.3}%
-\contentsline {chapter}{\numberline {3}Conductor Cross-Section Sizing}{5}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Introduction}{5}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Methodology}{5}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Technical Sizing}{5}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Economic Optimization}{5}{subsection.3.2.2}%
-\contentsline {section}{\numberline {3.3}Results}{6}{section.3.3}%
-\contentsline {chapter}{\numberline {A}References}{7}{appendix.A}%
-\contentsline {chapter}{\numberline {B}Material and Assumed Properties}{8}{appendix.B}%
-\contentsline {chapter}{\numberline {C}List of Formulas}{9}{appendix.C}%
-\contentsline {chapter}{\numberline {D}MATLAB Code}{10}{appendix.D}%
-\contentsline {section}{\numberline {D.1}ProjectSelector.m}{10}{section.D.1}%
-\contentsline {section}{\numberline {D.2}A1\_ConductorHeatingAnalysis.m}{11}{section.D.2}%
-\contentsline {section}{\numberline {D.3}A2\_MaximumCurrent.m}{15}{section.D.3}%
-\contentsline {section}{\numberline {D.4}A3\_ResistanceTemperatureCorrection.m}{16}{section.D.4}%
-\contentsline {section}{\numberline {D.5}A3b\_AC\_Resistance\_Factor.m}{16}{section.D.5}%
-\contentsline {section}{\numberline {D.6}A4\_ThermalEquilibrium.m}{17}{section.D.6}%
-\contentsline {section}{\numberline {D.7}A5\_HeatingCurves.m}{18}{section.D.7}%
-\contentsline {section}{\numberline {D.8}A6\_TransientHeating.m}{20}{section.D.8}%
-\contentsline {section}{\numberline {D.9}A7\_HeatDissipation.m}{21}{section.D.9}%
-\contentsline {section}{\numberline {D.10}B1\_VoltageDropAnalysis.m}{23}{section.D.10}%
-\contentsline {section}{\numberline {D.11}C1\_ConductorSizingAnalysis.m}{27}{section.D.11}%
-\contentsline {section}{\numberline {D.12}centeredMenu.m}{30}{section.D.12}%
+\contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
+\contentsline {section}{\numberline {2}Conductor Thermal Analysis}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Principle of Thermal Equilibrium}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}AC Resistance and Maximum Current}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Thermal Analysis Results}{3}{subsection.2.3}%
+\contentsline {section}{\numberline {3}Advanced Voltage Drop Analysis}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Blondel's Formula}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}REBT Compliance and Voltage Profile}{5}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Conductor Sizing and Economic Analysis}{5}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Technical and Economic Sizing Criteria}{5}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Lifecycle Cost Analysis}{6}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Sizing Analysis Results}{6}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Conclusion}{6}{section.5}%
+\contentsline {section}{\numberline {A}References}{7}{appendix.A}%
+\contentsline {section}{\numberline {B}Tables and Assumed Values}{7}{appendix.B}%
+\contentsline {subsection}{\numberline {B.1}List of Tables}{7}{subsection.B.1}%
+\contentsline {subsection}{List of Tables}{7}{section*.6}%
+\contentsline {subsection}{\numberline {B.2}Summary of Material Properties}{7}{subsection.B.2}%
+\contentsline {section}{\numberline {C}Formulas}{7}{appendix.C}%
+\contentsline {subsection}{\numberline {C.1}AC Resistance at Temperature}{7}{subsection.C.1}%
+\contentsline {subsection}{\numberline {C.2}Blondel's Formula (Three-Phase)}{7}{subsection.C.2}%
+\contentsline {subsection}{\numberline {C.3}Required Section (Voltage Drop)}{8}{subsection.C.3}%
+\contentsline {subsection}{\numberline {C.4}Lifecycle Cost}{8}{subsection.C.4}%
+\contentsline {section}{\numberline {D}MATLAB Source Code}{8}{appendix.D}%
+\contentsline {section}{MATLAB Source Code}{8}{appendix.D}%
+\contentsline {subsection}{\numberline {D.1}week2\_master.m}{8}{subsection.D.1}%
+\contentsline {subsection}{\numberline {D.2}E0\_Run\_Analysis\_and\_Report.m}{10}{subsection.D.2}%
+\contentsline {subsection}{\numberline {D.3}E1\_ConductorHeatingAnalysis.m}{11}{subsection.D.3}%
+\contentsline {subsection}{\numberline {D.4}E2\_MaximumCurrent.m}{12}{subsection.D.4}%
+\contentsline {subsection}{\numberline {D.5}E3\_ResistanceTemperatureCorrection.m}{12}{subsection.D.5}%
+\contentsline {subsection}{\numberline {D.6}E3b\_AC\_Resistance\_Factor.m}{13}{subsection.D.6}%
+\contentsline {subsection}{\numberline {D.7}E4\_ThermalEquilibrium.m}{13}{subsection.D.7}%
+\contentsline {subsection}{\numberline {D.8}E5\_HeatingCurves.m}{13}{subsection.D.8}%
+\contentsline {subsection}{\numberline {D.9}E6\_TransientHeating.m}{14}{subsection.D.9}%
+\contentsline {subsection}{\numberline {D.10}E7\_HeatDissipation.m}{14}{subsection.D.10}%
+\contentsline {subsection}{\numberline {D.11}E8\_GroupingFactor.m}{15}{subsection.D.11}%
+\contentsline {subsection}{\numberline {D.12}F1\_VoltageDropAnalysis.m}{15}{subsection.D.12}%
+\contentsline {subsection}{\numberline {D.13}F2\_calculateExactVoltageDrop.m}{16}{subsection.D.13}%
+\contentsline {subsection}{\numberline {D.14}F3\_calculateSimplifiedVoltageDrop.m}{16}{subsection.D.14}%
+\contentsline {subsection}{\numberline {D.15}F4\_checkREBTCompliance.m}{16}{subsection.D.15}%
+\contentsline {subsection}{\numberline {D.16}F4b\_checkInstallationCompliance.m}{16}{subsection.D.16}%
+\contentsline {subsection}{\numberline {D.17}F5\_plotVoltageProfile.m}{17}{subsection.D.17}%
+\contentsline {subsection}{\numberline {D.18}F6\_plotInstallationProfile.m}{17}{subsection.D.18}%
+\contentsline {subsection}{\numberline {D.19}G1\_ConductorSizingAnalysis.m}{18}{subsection.D.19}%
+\contentsline {subsection}{\numberline {D.20}G2\_calculateRequiredSection.m}{18}{subsection.D.20}%
+\contentsline {subsection}{\numberline {D.21}G3\_selectStandardSection.m}{19}{subsection.D.21}%
+\contentsline {subsection}{\numberline {D.22}G4\_calculateLifecycleCost.m}{19}{subsection.D.22}%
+\contentsline {subsection}{\numberline {D.23}G5\_plotEconomicAnalysis.m}{19}{subsection.D.23}%
+\contentsline {subsection}{\numberline {D.24}G6\_verifyFinalDesign.m}{20}{subsection.D.24}%
