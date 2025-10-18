@@ -16,7 +16,7 @@ current_in_segment = results.Ia;
 for i = 1:height(sorted_loads)
     prev_dist = distances(i);
     segment_length = sorted_loads.distance(i) - prev_dist;
-    drop = (1/(results.sigma*results.crossSection)) * current_in_segment * segment_length;
+    drop = (1/(results.conductivity*results.crossSection)) * current_in_segment * segment_length;
     voltages(end+1) = voltages(end) - drop;
     current_in_segment = current_in_segment - sorted_loads.current(i);
 end

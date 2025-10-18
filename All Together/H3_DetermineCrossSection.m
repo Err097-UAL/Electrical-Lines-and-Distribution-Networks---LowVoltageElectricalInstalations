@@ -19,9 +19,9 @@ for i = 1:length(results.loads)
 end
 
 % --- 2. Calculate the required cross-section ---
-% s = (K * M) / (sigma * max_drop_V)
+% s = (K * M) / (conductivity * max_drop_V)
 max_drop_V = results.U_source * (max_drop_percent / 100);
-required_s = (results.phase_factor * total_moment) / (results.sigma * max_drop_V);
+required_s = (results.phase_factor * total_moment) / (results.conductivity * max_drop_V);
 
 % --- 3. Find the next standard cross-section ---
 conductors = getStandardConductors(results.materialName);

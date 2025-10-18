@@ -15,7 +15,7 @@ current_in_segment = results.Ia;
 for i = 1:length(sorted_loads)
     prev_dist = distances(i);
     segment_length = sorted_loads(i).distance - prev_dist;
-    drop = (1/(results.sigma*results.crossSection)) * current_in_segment * segment_length;
+    drop = (1/(results.conductivity*results.crossSection)) * current_in_segment * segment_length;
     voltages_normal(end+1) = voltages_normal(end) - drop;
     current_in_segment = current_in_segment - sorted_loads(i).current;
 end
@@ -32,7 +32,7 @@ if isfield(results, 'min_voltage_fail_B')
     for i = 1:length(sorted_loads)
         current = sum([sorted_loads(i:end).current]);
         if i==1, seg_len = sorted_loads(i).distance; else, seg_len = sorted_loads(i).distance - sorted_loads(i-1).distance; end
-        drop = drop + (1/(results.sigma*results.crossSection)) * current * seg_len;
+        drop = drop + (1/(results.conductivity*results.crossSection)) * current * seg_len;
         voltages_fail_B(end+1) = results.Ua - drop;
     end
     plot([0, [sorted_loads.distance]], voltages_fail_B, '--r', 'LineWidth', 1.5, 'DisplayName', 'Source B Failure');
@@ -46,7 +46,7 @@ if isfield(results, 'min_voltage_fail_A')
     for i = 1:height(loads_from_B)
         current = sum(loads_from_B.current(i:end));
         if i==1, seg_len = results.L_total - loads_from_B.distance(i); else, seg_len = loads_from_B.distance(i-1) - loads_from_B.distance(i); end
-        drop = drop + (1/(results.sigma*results.crossSection)) * current * seg_len;
+        drop = drop + (1/(results.conductivity*results.crossSection)) * current * seg_len;
         voltages_fail_A(end+1) = results.Ub - drop;
     end
     plot([results.L_total, loads_from_B.distance'], voltages_fail_A, ':g', 'LineWidth', 1.5, 'DisplayName', 'Source A Failure');

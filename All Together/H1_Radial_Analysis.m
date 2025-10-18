@@ -39,7 +39,7 @@ loads = getLoads(scenarioChoice);
 base_results.U_source = U_source;
 base_results.phase_factor = phase_factor;
 base_results.materialName = materialName;
-base_results.sigma = materialProps.sigma;
+base_results.conductivity = materialProps.conductivity;
 base_results.loads = loads;
 base_results.scenarioName = getScenarioName(scenarioChoice);
 
@@ -52,7 +52,7 @@ if modeChoice == 1 % ANALYSIS MODE
     voltage_at_node = base_results.U_source;
     current_in_segment = sum([base_results.loads.current]);
     for k = 1:length(base_results.loads)
-         drop_segment = (base_results.phase_factor / (base_results.sigma * crossSection)) * current_in_segment * base_results.loads(k).length;
+         drop_segment = (base_results.phase_factor / (base_results.conductivity * crossSection)) * current_in_segment * base_results.loads(k).length;
          voltage_at_node = voltage_at_node - drop_segment;
          base_results.loads(k).voltage = voltage_at_node;
          current_in_segment = current_in_segment - base_results.loads(k).current;
@@ -94,9 +94,9 @@ end
 
 function props = getMaterialProperties(materialName)
     if strcmpi(materialName, 'Copper')
-        props.sigma = 56;
+        props.conductivity = 56;
     else
-        props.sigma = 35;
+        props.conductivity = 35;
     end
 end
 

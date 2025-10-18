@@ -36,7 +36,7 @@ for i = 1:height(conductors)
     current_in_segment = max_current_in_line;
     
     for j = 1:length(base_results.loads)
-        drop_segment = (base_results.phase_factor / (base_results.sigma * s_test)) * current_in_segment * base_results.loads(j).length;
+        drop_segment = (base_results.phase_factor / (base_results.conductivity * s_test)) * current_in_segment * base_results.loads(j).length;
         total_drop = total_drop + drop_segment;
         current_in_segment = current_in_segment - base_results.loads(j).current;
     end
@@ -60,7 +60,7 @@ for i = 1:height(conductors)
         voltage_at_node = base_results.U_source;
         current_in_segment = max_current_in_line;
         for k = 1:length(optimal_results.loads)
-             drop_segment = (optimal_results.phase_factor / (optimal_results.sigma * s_test)) * current_in_segment * optimal_results.loads(k).length;
+             drop_segment = (optimal_results.phase_factor / (optimal_results.conductivity * s_test)) * current_in_segment * optimal_results.loads(k).length;
              voltage_at_node = voltage_at_node - drop_segment;
              optimal_results.loads(k).voltage = voltage_at_node;
              current_in_segment = current_in_segment - optimal_results.loads(k).current;
