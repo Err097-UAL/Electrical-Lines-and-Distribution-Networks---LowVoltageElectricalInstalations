@@ -1,7 +1,22 @@
-\babel@toc {spanish}{}\relax 
-\contentsline {chapter}{\numberline {1}Objeto del Proyecto}{2}{chapter.1}%
-\contentsline {chapter}{\numberline {2}Normativa de Aplicación}{3}{chapter.2}%
-\contentsline {chapter}{\numberline {3}Descripción General de la Instalación}{4}{chapter.3}%
-\contentsline {chapter}{\numberline {4}Previsión de Cargas}{6}{chapter.4}%
-\contentsline {chapter}{\numberline {5}Cálculos Justificativos}{7}{chapter.5}%
-\contentsline {chapter}{\numberline {6}Planos}{8}{chapter.6}%
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}Project Objective}{2}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Applicable Regulations}{3}{chapter.2}%
+\contentsline {chapter}{\numberline {3}General Description of the Installation}{4}{chapter.3}%
+\contentsline {chapter}{\numberline {4}Load Forecasting}{5}{chapter.4}%
+\contentsline {subsection}{\numberline {4.0.1}Office Building}{5}{subsection.4.0.1}%
+\contentsline {subsection}{\numberline {4.0.2}Industrial Facilities}{5}{subsection.4.0.2}%
+\contentsline {subsection}{\numberline {4.0.3}Technology Museum}{5}{subsection.4.0.3}%
+\contentsline {subsection}{\numberline {4.0.4}Outdoor Lighting}{5}{subsection.4.0.4}%
+\contentsline {subsection}{\numberline {4.0.5}Residential Area}{5}{subsection.4.0.5}%
+\contentsline {subsection}{\numberline {4.0.6}Summary Table and Total Demand}{6}{subsection.4.0.6}%
+\contentsline {chapter}{\numberline {5}Justifying Calculations}{7}{chapter.5}%
+\contentsline {subsection}{\numberline {5.0.1}Calculation of Nominal Currents}{7}{subsection.5.0.1}%
+\contentsline {subsection}{\numberline {5.0.2}Sizing by Voltage Drop}{7}{subsection.5.0.2}%
+\contentsline {subsection}{\numberline {5.0.3}Check by Maximum Admissible Current}{7}{subsection.5.0.3}%
+\contentsline {subsection}{\numberline {5.0.4}Selection of Protections}{8}{subsection.5.0.4}%
+\contentsline {chapter}{\numberline {6}Design Methodology with MATLAB}{9}{chapter.6}%
+\contentsline {subsection}{\numberline {6.0.1}Automation and Efficiency}{9}{subsection.6.0.1}%
+\contentsline {subsection}{\numberline {6.0.2}Techno-Economic Optimization}{9}{subsection.6.0.2}%
+\contentsline {subsection}{\numberline {6.0.3}Comparative Analysis of Topologies}{9}{subsection.6.0.3}%
+\contentsline {subsection}{\numberline {6.0.4}Visualization and Verification}{10}{subsection.6.0.4}%
+\contentsline {chapter}{\numberline {7}Drawings}{11}{chapter.7}%

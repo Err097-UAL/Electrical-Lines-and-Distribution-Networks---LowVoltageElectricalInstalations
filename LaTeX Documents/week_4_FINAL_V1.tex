@@ -1,8 +1,8 @@
 \documentclass[12pt, a4paper]{report}
 
-% --- PAQUETES ESENCIALES ---
+% --- ESSENTIAL PACKAGES ---
 \usepackage[utf8]{inputenc}
-\usepackage[spanish]{babel}
+\usepackage[english]{babel}
 \usepackage{geometry}
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -10,131 +10,332 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+\usepackage{listings} % For MATLAB code
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, fit}
 
-% --- CONFIGURACIÓN DE PÁGINA Y ENCABEZADOS ---
+% --- PAGE AND HEADER CONFIGURATION ---
 \geometry{a4paper, margin=2.5cm, headheight=15pt}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{Proyecto de Instalación Eléctrica de Baja Tensión}
+\fancyhead[L]{Low Voltage Electrical Installation Project}
 \fancyhead[R]{TechnoParque Almería}
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 \fancypagestyle{plain}{
-  \fancyhf{} % Limpia encabezados y pies para páginas de inicio de capítulo
-  \renewcommand{\headrulewidth}{0pt} % Sin línea
+  \fancyhf{} % Clear headers and footers for chapter start pages
+  \renewcommand{\headrulewidth}{0pt} % No line
 }
 
-% --- CONFIGURACIÓN DE HIPERVÍNCULOS ---
+% --- HYPERLINK CONFIGURATION ---
 \hypersetup{
     colorlinks=true,
     linkcolor=blue,
     urlcolor=cyan,
 }
 
+% --- MATLAB CODE LISTING STYLE ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    literate=*{_}{{\_}}{1} % FIX: Treat underscore as a literal character
+}
+\lstset{style=mystyle}
+
 % =================================================================
-% --- INICIO DEL DOCUMENTO ---
+% --- DOCUMENT START ---
 % =================================================================
 \begin{document}
 
-% --- PÁGINA DE TÍTULO ---
+% --- TITLE PAGE ---
 \begin{titlepage}
     \centering
     \vspace*{2cm}
-    {\Huge \textbf{PROYECTO TÉCNICO}}
+    {\Huge \textbf{TECHNICAL PROJECT}}
     \vspace{1.5cm}
-    {\Large \textbf{Instalación Eléctrica de Baja Tensión para Suministro a Parque Tecnológico}}
+    {\Large \textbf{Low Voltage Electrical Installation for a Technology Park Supply}}
     \vspace{2cm}
     {\Large \textbf{TechnoParque Almería}}
     \vspace{\fill}
-    {\large Promotor: [Tu Nombre/Empresa]}
+    {\large Promoter: [Your Name/Company]}
     \vfill
-    {\large Fecha: Octubre de 2025}
+    {\large Date: October 2025}
 \end{titlepage}
 
-% --- ÍNDICE ---
+% --- TABLE OF CONTENTS ---
 \tableofcontents
 \newpage
 
 % =================================================================
-\chapter{Objeto del Proyecto}
+\chapter{Project Objective}
 \label{chap:objeto}
-El presente documento tiene por objeto describir y justificar, a nivel técnico y normativo, el diseño de la instalación eléctrica de distribución en Baja Tensión (BT) para el parque tecnológico "TechnoParque Almería".
+The purpose of this document is to describe and justify, on a technical and regulatory level, the design of the Low Voltage (LV) electrical distribution installation for the "TechnoParque Almería" technology park.
 
-La instalación parte de varios Centros de Transformación (CT) alimentados por una red de Media Tensión (MT) en anillo, y distribuye la energía a los distintos consumidores del parque, incluyendo naves industriales, un edificio de oficinas, una zona residencial y el sistema de alumbrado público.
+The installation originates from several Transformation Centers (TCs) supplied by a Medium Voltage (MV) ring network, and distributes energy to the various consumers in the park, including industrial facilities, an office building, a technology museum, a residential area, and the public lighting system.
 
-El diseño se ha realizado siguiendo las prescripciones del Reglamento Electrotécnico para Baja Tensión (REBT) y sus Instrucciones Técnicas Complementarias (ITC-BT).
+The design has been carried out following the prescriptions of the Low Voltage Electrotechnical Regulation (REBT) and its Complementary Technical Instructions (ITC-BT).
 
-\chapter{Normativa de Aplicación}
+\chapter{Applicable Regulations}
 \label{chap:normativa}
-El diseño, cálculo y ejecución de la instalación descrita en este proyecto se rige por la siguiente normativa:
+The design, calculation, and execution of the installation described in this project are governed by the following regulations:
 \begin{itemize}
-    \item Real Decreto 842/2002, de 2 de agosto, por el que se aprueba el \textbf{Reglamento Electrotécnico para Baja Tensión (REBT)}.
-    \item Instrucciones Técnicas Complementarias (ITC-BT), en especial:
+    \item Royal Decree 842/2002, of August 2, which approves the \textbf{Low Voltage Electrotechnical Regulation (REBT)}.
+    \item Complementary Technical Instructions (ITC-BT), especially:
     \begin{itemize}
-        \item \textbf{ITC-BT-04}: Documentación y puesta en servicio de las instalaciones.
-        \item \textbf{ITC-BT-06}: Redes aéreas para distribución en baja tensión.
-        \item \textbf{ITC-BT-07}: Redes subterráneas para distribución en baja tensión.
-        \item \textbf{ITC-BT-09}: Instalaciones de alumbrado exterior.
-        \item \textbf{ITC-BT-19}: Instalaciones interiores o receptoras. Prescripciones generales.
+        \item \textbf{ITC-BT-04}: Documentation and commissioning of installations.
+        \item \textbf{ITC-BT-06}: Overhead networks for low voltage distribution.
+        \item \textbf{ITC-BT-07}: Underground networks for low voltage distribution.
+        \item \textbf{ITC-BT-09}: Outdoor lighting installations.
+        \item \textbf{ITC-BT-19}: Indoor or receiver installations. General prescriptions.
+        \item \textbf{ITC-BT-10}: Load forecasting for low voltage supplies.
     \end{itemize}
-    \item Normas Particulares de la empresa distribuidora de la zona (a especificar).
+    \item Specific regulations of the local distribution company (to be specified).
 \end{itemize}
 
-\chapter{Descripción General de la Instalación}
+\chapter{General Description of the Installation}
 \label{chap:descripcion}
-La infraestructura eléctrica del TechnoParque se ha diseñado para garantizar una alta fiabilidad y calidad de suministro, acorde a las necesidades de un entorno tecnológico y empresarial. La arquitectura general se basa en el esquema de la Figura \ref{fig:esquema_general}.
+The electrical infrastructure of TechnoParque has been designed to ensure high reliability and supply quality, consistent with the needs of a technological and business environment. The general architecture is based on the diagram in Figure \ref{fig:esquema_general} (see Chapter \ref{chap:planos}).
+
+The installation consists of the following main elements:
+\begin{enumerate}
+    \item \textbf{Medium Voltage (MV) Distribution Network:} An underground ring network at 20 kV that interconnects several Transformation Centers. This topology ensures the continuity of supply to the TCs in case of a fault in a section of the ring.
+    \item \textbf{Transformation Centers (TCs):} Two prefabricated centers (TC-1 and TC-2) of 400 kVA each. They are responsible for reducing the voltage from 20 kV to 400/230 V for low voltage distribution.
+    \item \textbf{General Feeder Lines (LGA):} Underground low voltage circuits that start from each TC to supply the General Command and Protection Panels (CGMP) of the various consumers. The building connection cables will be Copper with XLPE insulation (type RZ1-K 0.6/1 kV), installed in buried conduits.
+    \item \textbf{Consumers:}
+    \begin{itemize}
+        \item Industrial Facilities (x3).
+        \item Office Building.
+        \item Technology Museum.
+        \item Residential Area.
+        \item Public Lighting.
+    \end{itemize}
+\end{enumerate}
+
+\chapter{Load Forecasting}
+\label{chap:cargas}
+The maximum expected power for each of the technology park's receivers is detailed below. A global power factor ($\cos \varphi$) of \textbf{0.9} is assumed for all calculations.
+
+\subsection{Office Building}
+An installed power of \textbf{20 kW} is estimated. This figure includes centralized air conditioning, multiple workstations with computer equipment, lighting, and general services.
+
+\subsection{Industrial Facilities}
+Three facilities are planned:
+\begin{itemize}
+    \item \textbf{Facility 1 (R\&D):} A power of \textbf{300 kW} is anticipated, justified by high-consumption machinery such as MRI prototypes, HPC laboratories, or large climatic chambers.
+    \item \textbf{Facilities 2 \& 3 (Workshops):} A power of \textbf{75 kW} is estimated for each of these.
+\end{itemize}
+
+\subsection{Technology Museum}
+For the 13,600 $\text{m}^2$ museum, an installed power of \textbf{100 kW} is estimated for lighting, air conditioning, and audiovisual equipment.
+
+\subsection{Outdoor Lighting}
+For a 1 km perimeter, 34 LED luminaires of 150 W will be installed, resulting in a total power of \textbf{5.1 kW}.
+
+\subsection{Residential Area}
+A small residential area with 10 homes is planned. ITC-BT-10 is applied with high electrification (9,200 W per home) and a simultaneity factor. The total simultaneous power is calculated to be \textbf{27.0 kW}.
+
+\subsection{Summary Table and Total Demand}
+A global simultaneity factor of \textbf{0.7} is applied to the total installed power.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Summary of installed power.}
+    \label{tab:potencias}
+    \begin{tabular}{@{}lc@{}}
+        \toprule
+        \textbf{Receiver} & \textbf{Power (kW)} \\ \midrule
+        Office Building & 20.0 \\
+        Industrial Facility 1 (R\&D) & 300.0 \\
+        Industrial Facility 2 & 75.0 \\
+        Industrial Facility 3 & 75.0 \\
+        Technology Museum & 100.0 \\
+        Outdoor Lighting & 5.1 \\
+        Residential Area & 27.0 \\ \midrule
+        \textbf{Total Installed} & \textbf{602.1 kW} \\ \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{itemize}
+    \item \textbf{Maximum simultaneous power:} $602.1 \text{ kW} \times 0.7 = \textbf{421.5 kW}$
+    \item \textbf{Simultaneous apparent power:} $421.5 \text{ kW} / 0.9 = \textbf{468.3 kVA}$
+\end{itemize}
+
+\textbf{Conclusion:} The maximum expected demand of 468.3 kVA justifies the installation of two 400 kVA Transformation Centers, distributing the loads to ensure reliability and optimize the lengths of the LV lines.
+
+\chapter{Justifying Calculations}
+\label{chap:calculos}
+This chapter sizes the General Feeder Lines (LGA) from the TCs to each general panel. A line voltage of 400 V and a power factor of 0.9 are assumed.
+
+\subsection{Calculation of Nominal Currents}
+The nominal current ($I_N$) for each three-phase line is calculated with the formula: $I_N = \frac{P}{\sqrt{3} \cdot U \cdot \cos \varphi}$.
+\begin{itemize}
+    \item \textbf{LGA R\&D Facility:} $I_N = \frac{300,000}{\sqrt{3} \cdot 400 \cdot 0.9} = 481.1 \text{ A}$
+    \item \textbf{LGA Museum:} $I_N = \frac{100,000}{\sqrt{3} \cdot 400 \cdot 0.9} = 160.4 \text{ A}$
+    \item \textbf{LGA Offices:} $I_N = \frac{20,000}{\sqrt{3} \cdot 400 \cdot 0.9} = 32.1 \text{ A}$
+\end{itemize}
+
+\subsection{Sizing by Voltage Drop}
+Sizing is for a maximum voltage drop of 1.5\% for underground LGA (ITC-BT-07), which is 6 V. The following distances from the TC are assumed: R\&D Facility (100m), Museum (150m), Offices (80m). Copper cable is used ($\sigma = 48 \frac{m}{\Omega \cdot mm^2}$ for cables $>16mm^2$).
+The minimum cross-section ($s$) is calculated with: $s = \frac{P \cdot L}{\sigma \cdot U^2 \cdot \Delta u_{\%}}$.
+\begin{itemize}
+    \item \textbf{LGA R\&D Facility:} $s = \frac{300,000 \cdot 100}{48 \cdot 400^2 \cdot 0.015} = 260.4 \text{ mm}^2$
+    \item \textbf{LGA Museum:} $s = \frac{100,000 \cdot 150}{48 \cdot 400^2 \cdot 0.015} = 130.2 \text{ mm}^2$
+    \item \textbf{LGA Offices:} $s = \frac{20,000 \cdot 80}{48 \cdot 400^2 \cdot 0.015} = 13.9 \text{ mm}^2$
+\end{itemize}
+
+\subsection{Check by Maximum Admissible Current}
+It is verified if the next standard cross-section supports the nominal current. Buried installation in conduit is assumed (Method D, table 1 of ITC-BT-07) with RZ1-K(AS) cables.
+\begin{itemize}
+    \item \textbf{LGA R\&D Facility:} Calculated section 260.4 $\text{mm}^2$. The standard \textbf{2x(240 $\text{mm}^2$)} in parallel per conductor is chosen. $I_{adm} \approx 2 \times 364 = 728$ A. Since $481.1 \text{ A} < 728 \text{ A}$, it is valid.
+    \item \textbf{LGA Museum:} Calculated section 130.2 $\text{mm}^2$. The standard \textbf{150 $\text{mm}^2$} is chosen. $I_{adm} = 286$ A. Since $160.4 \text{ A} < 286 \text{ A}$, it is valid.
+    \item \textbf{LGA Offices:} Calculated section 13.9 $\text{mm}^2$. The standard \textbf{16 $\text{mm}^2$} is chosen. $I_{adm} = 85$ A. Since $32.1 \text{ A} < 85 \text{ A}$, it is valid.
+\end{itemize}
+
+\subsection{Selection of Protections}
+A General Automatic Circuit Breaker (IGA) is chosen for each LGA with a nominal rating ($I_n$) that satisfies $I_N \le I_n \le I_{adm}$.
+\begin{itemize}
+    \item \textbf{LGA R\&D Facility:} $I_N=481.1$ A. A \textbf{500 A} IGA is chosen.
+    \item \textbf{LGA Museum:} $I_N=160.4$ A. A \textbf{200 A} IGA is chosen.
+    \item \textbf{LGA Offices:} $I_N=32.1$ A. A \textbf{40 A} IGA is chosen.
+\end{itemize}
+
+
+\chapter{Design Methodology with MATLAB}
+\label{chap:matlab}
+The design of the TechnoParque Almería electrical installation has been fundamentally supported by a suite of calculation and analysis tools developed in MATLAB. This approach has allowed us to go beyond manual calculations, bringing efficiency, precision, and optimization capabilities to the project.
+
+\subsection{Automation and Efficiency}
+The MATLAB suite automates the repetitive and complex calculations required by the REBT, such as the calculation of currents, electrical moments, and cumulative voltage drops in networks with multiple loads. This not only drastically reduces design time but also minimizes the probability of human error.
+
+\subsection{Techno-Economic Optimization}
+One of the most powerful capabilities of the suite is the optimization algorithm, implemented in the \texttt{H4\_OptimizeRadialNetwork.m} function. Instead of simply finding a valid conductor cross-section, this algorithm seeks the optimal solution. It iterates through standardized conductor cross-sections, verifying compliance with voltage drop and maximum admissible current criteria for each one. The first cross-section that meets all requirements is recommended, thus guaranteeing the most economical solution that fully satisfies the technical demands.
+
+\subsection{Comparative Analysis of Topologies}
+The modular structure of the software (Modules H, I, and J) has facilitated a rigorous comparative analysis between different network topologies. The \texttt{J5\_CompareNetworks.m} function, for example, allows for the evaluation of the same load configuration in both a radial and a ring network, providing quantitative data on:
+\begin{itemize}
+    \item \textbf{Voltage Quality:} Comparing voltage profiles and maximum drops.
+    \item \textbf{Reliability:} Analyzing network behavior under fault conditions.
+    \item \textbf{Life Cycle Cost:} Evaluating the initial cost versus the long-term cost of energy losses.
+\end{itemize}
+This capability is crucial for making informed engineering decisions and justifying the choice of a more reliable (and initially more expensive) topology like the ring network for this technology park.
+
+\subsection{Visualization and Verification}
+Finally, the visualization tools (\texttt{H2\_PlotRadialProfile.m}, \texttt{I2\_PlotDualFedProfile.m}, etc.) automatically generate graphs of voltage profiles, load diagrams, and single-line diagrams. These visual representations are indispensable for interpreting results, detecting potential problems (such as excessive voltage drops at intermediate points), and documenting the project in a clear and professional manner.
+
+In summary, the MATLAB suite has served as a comprehensive tool that not only performs the calculations but also verifies regulatory compliance, optimizes the design from an economic perspective, and facilitates the understanding and justification of the adopted solutions.
+
+\chapter{Drawings}
+\label{chap:planos}
+This chapter presents the simplified single-line diagrams of the installation, generated using LaTeX code for a conceptual representation.
 
 \begin{figure}[htbp]
     \centering
-    % Aquí insertaremos el plano de AutoCAD una vez lo tengas.
-    % De momento, un placeholder.
-    \framebox{\parbox{0.8\textwidth}{\centering
-        \vspace{5cm}
-        \textbf{Placeholder para Esquema Unifilar General}\\
-        \small\textit{Basado en la imagen `image\_908e4e.png`} % FIX: Escaped the underscore
-        \vspace{5cm}
-    }}
-    \caption{Esquema unifilar general de la instalación eléctrica.}
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}
+        [node distance=2cm,
+        source/.style={draw, circle, thick, label=below:{MV Supply}},
+        ct/.style={draw, thick, rectangle, minimum size=1cm, label=above:{TC}},
+        load/.style={draw, thick, minimum height=1cm, minimum width=0.5cm},
+        line/.style={thick},
+        arrow/.style={-latex, thick}
+    ]
+        % MT Ring
+        \node[source] (mt) {20kV};
+        \node[ct, above left=2cm and 3cm of mt] (ct1) {TC-1};
+        \node[ct, above right=2cm and 3cm of mt] (ct2) {TC-2};
+        \draw[line, red] (mt.120) .. controls +(120:3cm) and +(180:3cm) .. (ct1.west);
+        \draw[line, red] (mt.60) .. controls +(60:3cm) and +(0:3cm) .. (ct2.east);
+        \draw[line, red] (ct1.north) .. controls +(up:1.5cm) and +(up:1.5cm) .. (ct2.north);
+
+        % Loads from CT-1
+        \node[load, below=2cm of ct1, label=below:{R\&D Facility}] (ind1) {};
+        \node[load, right=1cm of ind1, label=below:{Offices}] (off) {};
+        \draw[arrow] (ct1) -- node[midway, right]{LGA-1} (ind1);
+        \draw[arrow] (ct1) -- node[midway, right]{LGA-2} (off);
+
+        % Loads from CT-2
+        \node[load, below=2cm of ct2, label=below:{Museum}] (mus) {};
+        \node[load, right=1cm of mus, label=below:{Facilities 2\&3}] (ind23) {};
+        \node[load, left=1cm of mus, label=below:{Residential}] (res) {};
+        
+        \draw[arrow] (ct2) -- node[midway, right]{LGA-3} (mus);
+        \draw[arrow] (ct2) -- node[midway, left]{LGA-4} (ind23);
+        \draw[arrow] (ct2) -- node[midway, left]{LGA-5} (res);
+        
+        % Alumbrado (shared)
+        \node[load, below=5cm of mt, label=below:{Lighting}] (alum) {};
+        \draw[arrow] ($(ct1)!.5!(ct2)$) |- (alum);
+    \end{tikzpicture}
+    }
+    \caption{General single-line diagram of the TechnoParque installation.}
     \label{fig:esquema_general}
 \end{figure}
 
-La instalación se compone de los siguientes elementos principales:
-\begin{enumerate}
-    \item \textbf{Red de Distribución en Media Tensión (MT):} Una red subterránea en anillo a 20 kV que interconecta varios Centros de Transformación. Esta topología garantiza la continuidad del suministro a los CT en caso de un fallo en un tramo del anillo.
-    \item \textbf{Centros de Transformación (CT):} Edificios prefabricados que albergan los transformadores MT/BT. Serán responsables de reducir la tensión de 20 kV a 400/230 V para la distribución en baja tensión.
-    \item \textbf{Líneas Generales de Alimentación (LGA):} Circuitos subterráneos en baja tensión que parten de cada CT para alimentar los Cuadros Generales de Mando y Protección (CGMP) de los distintos consumidores.
-    \item \textbf{Consumidores:}
-    \begin{itemize}
-        \item Naves Industriales (x3).
-        \item Edificio de Oficinas.
-        \item Zona Residencial.
-        \item Alumbrado Público.
-    \end{itemize}
-\end{enumerate}
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[thick, scale=0.8, every node/.style={scale=0.8}]
+        \draw (-1,0) -- (7,0);
+        \node[above] at (3,0) {General Command and Protection Panel (GCPP)};
+        % LGA
+        \draw[->] (0,2) -- (0,0.2); \node[above] at (0,2) {LGA Offices (40A)};
+        % Sub-circuits
+        \draw (1,-0.2) -- (1,-2); \draw[->] (1,-2) -- (1,-3); \node[below] at (1,-3){C1: Lighting};
+        \draw (3,-0.2) -- (3,-2); \draw[->] (3,-2) -- (3,-3); \node[below] at (3,-3){C2: Power Outlets};
+        \draw (5,-0.2) -- (5,-2); \draw[->] (5,-2) -- (5,-3); \node[below] at (5,-3){C3: HVAC};
+    \end{tikzpicture}
+    \caption{Simplified single-line diagram for the Office Building.}
+\end{figure}
 
-\chapter{Previsión de Cargas}
-\label{chap:cargas}
-\textit{(Sección a completar. Ver puntos a definir en la siguiente sección).}
-\vspace{1cm}
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[thick, scale=0.8, every node/.style={scale=0.8}]
+        \draw (-1,0) -- (9,0);
+        \node[above] at (4,0) {GCPP R\&D Industrial Facility};
+        % LGA
+        \draw[->] (0,2) -- (0,0.2); \node[above] at (0,2) {LGA R\&D Facility (500A)};
+        % Sub-circuits
+        \draw (1,-0.2) -- (1,-2); \draw[->] (1,-2) -- (1,-3); \node[below] at (1,-3){C1: Lighting};
+        \draw (3,-0.2) -- (3,-2); \draw[->] (3,-2) -- (3,-3); \node[below] at (3,-3){C2: Power};
+        \draw (5,-0.2) -- (5,-2); \draw[->] (5,-2) -- (5,-3); \node[below] at (5,-3){C3: HVAC};
+        \draw (7,-0.2) -- (7,-2); \draw[->] (7,-2) -- (7,-3); \node[below] at (7,-3){C4: R\&D Equipment};
+    \end{tikzpicture}
+    \caption{Simplified single-line diagram for the Research Facility.}
+\end{figure}
 
-En esta sección se detallará la potencia máxima prevista para cada uno de los receptores, así como los factores de simultaneidad aplicados para determinar la potencia total requerida en cada Centro de Transformación.
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[thick, scale=0.8, every node/.style={scale=0.8}]
+        \draw (-1,0) -- (9,0);
+        \node[above] at (4,0) {GCPP Technology Museum};
+        % LGA
+        \draw[->] (0,2) -- (0,0.2); \node[above] at (0,2) {LGA Museum (200A)};
+        % Sub-circuits
+        \draw (1,-0.2) -- (1,-2); \draw[->] (1,-2) -- (1,-3); \node[below] at (1,-3){C1: General Light.};
+        \draw (3,-0.2) -- (3,-2); \draw[->] (3,-2) -- (3,-3); \node[below] at (3,-3){C2: Exhibit Light.};
+        \draw (5,-0.2) -- (5,-2); \draw[->] (5,-2) -- (5,-3); \node[below] at (5,-3){C3: Audiovisual};
+        \draw (7,-0.2) -- (7,-2); \draw[->] (7,-2) -- (7,-3); \node[below] at (7,-3){C4: HVAC};
+    \end{tikzpicture}
+    \caption{Simplified single-line diagram for the Technology Museum.}
+\end{figure}
 
-\chapter{Cálculos Justificativos}
-\label{chap:calculos}
-\textit{(Sección a completar. Ver puntos a definir en la siguiente sección).}
-\vspace{1cm}
-
-En este capítulo se incluirán todos los cálculos de dimensionamiento de las líneas de baja tensión, asegurando el cumplimiento de los criterios de:
-\begin{enumerate}
-    \item Caída de tensión máxima admisible según el REBT.
-    \item Intensidad máxima admisible del conductor (criterio térmico).
-\end{enumerate}
-También se justificarán las protecciones eléctricas seleccionadas.
-
-\chapter{Planos}
-\label{chap:planos}
-Los planos de la instalación, incluyendo esquemas unifilares, trazado de canalizaciones y detalles de los cuadros eléctricos, se adjuntan como documentos separados, elaborados con AutoCAD Electrical.
 
 \end{document}
 
