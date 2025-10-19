@@ -249,40 +249,50 @@ This chapter presents the simplified single-line diagrams of the installation, g
 \begin{figure}[htbp]
     \centering
     \resizebox{\textwidth}{!}{
-    \begin{tikzpicture}
-        [node distance=2cm,
-        source/.style={draw, circle, thick, label=below:{MV Supply}},
-        ct/.style={draw, thick, rectangle, minimum size=1cm, label=above:{TC}},
-        load/.style={draw, thick, minimum height=1cm, minimum width=0.5cm},
+    \begin{tikzpicture}[
+        node distance=2.5cm and 2cm,
+        source/.style={draw, circle, thick, minimum size=1cm},
+        bus/.style={draw, line width=2pt},
+        ct/.style={draw, thick, rectangle, minimum size=1cm},
+        load/.style={draw, thick, minimum height=1cm, minimum width=0.7cm, label=below:\parbox{2cm}{\centering #1}},
         line/.style={thick},
         arrow/.style={-latex, thick}
     ]
-        % MT Ring
-        \node[source] (mt) {20kV};
-        \node[ct, above left=2cm and 3cm of mt] (ct1) {TC-1};
-        \node[ct, above right=2cm and 3cm of mt] (ct2) {TC-2};
-        \draw[line, red] (mt.120) .. controls +(120:3cm) and +(180:3cm) .. (ct1.west);
-        \draw[line, red] (mt.60) .. controls +(60:3cm) and +(0:3cm) .. (ct2.east);
-        \draw[line, red] (ct1.north) .. controls +(up:1.5cm) and +(up:1.5cm) .. (ct2.north);
+        % Source and Main Bus
+        \node[source] (mt_source) at (0,8) {20kV};
+        \node at (0,8.7) {MV Supply};
+        \draw[bus, red] (-4,6) -- (4,6) node[midway, above, black]{MV RING};
 
-        % Loads from CT-1
-        \node[load, below=2cm of ct1, label=below:{R\&D Facility}] (ind1) {};
-        \node[load, right=1cm of ind1, label=below:{Offices}] (off) {};
-        \draw[arrow] (ct1) -- node[midway, right]{LGA-1} (ind1);
-        \draw[arrow] (ct1) -- node[midway, right]{LGA-2} (off);
+        % TCs
+        \node[ct] (ct1) at (-2.5, 4.5) {TC-1};
+        \node[ct] (ct2) at (2.5, 4.5) {TC-2};
+        \draw[line, red] (ct1) -- (-2.5,6);
+        \draw[line, red] (ct2) -- (2.5,6);
 
-        % Loads from CT-2
-        \node[load, below=2cm of ct2, label=below:{Museum}] (mus) {};
-        \node[load, right=1cm of mus, label=below:{Facilities 2\&3}] (ind23) {};
-        \node[load, left=1cm of mus, label=below:{Residential}] (res) {};
+        % LV Buses
+        \draw[bus] (-4,3) -- (0,3) node[midway, above, black, yshift=2mm]{LV BUS 1};
+        \draw[bus] (1,3) -- (5,3) node[midway, above, black, yshift=2mm]{LV BUS 2};
+        \draw[arrow] (ct1) -- (ct1 |- 0,-1);
+        \draw[arrow] (ct2) -- (ct2 |- 1, -1);
         
-        \draw[arrow] (ct2) -- node[midway, right]{LGA-3} (mus);
-        \draw[arrow] (ct2) -- node[midway, left]{LGA-4} (ind23);
-        \draw[arrow] (ct2) -- node[midway, left]{LGA-5} (res);
+        % Loads
+        \node[load=R\&D Facility] (ind1) at (-3, 1) {};
+        \node[load=Offices] (off) at (-1, 1) {};
+        \node[load=Museum] (mus) at (1.5, 1) {};
+        \node[load=Facilities 2\&3] (ind23) at (3.5, 1) {};
+        \node[load=Residential] (res) at (-3, -2) {};
+        \node[load=Lighting] (alum) at (1.5, -2) {};
         
-        % Alumbrado (shared)
-        \node[load, below=5cm of mt, label=below:{Lighting}] (alum) {};
-        \draw[arrow] ($(ct1)!.5!(ct2)$) |- (alum);
+        % Connections to LV Buses
+        \draw[arrow] (-3,3) -- (ind1);
+        \draw[arrow] (-1,3) -- (off);
+        \draw[arrow] (1.5,3) -- (mus);
+        \draw[arrow] (3.5,3) -- (ind23);
+        
+        % Connections from loads with sub-feeds
+        \draw[arrow] (ind1.south) |- (res.west);
+        \draw[arrow] (mus.south) |- (alum.west);
+
     \end{tikzpicture}
     }
     \caption{General single-line diagram of the TechnoParque installation.}
@@ -293,9 +303,9 @@ This chapter presents the simplified single-line diagrams of the installation, g
     \centering
     \begin{tikzpicture}[thick, scale=0.8, every node/.style={scale=0.8}]
         \draw (-1,0) -- (7,0);
-        \node[above] at (3,0) {General Command and Protection Panel (GCPP)};
+        \node[above, align=center, yshift=0.4cm] at (3,0) {General Command and Protection Panel (GCPP)};
         % LGA
-        \draw[->] (0,2) -- (0,0.2); \node[above] at (0,2) {LGA Offices (40A)};
+        \draw[->] (0,2.5) -- (0,0.2); \node[above, align=center] at (0,2.5) {LGA Offices (40A)};
         % Sub-circuits
         \draw (1,-0.2) -- (1,-2); \draw[->] (1,-2) -- (1,-3); \node[below] at (1,-3){C1: Lighting};
         \draw (3,-0.2) -- (3,-2); \draw[->] (3,-2) -- (3,-3); \node[below] at (3,-3){C2: Power Outlets};
@@ -308,14 +318,14 @@ This chapter presents the simplified single-line diagrams of the installation, g
     \centering
     \begin{tikzpicture}[thick, scale=0.8, every node/.style={scale=0.8}]
         \draw (-1,0) -- (9,0);
-        \node[above] at (4,0) {GCPP R\&D Industrial Facility};
+        \node[above, align=center, yshift=0.4cm] at (4,0) {GCPP R\&D Industrial Facility};
         % LGA
-        \draw[->] (0,2) -- (0,0.2); \node[above] at (0,2) {LGA R\&D Facility (500A)};
+        \draw[->] (0,2.5) -- (0,0.2); \node[above, align=center] at (0,2.5) {LGA R\&D Facility (500A)};
         % Sub-circuits
         \draw (1,-0.2) -- (1,-2); \draw[->] (1,-2) -- (1,-3); \node[below] at (1,-3){C1: Lighting};
         \draw (3,-0.2) -- (3,-2); \draw[->] (3,-2) -- (3,-3); \node[below] at (3,-3){C2: Power};
         \draw (5,-0.2) -- (5,-2); \draw[->] (5,-2) -- (5,-3); \node[below] at (5,-3){C3: HVAC};
-        \draw (7,-0.2) -- (7,-2); \draw[->] (7,-2) -- (7,-3); \node[below] at (7,-3){C4: R\&D Equipment};
+        \draw (7,-0.2) -- (7,-2); \draw[->] (7,-2) -- (7,-3); \node[below,align=center] at (7,-3){C4: R\&D\\Equipment};
     \end{tikzpicture}
     \caption{Simplified single-line diagram for the Research Facility.}
 \end{figure}
@@ -324,9 +334,9 @@ This chapter presents the simplified single-line diagrams of the installation, g
     \centering
     \begin{tikzpicture}[thick, scale=0.8, every node/.style={scale=0.8}]
         \draw (-1,0) -- (9,0);
-        \node[above] at (4,0) {GCPP Technology Museum};
+        \node[above, align=center, yshift=0.4cm] at (4,0) {GCPP Technology Museum};
         % LGA
-        \draw[->] (0,2) -- (0,0.2); \node[above] at (0,2) {LGA Museum (200A)};
+        \draw[->] (0,2.5) -- (0,0.2); \node[above, align=center] at (0,2.5) {LGA Museum (200A)};
         % Sub-circuits
         \draw (1,-0.2) -- (1,-2); \draw[->] (1,-2) -- (1,-3); \node[below] at (1,-3){C1: General Light.};
         \draw (3,-0.2) -- (3,-2); \draw[->] (3,-2) -- (3,-3); \node[below] at (3,-3){C2: Exhibit Light.};
