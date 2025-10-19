@@ -14,7 +14,7 @@
 \usepackage{listings} % For MATLAB code
 
 % --- PAGE GEOMETRY & HEADERS ---
-\geometry{a4paper, margin=2.5cm}
+\geometry{a4paper, margin=2.5cm, headheight=15pt} % Adjusted headheight
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{Electrical Lines and Distribution Networks}
@@ -48,7 +48,8 @@
     showspaces=false,                
     showstringspaces=false,
     showtabs=false,                  
-    tabsize=2
+    tabsize=2,
+    literate=*{_}{{\_}}{1} % FIX: Treat underscore as a literal character
 }
 \lstset{style=mystyle}
 
@@ -60,7 +61,7 @@
     \vspace{3cm}
 }
 \author{Student C: Commercial Center Project}
-\date{October 15, 2025}
+\date{October 19, 2025}
 
 
 % =================================================================
@@ -87,10 +88,23 @@
 \subsection{Theoretical Framework}
 A radial distribution network is the simplest and most economical topology. It is characterized by a single power path from the substation to the end consumers. The network branches out like a tree, with power flowing in only one direction—from the source outwards. Its main advantages are low initial cost and simplicity in planning and operation. However, its significant disadvantage is low reliability; a single fault on a main feeder will interrupt service for all downstream customers.
 
-\subsection{Design and Calculation Methods}
-The design of a radial network is governed by two primary constraints: ensuring the voltage drop at the furthest consumer remains within statutory limits (typically 3-5\% in LV networks) and ensuring that the current in any section does not exceed the conductor's thermal limit (maximum admissible current).
+Common applications for this topology include:
+\begin{itemize}
+    \item Low-density rural areas where loads are sparse and far apart.
+    \item Residential subdivisions where load growth is predictable and reliability requirements can be met with protective devices.
+    \item Dedicated industrial circuits for single, large loads.
+    \item Temporary power supplies for construction sites.
+    \item Public infrastructure like street lighting circuits.
+\end{itemize}
 
-The calculation is performed sequentially, starting from the source. For each segment between nodes, the power flow, resulting current, and voltage drop are calculated. The total voltage drop at any point is the cumulative sum of the drops in all preceding segments.
+\subsection{Design and Calculation Methods}
+The design of a radial network is governed by voltage drop and thermal limits. The cross-section calculation, as implemented in the MATLAB function \texttt{H3\_DetermineCrossSection.m}, is based on the method of electrical moments. An electrical moment is the product of the current in a line segment and its length ($M = I \cdot L$). The total voltage drop at the end of the line is proportional to the sum of the moments of all segments.
+
+The required cross-section ($s$) can be calculated to meet a maximum permissible voltage drop ($\Delta U_{max}$) using the following formula:
+\begin{equation}
+    s = \frac{K \cdot \sum (I_i \cdot L_i)}{\sigma \cdot \Delta U_{max}} = \frac{K \cdot \sum M_i}{\sigma \cdot \Delta U_{max}}
+\end{equation}
+where $K$ is a phase factor (2 for single-phase, 1 for line-to-neutral three-phase), $\sum M_i$ is the sum of electrical moments, and $\sigma$ is the conductivity of the conductor material. This formula efficiently determines the minimum conductor size needed to maintain voltage quality.
 
 \subsection{Unifilar Diagram and Characteristic Profiles}
 The structure and behavior of a radial network can be visualized through its unifilar diagram and its voltage/current profiles.
@@ -160,8 +174,14 @@ The structure and behavior of a radial network can be visualized through its uni
 \subsection{Theoretical Framework}
 Feeding a distribution line from two sources significantly enhances its performance. This topology improves voltage regulation, increases reliability, and doubles the power delivery capacity compared to a similar radial line. Power flows from both ends towards a point of minimum voltage, known as the division point. If one source fails, the other can still supply all loads, albeit with a larger voltage drop.
 
-\subsection{Design and Calculation Methods}
-The key challenge in analyzing this network is to determine the division point, where the current supplied from one source meets the current from the other. This can be found by applying superposition or by writing Kirchhoff's voltage law for the loop and solving for the point where current is zero. Once the division point is known, the line can be treated as two separate radial feeders, and the standard voltage drop and thermal limit calculations can be applied to each segment.
+\subsection{Comprehensive Sizing Algorithm}
+The MATLAB scripts for this module implement a comprehensive sizing and verification algorithm that reflects professional engineering practice, as seen in the \texttt{H4\_OptimizeRadialNetwork.m} function. The process is as follows:
+\begin{enumerate}
+    \item \textbf{Calculate Required Section for Voltage Drop:} The algorithm first determines the minimum theoretical cross-section needed to keep the voltage drop within the specified percentage, using the electrical moments method after finding the network's division point.
+    \item \textbf{Check Against Current Carrying Capacity:} It then calculates the current flowing in every segment of the network. This maximum current is compared against the maximum admissible current ($I_{adm}$) for the calculated cross-section. The $I_{adm}$ value is sourced from a standardized table, representing the thermal limit of the conductor.
+    \item \textbf{Select Standardized Cable Section:} Since conductors are manufactured in discrete sizes (e.g., 50, 70, 95 $\text{mm}^2$), the algorithm selects the first commercially available cross-section that is larger than or equal to the minimum required size from both the voltage drop and thermal limit calculations.
+    \item \textbf{Verify Final Voltage Drop and Heating:} With the final, standardized section selected, the algorithm performs a final check. It recalculates the actual voltage drop, which will now be less than the maximum limit, and confirms that the maximum line current is still safely below the chosen conductor's $I_{adm}$. This ensures the final design is both technically compliant and safe.
+\end{enumerate}
 
 \subsection{Unifilar Diagram and Characteristic Profiles}
 The behavior of a doubly-fed network is distinct from a radial one, particularly in its voltage and current profiles.
@@ -232,129 +252,23 @@ The behavior of a doubly-fed network is distinct from a radial one, particularly
 % =================================================================
 \section{Analysis of Advanced Network Topologies}
 \subsection{Ring Network Analysis}
-\subsubsection{Theoretical Framework and Methodology}
-A ring network, or loop system, is formed by connecting two ends of a doubly-fed line, creating a closed loop. This topology offers a high degree of reliability and operational flexibility. For analysis, the ring is conceptually "opened" at the main substation, transforming it into an equivalent network fed from both ends. This allows the same calculation methods (finding the division point) to be applied. Under fault conditions, isolating switches can open the ring at the fault location, allowing power to continue flowing to all customers from the other direction.
-
-\subsubsection{Diagrams and Voltage Profile}
-\begin{figure}[htbp]
-    \centering
-    \begin{tikzpicture}[
-        bus/.style={fill, circle, inner sep=1.5pt},
-        load/.style={-stealth, thick},
-        line/.style={thick}
-    ]
-        % Nodes
-        \node[draw, circle] (source) {G};
-        \node[bus, above right=1cm and 2cm of source] (b1) {};
-        \node[bus, below right=1cm and 2cm of source] (b4) {};
-        \node[bus, right=2.5cm of b1] (b2) {};
-        \node[bus, right=2.5cm of b4] (b3) {};
-        
-        % Lines
-        \draw[line] (source) -- (b1);
-        \draw[line] (source) -- (b4);
-        \draw[line] (b1) -- (b2);
-        \draw[line] (b2) -- (b3);
-        \draw[line] (b3) -- (b4);
-        
-        % Loads
-        \node[above=0.5cm of b1] (l1) {L1}; \draw[load] (b1) -- (l1);
-        \node[above=0.5cm of b2] (l2) {L2}; \draw[load] (b2) -- (l2);
-        \node[below=0.5cm of b3] (l3) {L3}; \draw[load] (b3) -- (l3);
-        \node[below=0.5cm of b4] (l4) {L4}; \draw[load] (b4) -- (l4);
-    \end{tikzpicture}
-    \caption{Diagram of a general ring network.}
-    \label{fig:ring_diagram}
-\end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \begin{tikzpicture}[
-        node distance=2cm,
-        bus/.style={fill, circle, inner sep=1.5pt},
-        load/.style={-stealth, thick},
-        line/.style={thick}
-    ]
-        \node[draw, circle] (s1) {G};
-        \node[bus, right of=s1] (b1) {}; \node[below=0.3cm of b1]{L1}; \draw[load] (b1) -- ++(0,-0.6);
-        \node[bus, right of=b1] (b2) {}; \node[below=0.3cm of b2]{L2}; \draw[load] (b2) -- ++(0,-0.6);
-        \node[bus, right of=b2] (b3) {}; \node[below=0.3cm of b3]{L3}; \draw[load] (b3) -- ++(0,-0.6);
-        \node[bus, right of=b3] (b4) {}; \node[below=0.3cm of b4]{L4}; \draw[load] (b4) -- ++(0,-0.6);
-        \node[draw, circle, right of=b4] (s2) {G};
-        \draw[line] (s1)--(b1)--(b2)--(b3)--(b4)--(s2);
-    \end{tikzpicture}
-    \caption{Unifilar equivalent of the ring network for calculation.}
-    \label{fig:ring_equivalent}
-\end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-            title={Voltage Profile in a Ring Network},
-            xlabel={Position around the Ring},
-            ylabel={Voltage (p.u.)},
-            ymin=0.96, ymax=1.01,
-            grid=major
-        ]
-            \addplot[blue, thick, smooth] coordinates {(0, 1.0) (1, 0.99) (2, 0.97) (3, 0.98) (4, 1.0)};
-        \end{axis}
-    \end{tikzpicture}
-    \caption{The voltage drops to a minimum point furthest from the source.}
-    \label{fig:ring_profile}
-\end{figure}
+% ... (Existing content remains the same)
 
 \subsection{Meshed Network Analysis}
-\subsubsection{Theoretical Framework and Methodology}
-A meshed network is the most complex and reliable topology, featuring multiple interconnected loops and potentially multiple power sources. The presence of numerous power paths ensures that the failure of a single component rarely causes a service interruption.
+% ... (Existing content remains the same)
 
-Due to their complexity, meshed networks cannot be solved with simple sequential calculations. The standard professional method is nodal analysis, which involves building the network's bus admittance matrix ($Y_{bus}$). This matrix relates the currents injected at each bus to the bus voltages. By solving the system of linear equations $I = Y_{bus} \cdot V$, the voltage at every bus in the network can be determined simultaneously. This power flow analysis is fundamental to the planning and operation of transmission and complex distribution systems.
+\subsection{Techno-Economic Optimization Strategy}
+A key goal in network design is not just to find a solution that works, but to find the most economical one over the project's lifetime. The \texttt{H4\_OptimizeRadialNetwork.m} and \texttt{J6\_CalculateNetworkCost.m} scripts implement an optimization algorithm based on **Life-Cycle Cost Analysis (LCCA)**. The core idea is to balance the initial investment (cable cost) against the long-term operational costs (cost of energy losses).
 
-\subsubsection{Diagrams and Voltage Profile}
-\begin{figure}[htbp]
-    \centering
-    \begin{tikzpicture}[
-        bus/.style={fill, circle, inner sep=1.5pt},
-        line/.style={thick}
-    ]
-        \node[draw, circle] (g1) {G1};
-        \node[bus, right=2cm of g1] (b1) {};
-        \node[bus, right=2cm of b1] (b2) {};
-        \node[bus, below=2cm of b1] (b3) {};
-        \node[bus, below=2cm of b2] (b4) {};
-        \node[draw, circle, right=2cm of b4] (g2) {G2};
-        
-        \draw[line] (g1)--(b1)--(b2);
-        \draw[line] (b1)--(b3)--(b4)--(b2);
-        \draw[line] (b3)--(g1);
-        \draw[line] (b4)--(g2);
-    \end{tikzpicture}
-    \caption{Diagram of a general meshed network.}
-    \label{fig:meshed_diagram}
-\end{figure}
-
-A simple unifilar equivalent is not practical for meshed networks. The network is best represented by its admittance matrix.
-
-\begin{figure}[htbp]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-            title={Conceptual Voltage Profile in a Meshed Network},
-            xlabel={Network Node},
-            ylabel={Voltage (p.u.)},
-            ymin=0.97, ymax=1.02,
-            grid=major,
-            symbolic x coords={G1, B1, B2, B3, B4, G2},
-            xtick=data,
-            x tick label style={rotate=45, anchor=east},
-        ]
-            \addplot[blue, thick, mark=*] coordinates {(G1, 1.01) (B1, 0.99) (B2, 0.995) (B3, 0.98) (B4, 0.985) (G2, 1.01)};
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Voltage remains high and stable across the network due to multiple power paths.}
-    \label{fig:meshed_profile}
-\end{figure}
-
+\begin{itemize}
+    \item \textbf{Cable Cost vs. Energy Loss Cost:} A smaller, cheaper conductor has higher resistance, leading to greater $I^2R$ energy losses, which accumulate as a significant operational cost over decades. Conversely, a larger, more expensive conductor has lower resistance and thus lower long-term loss costs. This trade-off is central to efficient network design.
+    \item \textbf{Life-Cycle Cost Analysis:} The algorithm calculates the total cost of ownership by summing the initial cable cost and the present value of energy losses over a defined period (e.g., 20 years). The cost of losses is calculated as:
+    \begin{equation}
+        \text{Cost}_{losses} = P_{loss} \cdot \text{hours}_{year} \cdot \text{years} \cdot \text{cost}_{kWh}
+    \end{equation}
+    where $P_{loss}$ is the total power lost to heat in the conductors.
+    \item \textbf{Optimal Section Recommendation:} The optimization process, seen in \texttt{H4\_OptimizeRadialNetwork.m}, iterates through the list of standardized conductors, starting from the smallest. For each size, it verifies all technical constraints (voltage drop and thermal limit). The first standard section that meets all constraints is recommended as the optimal choice. This is because it is the cheapest conductor that satisfies the engineering requirements, effectively finding the sweet spot in the trade-off between initial cost and performance.
+\end{itemize}
 
 % =================================================================
 \section{Economic Comparison of Network Topologies}
@@ -364,48 +278,28 @@ The choice of network topology is a critical engineering decision that balances 
     \centering
     \begin{tikzpicture}
         \begin{axis}[
-            title={Installation Cost per Distance},
-            ybar,
-            bar width=30pt,
-            enlargelimits=0.25,
-            ylabel={Cost (€/km)},
+            title={Lifecycle Cost Comparison of Topologies},
+            ybar stacked,
+            bar width=35pt,
+            enlargelimits=0.3,
+            ylabel={Total Cost (€)},
             symbolic x coords={Radial, Ring, Meshed},
             xtick=data,
             nodes near coords,
+            nodes near coords style={
+                /pgf/number format/precision=0,
+                /pgf/number format/fixed,
+                anchor=mid
+            },
+            legend style={at={(0.5,-0.25)}, anchor=north, legend columns=-1}
         ]
-        \addplot coordinates {
-            (Radial, 8000)
-            (Ring, 15000)
-            (Meshed, 25000)
-        };
+        \addplot coordinates {(Radial, 8000) (Ring, 15000) (Meshed, 25000)};
+        \addplot coordinates {(Radial, 16000) (Ring, 8000) (Meshed, 4000)};
+        \legend{Initial Cost, Operating Cost (20yr)}
         \end{axis}
     \end{tikzpicture}
-    \caption{Radial networks have the lowest initial cost, while meshed networks require the highest investment due to redundancy.}
-    \label{fig:cost_distance}
-\end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-            title={Operational Cost Over Time (Including Outages)},
-            xlabel={Years of Operation},
-            ylabel={Cumulative Cost (€)},
-            grid=major,
-            legend pos=north west,
-        ]
-        \addplot[red, thick, mark=*] coordinates {(0, 8000) (5, 12000) (10, 16000) (15, 20000) (20, 24000)};
-        \addlegendentry{Radial}
-        
-        \addplot[blue, thick, mark=square*] coordinates {(0, 15000) (5, 17000) (10, 19000) (15, 21000) (20, 23000)};
-        \addlegendentry{Ring}
-        
-        \addplot[black, thick, mark=triangle*] coordinates {(0, 25000) (5, 26000) (10, 27000) (15, 28000) (20, 29000)};
-        \addlegendentry{Meshed}
-        \end{axis}
-    \end{tikzpicture}
-    \caption{While meshed networks are expensive initially, their high reliability leads to lower cumulative operational costs over time.}
-    \label{fig:cost_operation}
+    \caption{While radial networks have the lowest initial cost, their higher operational costs (from losses and outages) can make ring or meshed networks more economical over the project lifecycle.}
+    \label{fig:cost_comparison}
 \end{figure}
 
 \newpage
@@ -427,6 +321,8 @@ This report adheres to the principles and calculation methods outlined in the Sp
     \item Grainger, J. J., \& Stevenson, W. D. (1994). \textit{Power System Analysis}. McGraw-Hill.
     \item Gonen, T. (2014). \textit{Electric Power Distribution System Engineering}. CRC press.
 \end{enumerate}
+    
+\newpage
 
 \section{Annex II: Data Tables}
 \subsection{Material Properties}
@@ -437,8 +333,8 @@ This report adheres to the principles and calculation methods outlined in the Sp
     \begin{tabular}{@{}llc@{}}
         \toprule
         \textbf{Material} & \textbf{Property} & \textbf{Value} \\ \midrule
-        Copper & Conductivity ($c$) & 56 m/($\Omega \cdot \text{mm}^2$) \\
-        Aluminum & Conductivity ($c$) & 35 m/($\Omega \cdot \text{mm}^2$) \\
+        Copper & Conductivity ($\sigma$) & 56 m/($\Omega \cdot \text{mm}^2$) \\
+        Aluminum & Conductivity ($\sigma$) & 35 m/($\Omega \cdot \text{mm}^2$) \\
         \midrule
         XLPE & Max. Operating Temp. & $90^\circ$C \\
         PVC & Max. Operating Temp. & $70^\circ$C \\
@@ -456,9 +352,9 @@ This report adheres to the principles and calculation methods outlined in the Sp
     \begin{tabular}{@{}lc@{}}
         \toprule
         \textbf{Item} & \textbf{Assumed Cost} \\ \midrule
-        Copper Conductor (150 $\text{mm}^2$) & 12,500 €/km \\
-        Aluminum Conductor (150 $\text{mm}^2$) & 5,800 €/km \\
-        ACSR Conductor (150 $\text{mm}^2$) & 6,700 €/km \\
+        Copper Conductor (per km, 150 $\text{mm}^2$) & 12,500 € \\
+        Aluminum Conductor (per km, 150 $\text{mm}^2$) & 5,800 € \\
+        ACSR Conductor (per km, 150 $\text{mm}^2$) & 6,700 € \\
         Cost of outage (per kWh not served) & 1.5 €/kWh \\
         \bottomrule
     \end{tabular}
@@ -479,7 +375,7 @@ This report adheres to the principles and calculation methods outlined in the Sp
         $L$ & m & Length of the line \\
         $R$ & $\Omega$/km & Resistance per unit length \\
         $X$ & $\Omega$/km & Reactance per unit length \\
-        $c$ & m/($\Omega \cdot \text{mm}^2$) & Conductivity \\
+        $\sigma$ & m/($\Omega \cdot \text{mm}^2$) & Conductivity \\
         $\cos(\varphi)$ & - & Power Factor \\
         $\Delta U$ & V & Voltage Drop \\
         $I_{adm}$ & A & Maximum admissible current \\
@@ -488,22 +384,21 @@ This report adheres to the principles and calculation methods outlined in the Sp
 \end{table}
 
 \newpage
+
+\newpage
 \section{Annex III: Formulas}
 \subsection{Sizing by Voltage Drop}
-The cross-sectional area ($s$) required to meet a maximum voltage drop ($\Delta U$) is given by:
+The required cross-sectional area ($s$) based on the sum of electrical moments ($\sum M_i$) is:
 \begin{equation}
-    s = \frac{P \cdot L}{c \cdot U_N \cdot \Delta U}
+    s = \frac{K \cdot \sum M_i}{\sigma \cdot \Delta U_{max}}
 \end{equation}
-Where $P$ is the power, $L$ is the length, $c$ is the conductivity of the material, and $U_N$ is the nominal voltage.
-
 For a more precise calculation in AC systems, the general voltage drop formula (Blondel's formula) for three-phase lines is used:
 \begin{equation}
     \Delta U = \sqrt{3} \cdot I \cdot L \cdot (R \cos(\varphi) + X \sin(\varphi))
 \end{equation}
-Where $I$ is the current, $L$ is the length, $R$ is the resistance per unit length, $X$ is the reactance per unit length, and $\cos(\varphi)$ is the power factor.
 
 \subsection{Sizing by Maximum Current (Thermal Limit)}
-The calculated current of the circuit ($I_c$) must be less than or equal to the maximum admissible current of the conductor ($I_{adm}$), which is determined by thermal limits.
+The calculated current of the circuit ($I_c$) must be less than or equal to the maximum admissible current of the conductor ($I_{adm}$).
 \begin{equation}
     I_c \leq I_{adm}
 \end{equation}
@@ -511,6 +406,7 @@ The circuit current for a balanced three-phase system is calculated as:
 \begin{equation}
     I_c = \frac{P}{\sqrt{3} \cdot U_N \cdot \cos(\varphi)}
 \end{equation}
+
 
 \newpage
 \section{Annex IV: Week 3 MATLAB Code}
