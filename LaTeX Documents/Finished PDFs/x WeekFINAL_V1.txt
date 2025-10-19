@@ -70,6 +70,8 @@
     \centering
     \vspace*{2cm}
     {\Huge \textbf{TECHNICAL PROJECT}}
+    \newline
+    \newline
     \vspace{1.5cm}
     {\Large \textbf{Low Voltage Electrical Installation for TechnoParque Almeria}}
     \vspace{2cm}
