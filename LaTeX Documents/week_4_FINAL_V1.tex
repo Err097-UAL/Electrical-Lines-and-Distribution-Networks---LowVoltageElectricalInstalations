@@ -1,0 +1,140 @@
+\documentclass[12pt, a4paper]{report}
+
+% --- PAQUETES ESENCIALES ---
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+
+% --- CONFIGURACIÓN DE PÁGINA Y ENCABEZADOS ---
+\geometry{a4paper, margin=2.5cm, headheight=15pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Proyecto de Instalación Eléctrica de Baja Tensión}
+\fancyhead[R]{TechnoParque Almería}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{
+  \fancyhf{} % Limpia encabezados y pies para páginas de inicio de capítulo
+  \renewcommand{\headrulewidth}{0pt} % Sin línea
+}
+
+% --- CONFIGURACIÓN DE HIPERVÍNCULOS ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=cyan,
+}
+
+% =================================================================
+% --- INICIO DEL DOCUMENTO ---
+% =================================================================
+\begin{document}
+
+% --- PÁGINA DE TÍTULO ---
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    {\Huge \textbf{PROYECTO TÉCNICO}}
+    \vspace{1.5cm}
+    {\Large \textbf{Instalación Eléctrica de Baja Tensión para Suministro a Parque Tecnológico}}
+    \vspace{2cm}
+    {\Large \textbf{TechnoParque Almería}}
+    \vspace{\fill}
+    {\large Promotor: [Tu Nombre/Empresa]}
+    \vfill
+    {\large Fecha: Octubre de 2025}
+\end{titlepage}
+
+% --- ÍNDICE ---
+\tableofcontents
+\newpage
+
+% =================================================================
+\chapter{Objeto del Proyecto}
+\label{chap:objeto}
+El presente documento tiene por objeto describir y justificar, a nivel técnico y normativo, el diseño de la instalación eléctrica de distribución en Baja Tensión (BT) para el parque tecnológico "TechnoParque Almería".
+
+La instalación parte de varios Centros de Transformación (CT) alimentados por una red de Media Tensión (MT) en anillo, y distribuye la energía a los distintos consumidores del parque, incluyendo naves industriales, un edificio de oficinas, una zona residencial y el sistema de alumbrado público.
+
+El diseño se ha realizado siguiendo las prescripciones del Reglamento Electrotécnico para Baja Tensión (REBT) y sus Instrucciones Técnicas Complementarias (ITC-BT).
+
+\chapter{Normativa de Aplicación}
+\label{chap:normativa}
+El diseño, cálculo y ejecución de la instalación descrita en este proyecto se rige por la siguiente normativa:
+\begin{itemize}
+    \item Real Decreto 842/2002, de 2 de agosto, por el que se aprueba el \textbf{Reglamento Electrotécnico para Baja Tensión (REBT)}.
+    \item Instrucciones Técnicas Complementarias (ITC-BT), en especial:
+    \begin{itemize}
+        \item \textbf{ITC-BT-04}: Documentación y puesta en servicio de las instalaciones.
+        \item \textbf{ITC-BT-06}: Redes aéreas para distribución en baja tensión.
+        \item \textbf{ITC-BT-07}: Redes subterráneas para distribución en baja tensión.
+        \item \textbf{ITC-BT-09}: Instalaciones de alumbrado exterior.
+        \item \textbf{ITC-BT-19}: Instalaciones interiores o receptoras. Prescripciones generales.
+    \end{itemize}
+    \item Normas Particulares de la empresa distribuidora de la zona (a especificar).
+\end{itemize}
+
+\chapter{Descripción General de la Instalación}
+\label{chap:descripcion}
+La infraestructura eléctrica del TechnoParque se ha diseñado para garantizar una alta fiabilidad y calidad de suministro, acorde a las necesidades de un entorno tecnológico y empresarial. La arquitectura general se basa en el esquema de la Figura \ref{fig:esquema_general}.
+
+\begin{figure}[htbp]
+    \centering
+    % Aquí insertaremos el plano de AutoCAD una vez lo tengas.
+    % De momento, un placeholder.
+    \framebox{\parbox{0.8\textwidth}{\centering
+        \vspace{5cm}
+        \textbf{Placeholder para Esquema Unifilar General}\\
+        \small\textit{Basado en la imagen `image\_908e4e.png`} % FIX: Escaped the underscore
+        \vspace{5cm}
+    }}
+    \caption{Esquema unifilar general de la instalación eléctrica.}
+    \label{fig:esquema_general}
+\end{figure}
+
+La instalación se compone de los siguientes elementos principales:
+\begin{enumerate}
+    \item \textbf{Red de Distribución en Media Tensión (MT):} Una red subterránea en anillo a 20 kV que interconecta varios Centros de Transformación. Esta topología garantiza la continuidad del suministro a los CT en caso de un fallo en un tramo del anillo.
+    \item \textbf{Centros de Transformación (CT):} Edificios prefabricados que albergan los transformadores MT/BT. Serán responsables de reducir la tensión de 20 kV a 400/230 V para la distribución en baja tensión.
+    \item \textbf{Líneas Generales de Alimentación (LGA):} Circuitos subterráneos en baja tensión que parten de cada CT para alimentar los Cuadros Generales de Mando y Protección (CGMP) de los distintos consumidores.
+    \item \textbf{Consumidores:}
+    \begin{itemize}
+        \item Naves Industriales (x3).
+        \item Edificio de Oficinas.
+        \item Zona Residencial.
+        \item Alumbrado Público.
+    \end{itemize}
+\end{enumerate}
+
+\chapter{Previsión de Cargas}
+\label{chap:cargas}
+\textit{(Sección a completar. Ver puntos a definir en la siguiente sección).}
+\vspace{1cm}
+
+En esta sección se detallará la potencia máxima prevista para cada uno de los receptores, así como los factores de simultaneidad aplicados para determinar la potencia total requerida en cada Centro de Transformación.
+
+\chapter{Cálculos Justificativos}
+\label{chap:calculos}
+\textit{(Sección a completar. Ver puntos a definir en la siguiente sección).}
+\vspace{1cm}
+
+En este capítulo se incluirán todos los cálculos de dimensionamiento de las líneas de baja tensión, asegurando el cumplimiento de los criterios de:
+\begin{enumerate}
+    \item Caída de tensión máxima admisible según el REBT.
+    \item Intensidad máxima admisible del conductor (criterio térmico).
+\end{enumerate}
+También se justificarán las protecciones eléctricas seleccionadas.
+
+\chapter{Planos}
+\label{chap:planos}
+Los planos de la instalación, incluyendo esquemas unifilares, trazado de canalizaciones y detalles de los cuadros eléctricos, se adjuntan como documentos separados, elaborados con AutoCAD Electrical.
+
+\end{document}
+
