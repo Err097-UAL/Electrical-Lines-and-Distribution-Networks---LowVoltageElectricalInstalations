@@ -10,18 +10,18 @@ function props = getMaterialProperties(materialName)
 %   materialName - String ('Copper', 'Aluminum', etc.)
 %
 % Output:
-%   props        - A struct with fields like .name, .sigma, .resistivity
+%   props        - A struct with fields like .name, .conductivity, .resistivity
 % =========================================================================
 switch lower(materialName)
     case 'copper'
         props.name = 'Copper';
-        props.sigma = 56; % Conductivity [S*m/mm^2]
-        props.resistivity = 1/props.sigma; % Resistivity [Ohm*mm^2/m]
+        props.conductivity = 56; % Conductivity [S*m/mm^2]
+        props.resistivity = 1/props.conductivity; % Resistivity [Ohm*mm^2/m]
         
     case 'aluminum'
         props.name = 'Aluminum';
-        props.sigma = 36; % Conductivity [S*m/mm^2]
-        props.resistivity = 1/props.sigma; % Resistivity [Ohm*mm^2/m]
+        props.conductivity = 36; % Conductivity [S*m/mm^2]
+        props.resistivity = 1/props.conductivity; % Resistivity [Ohm*mm^2/m]
         
     otherwise
         error('Unknown material specified: %s. Please check getMaterialProperties.m', materialName);

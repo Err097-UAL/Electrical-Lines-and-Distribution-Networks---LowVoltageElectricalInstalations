@@ -13,23 +13,23 @@ function results = H1_Radial_Analysis()
 clc;
 results = []; 
 
-% --- Main Operation Mode Selection ---
-modeChoice = centeredMenu('Select Operation Mode:', ...
-    'Analyze Network (with a known cross-section)', ...
-    'Design & Optimize Network (find best cross-section)');
-if modeChoice == 0, return; end
+% % --- Main Operation Mode Selection ---
+% modeChoice = centeredMenu3('Select Operation Mode:', ...
+%     'Analyze Network (with a known cross-section)', ...
+%     'Design & Optimize Network (find best cross-section)');
+% if modeChoice == 0, return; end
 
 % --- Get common inputs ---
-scenarioChoice = centeredMenu('Select Radial Network Scenario:', ...
+scenarioChoice = centeredMenu3('Select Radial Network Scenario:', ...
     'Industrial Estate (Concentrated Loads)', ...
     'Residential Area (Distributed Loads)', ...
     'Street Lighting (Uniform Loads)');
 if scenarioChoice == 0, return; end
 
 U_source = input('Enter source line-to-neutral voltage [V] (e.g., 230): ');
-lineTypeChoice = centeredMenu('Select System Type:', 'Single-Phase', 'Three-Phase');
+lineTypeChoice = centeredMenu3('Select System Type:', 'Single-Phase', 'Three-Phase');
 if lineTypeChoice == 1, phase_factor = 2; else, phase_factor = 1; end
-materialChoice = centeredMenu('Select Conductor Material:', 'Copper', 'Aluminum');
+materialChoice = centeredMenu3('Select Conductor Material:', 'Copper', 'Aluminum');
 if materialChoice == 1, materialName = 'Copper'; else, materialName = 'Aluminum'; end
 
 materialProps = getMaterialProperties(materialName);
@@ -100,7 +100,7 @@ function props = getMaterialProperties(materialName)
     end
 end
 
-function choice = centeredMenu(title, varargin)
+function choice = centeredMenu3(title, varargin)
     % Creates and centers a menu dialog box
     fig = figure('Name', title, 'NumberTitle', 'off', 'MenuBar', 'none', ...
                  'Units', 'pixels', 'Position', [0 0 400 150], 'Visible', 'off');
