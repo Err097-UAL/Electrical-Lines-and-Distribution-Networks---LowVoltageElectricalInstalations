@@ -10,7 +10,7 @@
 % To run the entire project, simply execute this script.
 % =========================================================================
 
-%% --- Cleanup and Initialization ---
+%% --- Cleanup and Initialization --- 
 % Ensures a clean and predictable environment each time the suite is started.
 clc;
 clear;
