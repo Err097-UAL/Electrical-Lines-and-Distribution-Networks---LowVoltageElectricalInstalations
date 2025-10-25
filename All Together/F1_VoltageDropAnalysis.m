@@ -51,8 +51,10 @@ function run_full_installation_analysis()
     % --- Get Global Parameters ---
     disp('--- Entering Global Parameters for Full Installation ---');
     U_source_initial = input('Enter source voltage at LV Distribution Line [V] (e.g., 230 or 400): ');
-    loadCurrent = input('Enter final load current [A] (e.g., 30): ');
+    %loadCurrent = input('Enter final load current [A] (e.g., 30): ');
+    loadPower = input('enter load power consumption [W] (e.g. 9000):');
     cos_phi = input('Enter final load power factor (e.g., 0.95): ');
+    loadCurrent = (loadPower/((sqrt(3))*U_source_initial*cos_phi))
     frequency = input('Enter AC frequency [Hz] (e.g., 50): ');
 
     lineTypeChoice = centeredMenu2('Select Dominant System Type:', 'Single-Phase', 'Three-Phase');
@@ -122,8 +124,13 @@ function run_single_line_analysis()
         lineType = 'three-phase';
         U_source = input('Enter three-phase source voltage (L-L) [V] (e.g., 400): ');
     end
-    loadCurrent = input('Enter load current [A] (e.g., 25): ');
-    cos_phi = input('Enter load power factor (e.g., 0.9): ');
+
+ %loadCurrent = input('Enter final load current [A] (e.g., 30): ');
+    loadPower = input('enter load power consumption [W] (e.g. 9000):');
+    cos_phi = input('Enter final load power factor (e.g., 0.95): ');
+    loadCurrent = (loadPower/((sqrt(3))*U_source*cos_phi))
+   % loadCurrent = input('Enter load current [A] (e.g., 25): ');
+   % cos_phi = input('Enter load power factor (e.g., 0.9): ');
     lineLength = input('Enter total line length [m] (e.g., 150): ');
     reactance = input('Enter line reactance per unit length [Ohm/m] (e.g., 0.0001): ');
     frequency = input('Enter AC frequency [Hz] (e.g., 50): ');
@@ -139,7 +146,7 @@ function run_single_line_analysis()
     % --- Resistance Calculations (DC and AC) ---
     resistance_dc_per_meter = resistivity / crossSection;
     diameter_m = sqrt(4 * crossSection / pi) / 1000;
-    [k_skin, k_proximity] = A3b_AC_Resistance_Factor(frequency, diameter_m, sigma);
+    [k_skin, k_proximity] = E3b_AC_Resistance_Factor(frequency, diameter_m, sigma);
     resistance_ac_per_meter = resistance_dc_per_meter * (1 + k_skin + k_proximity);
 
     % --- Perform Voltage Drop Calculations ---
