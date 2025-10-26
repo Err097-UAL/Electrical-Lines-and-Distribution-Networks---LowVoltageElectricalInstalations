@@ -168,22 +168,69 @@ Where:
 \end{itemize}
 
 \subsubsection{Overhead Installation}
-For an overhead line exposed to the atmosphere, the heat dissipation is a combination of convection, radiation, and solar heat gain.
-
+For an overhead line exposed to the atmosphere, the heat generated internally by the conductor ($P_{gen} = I^2 R$) must be dissipated to the surroundings to reach thermal equilibrium. The primary mechanisms for heat dissipation are convection and radiation, while the cable also absorbs heat from solar radiation. The heat balance is given by:
 \begin{equation}
-P_{\text{diss}} = P_{\text{conv}} + P_{\text{rad}} - P_{\text{solar}}
+P_{gen} = P_{\text{diss}} = P_{\text{conv}} + P_{\text{rad}} - P_{\text{solar}}
 \end{equation}
+Where $P_{\text{diss}}$ is the net heat dissipated away from the cable.
 
-\textbf{1. Convection ($P_{\text{conv}}$):} Heat transfer due to air movement.
+\textbf{1. Convection ($P_{\text{conv}}$):}
+Convection is the heat transfer due to the bulk movement of the surrounding fluid (in this case, air). As the air near the hotter cable surface heats up, it becomes less dense and rises (natural convection), or it is moved away by external factors like wind (forced convection). The rate of convective heat transfer is given by Newton's law of cooling:
 \begin{equation}
 P_{\text{conv}} = h_c \cdot A_s \cdot (T_s - T_{\text{air}})
 \end{equation}
-The convective heat transfer coefficient, $h_c$, is derived from the Nusselt number ($Nu$), which depends on fluid dynamics (Reynolds number $Re$ for forced convection due to wind, and Grashof number $Gr$ for natural convection).
+Where:
 \begin{itemize}
-    \item $A_s = \pi D L$: Surface area of the cable (m$^2$)
-    \item $h_c = \frac{k_{\text{air}}}{D} Nu$: Convective heat transfer coefficient (W/m$^2$K)
-    \item The formulas for $Nu$ are empirical correlations depending on $Re$ and Prandtl number ($Pr$) for forced convection, or $Gr$ and $Pr$ for natural convection.
+    \item $P_{\text{conv}}$: Convective heat power dissipated (W)
+    \item $h_c$: Average convective heat transfer coefficient (W/m$^2$K)
+    \item $A_s = \pi D L$: Surface area of the cable (m$^2$), where $D$ is the outer diameter and $L$ is the length.
+    \item $T_s$: Cable surface temperature (°C or K)
+    \item $T_{\text{air}}$: Ambient air temperature (°C or K)
 \end{itemize}
+The crucial parameter is the convective heat transfer coefficient, $h_c$. It is not a material property but depends on the fluid properties (air), the flow conditions (natural or forced), and the geometry of the surface (cylinder). It is calculated using the Nusselt number ($Nu$), a dimensionless number representing the ratio of convective to conductive heat transfer across the boundary:
+\begin{equation}
+h_c = \frac{k_{\text{air}}}{D} Nu
+\end{equation}
+Where $k_{\text{air}}$ is the thermal conductivity of air (W/mK). The Nusselt number ($Nu$) is determined using empirical correlations based on other dimensionless numbers characterizing the flow:
+
+\subparagraph{a) Natural Convection:}
+This occurs when air movement is driven purely by buoyancy forces arising from the temperature difference between the cable surface and the ambient air. It dominates in still air conditions (no wind). The flow regime (laminar or turbulent) and heat transfer depend on the Grashof number ($Gr$) and the Prandtl number ($Pr$), often combined into the Rayleigh number ($Ra = Gr \cdot Pr$).
+\begin{itemize}
+    \item \textbf{Grashof Number ($Gr$):} Ratio of buoyancy forces to viscous forces.
+        \begin{equation}
+        Gr = \frac{g \beta (T_s - T_{\text{air}}) D^3}{\nu^2}
+        \end{equation}
+        Where: $g$ is gravitational acceleration (m/s$^2$), $\beta$ is the thermal expansion coefficient of air (1/K, approximately $1/T_f$ where $T_f = (T_s+T_{air})/2$ is the film temperature in Kelvin), and $\nu$ is the kinematic viscosity of air (m$^2$/s). All fluid properties ($\beta, \nu, k_{\text{air}}, Pr$) are evaluated at the film temperature $T_f$.
+    \item \textbf{Prandtl Number ($Pr$):} Ratio of momentum diffusivity to thermal diffusivity. For air, $Pr \approx 0.71$.
+        \begin{equation}
+        Pr = \frac{c_p \mu}{k_{\text{air}}} = \frac{\nu}{\alpha_{\text{diff}}}
+        \end{equation}
+        Where: $c_p$ is specific heat, $\mu$ is dynamic viscosity, $k_{\text{air}}$ is thermal conductivity, $\nu$ is kinematic viscosity, $\alpha_{\text{diff}}$ is thermal diffusivity.
+    \item \textbf{Rayleigh Number ($Ra$):} $Ra = Gr \cdot Pr$.
+    \item \textbf{Nusselt Number ($Nu$) Correlation (Example for Horizontal Cylinder):} A common correlation covering a wide range of $Ra$ is:
+        \begin{equation}
+        Nu_{\text{nat}} = \left\{ 0.60 + \frac{0.387 Ra^{1/6}}{\left[1 + (0.559/Pr)^{9/16}\right]^{8/27}} \right\}^2
+        \end{equation}
+        Valid for $10^{-5} < Ra < 10^{12}$.
+\end{itemize}
+
+\subparagraph{b) Forced Convection:}
+This occurs when air movement is caused by an external source, primarily wind blowing across the cable. It usually results in significantly higher heat transfer than natural convection. The flow regime and heat transfer depend on the Reynolds number ($Re$) and the Prandtl number ($Pr$).
+\begin{itemize}
+    \item \textbf{Reynolds Number ($Re$):} Ratio of inertial forces to viscous forces.
+        \begin{equation}
+        Re = \frac{v_{\text{wind}} D}{\nu}
+        \end{equation}
+        Where: $v_{\text{wind}}$ is the wind velocity perpendicular to the cable (m/s), $D$ is the cable diameter (m), and $\nu$ is the kinematic viscosity of air (m$^2$/s), evaluated at the film temperature $T_f$.
+    \item \textbf{Nusselt Number ($Nu$) Correlation (Example for Cylinder in Crossflow):} A widely used correlation (Churchill \& Bernstein) valid for a broad range of $Re$ and $Pr \ge 0.2$ is: % Corrected & to \&
+        \begin{equation}
+        Nu_{\text{forced}} = 0.3 + \frac{0.62 Re^{1/2} Pr^{1/3}}{\left[1 + (0.4/Pr)^{2/3}\right]^{1/4}} \left[1 + \left(\frac{Re}{282000}\right)^{5/8}\right]^{4/5}
+        \end{equation}
+        Simpler correlations like $Nu = C Re^m Pr^{1/3}$ are often used for specific $Re$ ranges.
+\end{itemize}
+
+\subparagraph{c) Combined Convection:}
+In many real-world scenarios, both natural and forced convection effects might be present (e.g., low wind speeds). More complex correlations exist to combine $Nu_{\text{nat}}$ and $Nu_{\text{forced}}$, often involving vector summation or other empirical methods, to determine the overall effective $Nu$ and subsequently $h_c$.
 
 \textbf{2. Radiation ($P_{\text{rad}}$):} Heat emitted as electromagnetic waves.
 This is calculated using the Stefan-Boltzmann law, which relates radiated power to the fourth power of the absolute temperature.
@@ -192,20 +239,20 @@ P_{\text{rad}} = \varepsilon \cdot \sigma \cdot A_s \cdot (T_{s,K}^4 - T_{\text{
 \end{equation}
 Where:
 \begin{itemize}
-    \item $\varepsilon$: Emissivity of the cable surface (dimensionless)
+    \item $\varepsilon$: Emissivity of the cable surface (dimensionless, typically 0.5-0.9 for weathered conductors)
     \item $\sigma$: Stefan-Boltzmann constant ($5.67 \times 10^{-8}$ W/m$^2$K$^4$)
-    \item $T_{s,K}, T_{\text{air},K}$: Absolute temperatures of the surface and air in Kelvin (K)
+    \item $T_{s,K}, T_{\text{air},K}$: Absolute temperatures of the surface and air in Kelvin (K). Note the conversion: $T_K = T_{°C} + 273.15$.
 \end{itemize}
 
 \textbf{3. Solar Gain ($P_{\text{solar}}$):} Heat absorbed from solar radiation.
 \begin{equation}
-P_{\text{solar}} = a \cdot S \cdot D \cdot L
+P_{\text{solar}} = a \cdot S \cdot A_{\text{proj}} = a \cdot S \cdot D \cdot L
 \end{equation}
 Where:
 \begin{itemize}
-    \item $a$: Solar absorptivity of the cable surface (dimensionless)
-    \item $S$: Solar irradiance (W/m$^2$)
-    \item $D \cdot L$: Projected area of the cable exposed to the sun (m$^2$)
+    \item $a$: Solar absorptivity of the cable surface (dimensionless, often similar to emissivity)
+    \item $S$: Total solar irradiance incident on the cable (W/m$^2$), considering direct and diffuse radiation.
+    \item $A_{\text{proj}} = D \cdot L$: Projected area of the cable exposed to the sun (m$^2$)
 \end{itemize}
     
 \subsection{AC Resistance and Maximum Current}

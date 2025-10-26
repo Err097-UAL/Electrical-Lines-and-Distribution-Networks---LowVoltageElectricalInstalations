@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.9.18)  18 OCT 2025 21:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.9.18)  26 OCT 2025 15:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1036,7 +1036,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.41 ...oltageDropAnalysis.m}{22}{subsection.D.12}
+l.44 ...oltageDropAnalysis.m}{23}{subsection.D.12}
                                                   % [1])
 \tf@toc=\write5
 \openout5 = `Week_2_V1_1140pm.toc'.
@@ -1073,126 +1073,127 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 146.
 
-[4] [5]
-Overfull \hbox (0.8817pt too wide) in paragraph at lines 257--258
+[4] [5] [6]
+
+LaTeX Warning: Command \textdegree invalid in math mode on input line 244.
+
+
+LaTeX Warning: Command \textdegree invalid in math mode on input line 244.
+
+Missing character: There is no ° in font cmr8!
+[7]
+Overfull \hbox (0.8817pt too wide) in paragraph at lines 304--305
  [][] 
  []
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-[6] [7]
-Overfull \hbox (124.95822pt too wide) in paragraph at lines 300--301
-\T1/cmr/m/n/12 Compliance with the Span-ish reg-u-la-tion (REBT) is manda-tory.
- The script \T1/cmtt/m/n/12 F4b_checkInstallationCompliance.m
- []
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [8]
+Overfull \hbox (124.95822pt too wide) in paragraph at lines 347--348
+\T1/cmr/m/n/12 Compliance with the Span-ish reg-u-la-tion (REBT) is manda-tory.
+ The script \T1/cmtt/m/n/12 F4b_checkInstallationCompliance.m
+ []
 
-LaTeX Warning: Text page 9 contains only floats.
-
-[9] [10]
-Package pgfplots info on input line 474: Using 'lua backend=false' for axis: st
+[9] [10] [11]
+Package pgfplots info on input line 521: Using 'lua backend=false' for axis: st
 acked plots unsupported (yet).
-Package pgfplots info on input line 474: Using 'lua backend=false' for axis: x 
+Package pgfplots info on input line 521: Using 'lua backend=false' for axis: x 
 coord trafo unsupported.
-Package pgfplots info on input line 485: Using 'lua backend=false' for axis: x 
+Package pgfplots info on input line 532: Using 'lua backend=false' for axis: x 
 coord trafo unsupported.
 
-Overfull \hbox (21.11308pt too wide) in paragraph at lines 491--492
+Overfull \hbox (21.11308pt too wide) in paragraph at lines 538--539
  [][] 
  []
 
-[11]
-Overfull \hbox (13.96886pt too wide) in paragraph at lines 508--509
+[12]
+Overfull \hbox (13.96886pt too wide) in paragraph at lines 555--556
 []\T1/cmr/bx/n/12 Reglamento Elec-trotéc-nico para Baja Ten-sión (REBT)\T1/cmr/
 m/n/12 , Real De-creto 842/2002.
  []
 
-[12] (Week_2_V1_1140pm.lot)
+[13] (Week_2_V1_1140pm.lot)
 \tf@lot=\write6
 \openout6 = `Week_2_V1_1140pm.lot'.
 
- [13] [14]
+ [14] [15]
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
-nput line 598.
+nput line 645.
 
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 599--600
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 646--647
 [][][][] 
  []
 
 
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 601--602
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 648--649
 [][][][] 
  []
 
 
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 606--608
-[][][][] 
- []
-
-[15]
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 664--665
-[][][][] 
- []
-
-
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 666--667
-[][][][] 
- []
-
-
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 671--673
-[][][][] 
- []
-
-
-Overfull \hbox (11.95102pt too wide) in paragraph at lines 683--684
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 653--655
 [][][][] 
  []
 
 [16]
-Overfull \hbox (11.95102pt too wide) in paragraph at lines 685--687
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 711--712
 [][][][] 
  []
 
 
-Overfull \hbox (11.95102pt too wide) in paragraph at lines 707--708
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 713--714
 [][][][] 
  []
 
 
-Overfull \hbox (11.95102pt too wide) in paragraph at lines 709--710
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 718--720
 [][][][] 
  []
 
 
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 715--716
+Overfull \hbox (11.95102pt too wide) in paragraph at lines 730--731
+[][][][] 
+ []
+
+[17]
+Overfull \hbox (11.95102pt too wide) in paragraph at lines 732--734
 [][][][] 
  []
 
 
-Overfull \hbox (24.54807pt too wide) in paragraph at lines 718--719
+Overfull \hbox (11.95102pt too wide) in paragraph at lines 754--755
 [][][][] 
  []
 
-[17] [18] [19] [20] [21] [22] [23] [24] [25] [26] (Week_2_V1_1140pm.aux)
+
+Overfull \hbox (11.95102pt too wide) in paragraph at lines 756--757
+[][][][] 
+ []
+
+
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 762--763
+[][][][] 
+ []
+
+
+Overfull \hbox (24.54807pt too wide) in paragraph at lines 765--766
+[][][][] 
+ []
+
+[18] [19] [20] [21] [22] [23] [24] [25] [26] [27] (Week_2_V1_1140pm.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
  ***********
 Package rerunfilecheck Info: File `Week_2_V1_1140pm.out' has not changed.
-(rerunfilecheck)             Checksum: 98C16484695B6EB339868FC3D3927930;9880.
+(rerunfilecheck)             Checksum: 52D0CADE7996CD9C4B77F5C2CDAB75BD;9881.
  ) 
 Here is how much of TeX's memory you used:
- 39574 strings out of 474485
- 939428 string characters out of 5737090
+ 39584 strings out of 474485
+ 939546 string characters out of 5737090
  2275542 words of memory out of 5000000
  60808 multiletter control sequences out of 15000+600000
  577648 words of font info for 75 fonts, out of 8000000 for 9000
@@ -1231,9 +1232,9 @@ b><C:/Users/Enrique A. Raudales/AppData/Local/Programs/MiKTeX/fonts/type1/publi
 c/amsfonts/cm/cmsy10.pfb><C:/Users/Enrique A. Raudales/AppData/Local/Programs/M
 iKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/Enrique A. Raudales/Ap
 pData/Local/Programs/MiKTeX/fonts/type1/public/eurosym/feymr10.pfb>
-Output written on Week_2_V1_1140pm.pdf (27 pages, 506080 bytes).
+Output written on Week_2_V1_1140pm.pdf (28 pages, 518361 bytes).
 PDF statistics:
- 1641 PDF objects out of 1728 (max. 8388607)
- 529 named destinations out of 1000 (max. 500000)
+ 1656 PDF objects out of 1728 (max. 8388607)
+ 539 named destinations out of 1000 (max. 500000)
  437 words of extra memory for PDF output out of 10000 (max. 10000000)
 
