@@ -5,6 +5,8 @@ function results = I1_DualFed_Analysis()
 % MODIFIED:
 % - Added detailed comments to explicitly label the implementation of
 %   the core analysis requirements.
+% - CHANGED: Load inputs modified to accept Power (kW) and Power Factor (PF)
+%   instead of current. Current is now calculated.
 % =========================================================================
 results = []; 
 scenarioChoice = centeredMenu3('Select Dual-Fed Network Scenario:', ...
@@ -28,23 +30,50 @@ phase_factor = 1; % Assume three-phase line-to-neutral calculations (K=1)
 switch scenarioChoice
     case 1 % Symmetrical
         results.scenarioName = 'Symmetrical Network';
-        Ua = input('Enter the symmetrical source voltage [V]: ');
+        Ua = input('Enter the symmetrical source voltage (Line-to-Neutral) [V]: ');
         Ub = Ua;
-        loads(1).current = input('Enter current of the single load [A]: ');
+        
+        % MODIFIED: Get Power and PF, then calculate current
+        loadPower_kW = input('Enter Power of the single load [kW]: ');
+        cos_phi = input('Enter Power Factor of the load (e.g., 0.9): ');
+        loadPower_W = loadPower_kW * 1000;
+        % Using 3-phase formula with Line-to-Neutral voltage: P = 3 * V_ph * I * pf
+        loads(1).current = loadPower_W / (3 * Ua * cos_phi);
+        fprintf(' -> Calculated Current: %.2f A\n', loads(1).current);
+        
         loads(1).distance = L_total / 2;
+        
     case 2 % Asymmetrical
         results.scenarioName = 'Asymmetrical Network';
-        Ua = input('Enter voltage of Source A [V]: ');
-        Ub = input('Enter voltage of Source B [V]: ');
-        loads(1).current = input('Enter current of the single load [A]: ');
+        Ua = input('Enter voltage of Source A (Line-to-Neutral) [V]: ');
+        Ub = input('Enter voltage of Source B (Line-to-Neutral) [V]: ');
+        
+        % MODIFIED: Get Power and PF, then calculate current
+        loadPower_kW = input('Enter Power of the single load [kW]: ');
+        cos_phi = input('Enter Power Factor of the load (e.g., 0.9): ');
+        loadPower_W = loadPower_kW * 1000;
+        % Using 3-phase formula with L-N voltage (nominal Ua): P = 3 * V_ph * I * pf
+        loads(1).current = loadPower_W / (3 * Ua * cos_phi);
+        fprintf(' -> Calculated Current: %.2f A\n', loads(1).current);
+        
         loads(1).distance = input('Enter distance of the load from Source A [m]: ');
+        
     case 3 % Reliability
         results.scenarioName = 'Reliability Analysis';
-        Ua = input('Enter the primary source voltage (Ua) [V]: ');
-        Ub = input('Enter the backup source voltage (Ub) [V]: ');
+        Ua = input('Enter the primary source voltage (Ua, L-N) [V]: ');
+        Ub = input('Enter the backup source voltage (Ub, L-N) [V]: ');
         num_loads = input('Enter the number of loads on the line: ');
         for i = 1:num_loads
-            loads(i).current = input(['Enter current for load ' num2str(i) ' [A]: ']);
+            fprintf('--- Load %d ---\n', i);
+            % MODIFIED: Get Power and PF, then calculate current
+            loadPower_kW = input(['Enter Power for load ' num2str(i) ' [kW]: ']);
+            cos_phi = input(['Enter Power Factor for load ' num2str(i) ' (e.g., 0.9): ']);
+            
+            loadPower_W = loadPower_kW * 1000;
+            % Using 3-phase formula with L-N voltage (nominal Ua): P = 3 * V_ph * I * pf
+            loads(i).current = loadPower_W / (3 * Ua * cos_phi);
+            fprintf(' -> Calculated Current: %.2f A\n', loads(i).current);
+            
             loads(i).distance = input(['Enter distance of load ' num2str(i) ' from Source A [m]: ']);
         end
 end
@@ -134,4 +163,3 @@ function [total_drop, final_voltage] = calculate_radial_drop(U_source, loads, co
     end
     final_voltage = U_source - total_drop;
 end
-
