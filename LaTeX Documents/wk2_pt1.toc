@@ -1,0 +1,19 @@
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
+\contentsline {section}{\numberline {2}Thermal Equilibrium and Heat Transfer Analysis}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}The Fundamental Heat Balance Equation}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Heat Generation ($P_{\text {generated}}$)}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Heat Dissipation ($P_{\text {dissipated}}$)}{3}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Underground Installation}{4}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Overhead Installation}{4}{subsubsection.2.3.2}%
+\contentsline {subparagraph}{a) Natural Convection:}{5}{section*.2}%
+\contentsline {subparagraph}{b) Forced Convection:}{5}{section*.3}%
+\contentsline {subsection}{\numberline {2.4}AC Resistance and Maximum Current}{7}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Thermal Analysis Results}{7}{subsection.2.5}%
+\contentsline {section}{\numberline {3}Advanced Voltage Drop Analysis}{9}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Blondel's Formula}{9}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}REBT Compliance and Voltage Profile}{9}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Conductor Sizing and Economic Analysis}{11}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Technical and Economic Sizing Criteria}{11}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Lifecycle Cost Analysis}{11}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Sizing Analysis Results}{12}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Conclusion}{12}{section.5}%
