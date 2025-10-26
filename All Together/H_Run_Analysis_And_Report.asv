@@ -7,7 +7,7 @@ function results = H1_Radial_Analysis()
 
 clc;
 results = []; 
-
+%global U_source;
 % --- Get common inputs ---
 % UPDATED: Changed centeredMenu32 to centeredMenu3
 scenarioChoice = centeredMenu3('Select Radial Network Scenario:', ...
@@ -29,7 +29,7 @@ if materialChoice == 1, materialName = 'Copper'; else, materialName = 'Aluminum'
 materialProps = getMaterialProperties(materialName);
 conductivity = materialProps.conductivity; 
 crossSection = input('Enter conductor cross-section [mm^2]: '); 
-loads = getLoads(scenarioChoice); 
+loads = getLoads(scenarioChoice, U_source); 
 results.scenarioName = getScenarioName(scenarioChoice);
 results.U_source = U_source;
 results.materialName = materialName;
@@ -70,7 +70,7 @@ end
 end
 
 % --- Helper sub-functions ---
-function loads = getLoads(scenarioChoice)
+function loads = getLoads(scenarioChoice, U_source)
     % Simplified load input based on scenario (as previously defined)
     if scenarioChoice == 1 % Concentrated
         num_loads = input('Enter the number of loads/nodes: ');
@@ -83,7 +83,7 @@ function loads = getLoads(scenarioChoice)
           %  loads(i).current = input(['Enter current of load at node ' num2str(i) ' [A]: ']);
             loadPower = input(['enter Power usage at load [kW]']);
             cos_phi = input (['Enter Power Factor at load (E.g. 0.80)']);
-            loads(i).current = loadPower/((sqrt(3))*cos_phi*U_source);
+            loads(i).current = loadPower*1000/((sqrt(3))*cos_phi*U_source);
             total_dist = total_dist + loads(i).length;
             loads(i).distance = total_dist;
         end
@@ -93,7 +93,7 @@ function loads = getLoads(scenarioChoice)
    %  total_current = input('Enter total distributed current [A]: ');
         total_Power = input('Enter total Power consumption [kW]');
         cos_phi = input('Enter Power Factor (E.G. 0.97)');
-        total_current = total_Power/((sqrt(3))*U_source*cos_phi)
+        total_current = total_Power*1000/((sqrt(3))*U_source*cos_phi)
         num_segments = 20; % Approximate as 20 segments
         loads(num_segments) = struct('length', 0, 'current', 0, 'voltage', 0, 'distance', 0);
         total_dist = 0;

@@ -1,4 +1,4 @@
-function results = H1_Radial_Analysis()
+function results = H_Run_Analysis_And_Report()
 % =========================================================================
 % FUNCTION: Main Radial Network Analysis (V4 - With Optimization)
 % =========================================================================
@@ -7,7 +7,7 @@ function results = H1_Radial_Analysis()
 
 clc;
 results = []; 
-global U_source;
+%global U_source;
 % --- Get common inputs ---
 % UPDATED: Changed centeredMenu32 to centeredMenu3
 scenarioChoice = centeredMenu3('Select Radial Network Scenario:', ...
@@ -63,7 +63,7 @@ end
 % Plot profile if a valid result was found
 if ~isempty(results)
     % NOTE: H2_PlotRadialProfile needs to be defined or implemented
-    % H2_PlotRadialProfile(results); 
+     H2_PlotRadialProfile(results); 
     disp('Analysis complete. Plotting function H2_PlotRadialProfile needs implementation.');
 end
 

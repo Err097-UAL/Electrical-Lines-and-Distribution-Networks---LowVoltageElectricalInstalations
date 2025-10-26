@@ -7,14 +7,14 @@ function results = I1_DualFed_Analysis()
 %   the core analysis requirements.
 % =========================================================================
 results = []; 
-scenarioChoice = centeredMenu('Select Dual-Fed Network Scenario:', ...
+scenarioChoice = centeredMenu3('Select Dual-Fed Network Scenario:', ...
     'Symmetrical Network (Single Load)', ...
     'Asymmetrical Network (Single Load)', ...
     'Backup Feeding / Reliability Analysis (Multiple Loads)');
 if scenarioChoice == 0, return; end
 
 % --- Get common inputs ---
-materialChoice = centeredMenu('Select Conductor Material:', 'Copper', 'Aluminum');
+materialChoice = centeredMenu3('Select Conductor Material:', 'Copper', 'Aluminum');
 if materialChoice == 0, return; end
 if materialChoice == 1, materialName = 'Copper'; else, materialName = 'Aluminum'; end
 materialProps = getMaterialProperties(materialName);
