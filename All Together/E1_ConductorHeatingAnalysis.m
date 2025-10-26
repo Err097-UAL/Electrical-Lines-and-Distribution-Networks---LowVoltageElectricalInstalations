@@ -101,7 +101,7 @@ T_ss_ac = E4_ThermalEquilibrium(sim_current, R_20_AC, alpha, T_ref, envParams, l
 
 figure;
 plot(time_ac/60, temp_cond_ac, 'r-', 'LineWidth', 2);
-line([0, time_ac(end)/60], [T_ss_ac, T_ss_ac], 'Color', 'k', 'LineStyle', '--');
+line([0, time_ac(end)/60], [T_ss_ac, T_ss_ac], 'Color', 'c', 'LineStyle', '--');
 title(sprintf('Transient Heating for %.1f A', sim_current));
 xlabel('Time (minutes)'); ylabel('Temperature (°C)'); grid on;
 legend('Transient Temperature', sprintf('Final Equilibrium (%.1f°C)', T_ss_ac));

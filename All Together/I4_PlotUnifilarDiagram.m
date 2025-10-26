@@ -15,13 +15,13 @@ hold on;
 box on;
 
 % --- Draw the main line/busbar ---
-plot([0 results.L_total], [0 0], 'k-', 'LineWidth', 4);
+plot([0 results.L_total], [0 0], 'c-', 'LineWidth', 4);
 
 % --- Draw and label the sources ---
-plot(0, 0, 's', 'MarkerSize', 20, 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'k');
+plot(0, 0, 's', 'MarkerSize', 20, 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'c');
 text(0, 0.15, 'Source A', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom', 'FontWeight', 'bold');
 
-plot(results.L_total, 0, 's', 'MarkerSize', 20, 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'k');
+plot(results.L_total, 0, 's', 'MarkerSize', 20, 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'c');
 text(results.L_total, 0.15, 'Source B', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom', 'FontWeight', 'bold');
 
 % --- Draw and label each load ---

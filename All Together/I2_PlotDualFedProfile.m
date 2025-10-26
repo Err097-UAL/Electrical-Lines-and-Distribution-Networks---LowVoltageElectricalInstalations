@@ -22,7 +22,7 @@ end
 voltages_normal(end+1) = results.Ub;
 
 plot(distances, voltages_normal, '-ob', 'LineWidth', 2, 'MarkerFaceColor', 'b', 'DisplayName', 'Normal Operation');
-plot(results.min_voltage_node_distance, results.min_voltage_normal, 'kd', 'MarkerSize', 10, 'MarkerFaceColor', 'y');
+plot(results.min_voltage_node_distance, results.min_voltage_normal, 'cd', 'MarkerSize', 10, 'MarkerFaceColor', 'y');
 
 % 2. Plot Failure Scenarios if data exists
 if isfield(results, 'min_voltage_fail_B')

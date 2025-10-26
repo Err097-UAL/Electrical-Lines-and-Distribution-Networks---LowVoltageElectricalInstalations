@@ -23,7 +23,7 @@ end
 voltages(end+1) = results.Ua; % It must return to the start voltage at the end of the line
 
 plot(distances, voltages, '-ob', 'LineWidth', 2, 'MarkerFaceColor', 'r');
-plot(results.min_voltage_node_distance, results.min_voltage, 'kd', 'MarkerSize', 10, 'MarkerFaceColor', 'y');
+plot(results.min_voltage_node_distance, results.min_voltage, 'cd', 'MarkerSize', 10, 'MarkerFaceColor', 'y');
 
 title(['Voltage Profile for Ring Network (Unwrapped)']);
 xlabel('Distance from Feed Point along Ring (m)');

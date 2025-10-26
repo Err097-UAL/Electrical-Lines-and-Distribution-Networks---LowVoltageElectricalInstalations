@@ -39,7 +39,7 @@ currents(end+1) = -results.Ib;
 plot(distances, currents, '-r', 'LineWidth', 2);
 
 % Add a horizontal line at y=0 to show the current division point
-line([0, results.L_total], [0, 0], 'Color', 'k', 'LineStyle', '--');
+line([0, results.L_total], [0, 0], 'Color', 'c', 'LineStyle', '--');
 
 % Annotate start and end currents
 text(0, results.Ia, sprintf('  Ia = %.1f A', results.Ia), 'VerticalAlignment', 'bottom', 'FontWeight', 'bold');

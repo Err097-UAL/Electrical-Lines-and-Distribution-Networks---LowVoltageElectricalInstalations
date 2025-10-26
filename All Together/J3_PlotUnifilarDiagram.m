@@ -22,13 +22,13 @@ center_y = 0;
 
 % --- Draw the main ring conductor ---
 theta = linspace(0, 2*pi, 200);
-plot(center_x + radius * cos(theta), center_y + radius * sin(theta), 'k-', 'LineWidth', 4);
+plot(center_x + radius * cos(theta), center_y + radius * sin(theta), 'c-', 'LineWidth', 4);
 
 % --- Draw and label the feed-in point ---
 feed_angle = pi/2; % Place at the top
 feed_x = center_x + radius * cos(feed_angle);
 feed_y = center_y + radius * sin(feed_angle);
-plot(feed_x, feed_y, 's', 'MarkerSize', 20, 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'k');
+plot(feed_x, feed_y, 's', 'MarkerSize', 20, 'MarkerFaceColor', 'g', 'MarkerEdgeColor', 'c');
 text(feed_x, feed_y + 0.15, 'Feed-In', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom', 'FontWeight', 'bold');
 
 % --- Draw and label each load ---
