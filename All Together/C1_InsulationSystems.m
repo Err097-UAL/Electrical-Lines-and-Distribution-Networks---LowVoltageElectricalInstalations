@@ -44,8 +44,8 @@ alpha_pvc = 0.045;
 alpha_xlpe = 0.035;
 
 % Calculate resistance degradation
-R_pvc = R0 * exp(-alpha_pvc * (temp_range_C - 20));
-R_xlpe = R0 * exp(-alpha_xlpe * (temp_range_C - 20));
+R_pvc = 1100-(100 * exp(0.014 * (temp_range_C )));
+R_xlpe = 1100-(100 * exp(0.01 * (temp_range_C )));
 
 figure;
 hold on;
