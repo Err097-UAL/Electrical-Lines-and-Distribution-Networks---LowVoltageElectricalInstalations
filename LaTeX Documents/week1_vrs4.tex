@@ -80,7 +80,7 @@ The methodologies employed adhere to the project requirements, utilizing MATLAB 
 
 % --- SECTION 2: LINE CLASSIFICATION AND SELECTION ---
 \section{Problem 1: Line Classification and Selection Analysis}
-The initial task involved the classification of electrical lines for three distinct projects: an industrial facility, a residential complex, and a commercial center. A comprehensive database was established in MATLAB to manage these classifications. Structs were used for their convenience in grouping different data types into a single object, though tables could have also provided a clearer organization. (ref. \texttt{AALine\_Classification\_And\_Selection.m}).
+The initial task involved the classification of electrical lines for three distinct projects: an industrial facility, a residential complex, and a commercial center. A comprehensive database was established in MATLAB to manage these classifications. Structs were used for their convenience in grouping different data types into a single object, though tables could have also provided a clearer organization. (ref. \texttt{A1Line\_Classification\_And\_Selection.m}).
 
 \subsection{Line Database and Classification}
 Lines were categorized based on three primary criteria: Voltage Level (Medium or Low Voltage), Application (Transmission, Distribution, Service or Interior), and Topology (Overhead, Underground, or Mixed). The voltage levels for the analyzed projects are visualized in Figure \ref{fig:voltage_levels}. As shown, the industrial and medium voltage commercial center lines operate at 20 kV, while the residential and low voltage commercial center lines operate at 400 V.
@@ -135,7 +135,7 @@ Lines were categorized based on three primary criteria: Voltage Level (Medium or
 \end{figure}
 
 \subsection{Conductor Material Distribution}
-An analysis of the typical conductor materials selected for these initial classifications reveals a strong preference for copper in low voltage and interior wiring, due to its longer lifespan and superior properties, such as a superior tolerance to heat and smaller cross section requirements. Aluminum is favored for the medium voltage feeder due to its lower cost, and its capacity to match copper's conductivity, with a lower overall weight, although with a bigger cross section. Its inferior strength properties can be compensated through the use of steel (making an ACSR composite cable), although its susceptibility to warping due to heat or strain render its lifespan shorter. The relative distribution between the insulation type chosen for the different insulations is graphically shown in matlab with \texttt{ABpie chart.m}, is presented in Figure \ref{fig:conductor_pie}. The selection reflects a common trade-off between cost (favoring aluminum for large distribution lines) and performance/regulatory requirements (favoring copper for service lines).
+An analysis of the typical conductor materials selected for these initial classifications reveals a strong preference for copper in low voltage and interior wiring, due to its longer lifespan and superior properties, such as a superior tolerance to heat and smaller cross section requirements. Aluminum is favored for the medium voltage feeder due to its lower cost, and its capacity to match copper's conductivity, with a lower overall weight, although with a bigger cross section. Its inferior strength properties can be compensated through the use of steel (making an ACSR composite cable), although its susceptibility to warping due to heat or strain render its lifespan shorter. The relative distribution between the insulation type chosen for the different insulations is graphically shown in matlab with \texttt{A2 pie chart.m}, is presented in Figure \ref{fig:conductor_pie}. The selection reflects a common trade-off between cost (favoring aluminum for large distribution lines) and performance/regulatory requirements (favoring copper for service lines).
 
 \begin{figure}[h!]
     \centering
@@ -152,16 +152,16 @@ An analysis of the typical conductor materials selected for these initial classi
 \end{figure}
     
 \subsection{Interactive Selection Algorithm}
-To aid in future design decisions, an interactive selection algorithm was developed (ref. \texttt{ABLineTypeSelector.m}). This tool provides preliminary recommendations for line topology and conductor material based on user inputs for voltage, application location, and project lifetime. The underlying logic prioritizes overhead lines for main feeders due to cost and heat dissipation, while recommending underground lines for local distribution for safety and aesthetics. Material selection is guided by a longevity principle, favoring copper for projects exceeding a 30-year design life.
+To aid in future design decisions, an interactive selection algorithm was developed (ref. \texttt{A2LineTypeSelector.m}). This tool provides preliminary recommendations for line topology and conductor material based on user inputs for voltage, application location, and project lifetime. The underlying logic prioritizes overhead lines for main feeders due to cost and heat dissipation, while recommending underground lines for local distribution for safety and aesthetics. Material selection is guided by a longevity principle, favoring copper for projects exceeding a 30-year design life.
 
 
 
 % --- SECTION 3: CONDUCTOR AND INSULATION ANALYSIS ---
 \section{Problem 2: Conductor and Insulation Analysis}
-This section provides a detailed analysis of the mechanical and electrical properties of the primary conductor materials (Copper, Aluminum, and ACSR) and insulation systems (PVC and XLPE). The data for this analysis was compiled in the MATLAB scripts \texttt{BAConductor\_Analisis.m} and \texttt{CCStrenghtPropertyComparisons.m}.
+This section provides a detailed analysis of the mechanical and electrical properties of the primary conductor materials (Copper, Aluminum, and ACSR) and insulation systems (PVC and XLPE). The data for this analysis was compiled in the MATLAB scripts \texttt{B1\_Conductor\_Analisis.m} and \texttt{C3StrenghtPropertyComparisons.m}.
 
 \subsection{Conductive Properties of the Conductors and Electrical Analysis}
-A key characteristic of any conductor is how well it conduces current. Copper is the most used conductor, for its relative cheapness when compared to other metals, and for its excellent conductive properties (being the base for the IACS system of measuring conductivity, in which Annealed Copper is 100\% and Aluminum is just 61\%). A table was made comparing the different situations the three students were faced with, each being given specific line length, power and power factor constraints, with which they were asked to calculate the overall line resistance, the line current, the voltage drop and the power loss. These calculations were done through the MATLAB Script \texttt{CBElectricalConductivityWithLossV2}. The Maximum admissible current was also considered. In both cases, values were determined for a fixed set of parameters, which was sufficient for comparing the properties between materials. In the following graphs we visually compare the material's properties. We can appreciate how copper has the highest admissible current and the lowest voltage drop, whilst Aluminum and the ACSR composite have very similar conductive properties.
+A key characteristic of any conductor is how well it conduces current. Copper is the most used conductor, for its relative cheapness when compared to other metals, and for its excellent conductive properties (being the base for the IACS system of measuring conductivity, in which Annealed Copper is 100\% and Aluminum is just 61\%). A table was made comparing the different situations the three students were faced with, each being given specific line length, power and power factor constraints, with which they were asked to calculate the overall line resistance, the line current, the voltage drop and the power loss. These calculations were done through the MATLAB Script \texttt{C2ElectricalConductivityWithLossV2}. The Maximum admissible current was also considered. In both cases, values were determined for a fixed set of parameters, which was sufficient for comparing the properties between materials. In the following graphs we visually compare the material's properties. We can appreciate how copper has the highest admissible current and the lowest voltage drop, whilst Aluminum and the ACSR composite have very similar conductive properties.
 
 % --- CHART 1: Voltage Drop vs. Distance ---
 \begin{figure}[h!]
@@ -245,7 +245,7 @@ The mechanical integrity of a conductor is critical, especially for overhead lin
     \label{fig:tensile_strength}
 \end{figure}
 
-\paragraph{Young's Modulus.} This value indicates the material's stiffness or resistance to elastic deformation under load. Figure \ref{fig:youngs_modulus} shows that copper is the stiffest material, which means it will sag less under its own weight for a given tension compared to aluminum. The ACSR conductor has a mixed stiffness, influenced by both its aluminum and steel components. It is important to note that the ranking the materials had when their Tensile Strength was being compared is not the same as their ranking upon considering Young's Modulus, the difference being that while copper may be the stiffest metal, it is not the strongest.
+\paragraph{Young's Modulus.} This value indicates the material's stiffness or resistance to elastic deformation under load. Figure \ref{fig:youngs_modulus} shows that copper is the stiffest material, which means it will sag less under its own weight for a given tension compared to aluminum. The ACSR conductor has a mixed stiffness, influenced by both its aluminum and steel components. It is important to note that the ranking the materials had when their Tensile Strength was being compared is not the same as their ranking upon considering Young's Modulus, the difference being that while copper may not be the strongest metal, it is the stiffest.
 
 \begin{figure}[h!]
     \centering
@@ -273,13 +273,13 @@ The mechanical integrity of a conductor is critical, especially for overhead lin
 \newpage
 
 \subsection{Insulation Systems Analysis}
-The choice of insulation is dictated by thermal performance, environmental conditions, and regulatory requirements. The analysis in \texttt{CAInsulationSystems.m} focused on PVC and XLPE. The most critical aspect to consider is the maximum continuous operating temperature: 70°C for PVC versus 90°C for XLPE.
+The choice of insulation is dictated by thermal performance, environmental conditions, and regulatory requirements. The analysis in \texttt{C1InsulationSystems.m} focused on PVC and XLPE. The most critical aspect to consider is the maximum continuous operating temperature: 70°C for PVC versus 90°C for XLPE.
 
-PVC (Polyvinyl Chloride): A thermoplastic polymer. It is made flexible for cable use by adding plasticizers. It is a cost-effective and versatile insulator. It is characterized by a lower cost, high flexibility, good resistance to oils and chemicals. However, it has a lower temperature rating,and produces dense, corrosive smoke (HCl gas) when burned. It also becomes brittle at low temperatures.
+PVC (Polyvinyl Chloride): A thermoplastic polymer. It is made flexible for cable use by adding plasticizers. It is a cost-effective and versatile insulator. It is characterized by a lower cost, high flexibility, and good resistance to oils and chemicals. However, it has a lower temperature rating,and produces dense, corrosive smoke (HCl gas) when burned. It also becomes brittle at low temperatures.
 
 XLPE (Cross-linked Polyethylene) is a thermosetting polymer. The polyethylene molecules are permanently bonded ("cross-linked"), preventing them from melting or separating at higher temperatures, giving it superior thermal and mechanical stability. It has a higher operating temperature of 90°C, giving it its higher current rating for the same conductor size as PVC, as well as a greater mechanical toughness and water resistance. It does however have a  higher material cost, and it is less flexible than PVC which can make installing it in tight spaces more difficult.
 
-This thermal advantage allows an XLPE-insulated cable to carry significantly more current, and therefore more power, than a PVC-insulated cable of the same conductor size. This relationship is illustrated in Figure \ref{fig:power_capacity}, which shows the calculated maximum power capacity for a standard 2.5 mm² copper conductor. This makes XLPE the mandatory choice for high-power circuits as specified in REBT ITC-BT-07 and ITC-BT-15.
+This thermal advantage allows an XLPE-insulated cable to carry significantly more current, and therefore more power, than a PVC-insulated cable of the same conductor size. This relationship is illustrated in Figure \ref{fig:power_capacity}, which shows the calculated maximum power capacity for a standard 2.5 mm² copper conductor. This makes XLPE the mandatory choice for the high-power circuits where PVC does not meet the requirements as specified in REBT ITC-BT-07.
 
 \begin{figure}[h!]
     \centering
@@ -303,9 +303,133 @@ This thermal advantage allows an XLPE-insulated cable to carry significantly mor
     \label{fig:power_capacity}
 \end{figure}
 
+The wear of the conductor insulation has been modeled using a generic decay function that simplifies the Arrhenius equation used for modeling the decay of many systems.
+The wear of insulation material is due to heat which is treated as a function of temperature. The function used in the analysis is $R = R_0- R_0 \cdot e^{-\alpha(T )}$, where $R$ is the insulation resistance at a given temperature $T$, $R_0$ is the nominal resistance at a reference temperature, and the relative insulation resistance shows how much the material's thermal resistance capacity has dropped at a certain temperature in comparison to the initial thermal resistance value at the reference temperature $T_{ref}$ (e.g., 20°C), and $\alpha$ is the material-specific decay coefficient. This coefficient is the critical factor: PVC has a higher decay coefficient ($\alpha=0.045$) than XLPE ($\alpha=0.035$) (coefficients assumed for comparative purposes). This means that as temperature rises, PVC's insulation resistance drops more rapidly than XLPE's, indicating faster wear and degradation under thermal stress. 
+
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.9\textwidth,
+    height=8cm,
+    title={Temperature Effect on Insulation Resistance},
+    xlabel={Operating Temperature (°C)},
+    ylabel={Relative Insulation Resistance},
+    xmin=0, xmax=120,
+    ymin=0, ymax=1050, % Adjusted ymax slightly
+    legend pos=south west, % Moved legend to avoid overlap
+    grid=major,
+    ticklabel style={font=\small},
+]
+
+% Plot PVC - Adjusted alpha for moderate decay before 70C
+\addplot[
+    domain=0:120,
+    samples=100,
+    color=red,
+    thick,
+] {1100-(100 * exp(0.014 * (x )))}; % Used alpha = 0.014
+\addlegendentry{PVC}
+
+% Plot XLPE - Adjusted alpha for moderate decay before 90C
+\addplot[
+    domain=0:120,
+    samples=100,
+    color=blue,
+    thick,
+] {1100-(100 * exp(0.010 * (x )))}; % Used alpha = 0.010
+\addlegendentry{XLPE}
+
+% Max Temp Lines - Drawn up to the approximate resistance value at max temp
+\draw[red, dashed, thick] (axis cs:70, 0) -- (axis cs:70, 820) % Ends near the curve at T=70
+    node[above, pos=1, anchor=south, font=\small] {PVC Max (70°C)};
+
+\draw[blue, dashed, thick] (axis cs:90, 0) -- (axis cs:90,830) % Ends near the curve at T=90
+    node[above, pos=1, anchor=south, font=\small] {XLPE Max (90°C)};
+
+\end{axis}
+\end{tikzpicture}
+\caption{Comparison of insulation resistance decay for PVC and XLPE (More Curved Decay Model).}
+\end{figure}
+
+\newpage
+\subsection{Economic Comparison}
+The economic comparison involves a trade-off between initial capital cost and long-term operating cost. Based on the assumed data, Aluminum is the cheapest conductor (700 €/km), followed by ACSR (850 €/km), and finally Copper (1200 €/km). For insulation, PVC is noted as having a lower initial cost than XLPE. Therefore, a cable using an Aluminum conductor with PVC insulation would typically have the lowest initial purchase price. However, operating costs are driven by power losses ($I^2R$), which are inversely related to conductivity. Copper has the highest conductivity ($\sigma=56$), resulting in the lowest resistance and thus the lowest operating costs over the cable's lifetime. This is where the insulation choice becomes critical: XLPE, despite its higher initial cost, can safely operate at a higher temperature (90°C vs 70°C for PVC). This higher thermal rating allows the conductor to carry more current, which can enable the use of a smaller (and cheaper) conductor for the same power delivery. All of these trade offs lead to a concept known as the "economic section."
+
+
+
+
+These charts illustrate the trade-off between initial cost and operating cost for different conductor materials, based on the assumed data.
+The initial conductor cost values per kilometer are taken from table B2 in the Appendix, using a reference of 35mm\^2 cable of each type
+The estimated energy loss cost over 30 years is estimated with the following formulas: Power loss per phase is $P_{loss} = I^2 R$. For a balanced 3-phase system, total power loss is $P_{total} = 3 \times I^2 R$. Total energy loss over a period is $E_{loss} = P_{total} \times \text{time} = 3 \times I^2 R \times \text{time}$. $R$ is the resistance per km at the assumed operating power. The final cost is based on an assumed cost of EUR 0.15 per kWh and a 30 year time span.
+
+\begin{figure}[h!]
+\centering
+% Bar Chart 1: Initial Cost
+\begin{tikzpicture}
+\begin{axis}[
+    ybar,
+    width=0.9\textwidth,
+    height=7cm,
+    title={Initial Conductor Cost},
+    ylabel={Cost (€/km)},
+    symbolic x coords={Copper, Aluminum, ACSR},
+    xtick=data,
+    nodes near coords,
+    nodes near coords align={vertical},
+    ymin=0,
+    enlarge x limits=0.4,
+    ticklabel style={font=\small},
+]
+\addplot coordinates {
+    (Copper, 1200)
+    (Aluminum, 700)
+    (ACSR, 850)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{Initial material cost per kilometer.}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+% Bar Chart 2: Estimated 30-Year Operating Cost
+\begin{tikzpicture}
+\begin{axis}[
+    ybar,
+    width=0.9\textwidth,
+    height=7cm,
+    title={Estimated 30-Year Operating Cost (Energy Loss)},
+    ylabel={Estimated Cost (kEUR/km)}, % Changed label
+    symbolic x coords={Copper, Aluminum, ACSR},
+    xtick=data,
+    nodes near coords,
+    nodes near coords style={ % Adjusted formatting
+        /pgf/number format/fixed,
+        /pgf/number format/precision=0,
+        font=\small
+    },
+    nodes near coords align={vertical},
+    ymin=0,
+    ymax=850, % Adjusted ymax based on new values
+    enlarge x limits=0.4,
+    ticklabel style={font=\small}, % Kept comma here as it's correct
+]
+% Estimated Costs in kEUR (Calculations based on assumptions in description)
+\addplot coordinates {
+    (Copper, 472)      % Roughly 472,020 EUR
+    (Aluminum, 737)    % Roughly 736,532 EUR
+    (ACSR, 780)        % Roughly 779,595 EUR
+};
+\end{axis}
+\end{tikzpicture}
+\caption{Estimated 30-year operating cost due to energy losses, based on assumed load (100A), area (50mm²), temp (50°C), and price (€0.15/kWh). For comparative purposes only.\protect\footnote{Energy loss calculation: Power loss per phase is $P_{loss} = I^2 R$. For a balanced 3-phase system, total power loss is $P_{total} = 3 \times I^2 R$. Total energy loss over a period is $E_{loss} = P_{total} \times \text{time} = 3 \times I^2 R \times \text{time}$. $R$ is the resistance per km at the assumed operating temperature.}}
+\end{figure}
+\newpage
 % --- SECTION 4: BASIC LINE CALCULATIONS ---
 \section{Problem 3: Basic Line Calculations}
-To quantify the performance of a line, a set of fundamental calculations were implemented in the MATLAB script \texttt{DDBasicLineCalculations.m}. These calculations determine resistance, current, and voltage drop for the scenarios assigned to each student.
+To quantify the performance of a line, a set of fundamental calculations were implemented in the MATLAB script \texttt{D1BasicLineCalculations.m}. These calculations determine resistance, current, and voltage drop for the scenarios assigned to each student.
 
 \subsection{Fundamental Formulas}
 The following standard formulas were used for the analysis.
@@ -408,7 +532,7 @@ The following table consolidates the key material properties and economic values
         \bottomrule
     \end{tabular}
 \end{table}
-
+\newpage
 % --- APPENDIX C ---
 \begin{center}\textbf{APPENDIX C}\end{center}
 \section{List of Formulas}

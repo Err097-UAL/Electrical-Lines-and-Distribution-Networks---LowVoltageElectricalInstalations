@@ -9,29 +9,30 @@
 \contentsline {paragraph}{Tensile Strength.}{5}{section*.7}%
 \contentsline {paragraph}{Young's Modulus.}{6}{section*.9}%
 \contentsline {subsection}{\numberline {3.3}Insulation Systems Analysis}{7}{subsection.3.3}%
-\contentsline {section}{\numberline {4}Problem 3: Basic Line Calculations}{7}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Fundamental Formulas}{8}{subsection.4.1}%
-\contentsline {paragraph}{Resistance.}{8}{section*.12}%
-\contentsline {paragraph}{Three-Phase Current.}{8}{section*.13}%
-\contentsline {paragraph}{Voltage Drop.}{8}{section*.14}%
-\contentsline {subsection}{\numberline {4.2}Scenario Analysis Results}{8}{subsection.4.2}%
-\contentsline {section}{\numberline {5}Conclusion}{9}{section.5}%
-\contentsline {section}{\numberline {A}References}{10}{appendix.A}%
-\contentsline {section}{\numberline {B}Tables and Assumed Values}{10}{appendix.B}%
-\contentsline {subsection}{\numberline {B.1}List of Tables}{10}{subsection.B.1}%
-\contentsline {subsection}{List of Tables}{10}{section*.16}%
-\contentsline {subsection}{\numberline {B.2}Summary of Assumed Properties}{10}{subsection.B.2}%
-\contentsline {section}{\numberline {C}List of Formulas}{11}{appendix.C}%
-\contentsline {subsection}{\numberline {C.1}Total Line Resistance}{11}{subsection.C.1}%
-\contentsline {subsection}{\numberline {C.2}Voltage Drop (Per Phase)}{11}{subsection.C.2}%
-\contentsline {subsection}{\numberline {C.3}Three-Phase Power Loss}{11}{subsection.C.3}%
-\contentsline {subsection}{\numberline {C.4}Insulation Aging Estimation}{11}{subsection.C.4}%
-\contentsline {section}{\numberline {D}MATLAB Source Code}{12}{appendix.D}%
-\contentsline {subsection}{\numberline {D.1}AALine\_Classification\_And\_Selection.m}{12}{subsection.D.1}%
-\contentsline {subsection}{\numberline {D.2}ABLineTypeSelector.m}{13}{subsection.D.2}%
-\contentsline {subsection}{\numberline {D.3}ABpie chart.m}{14}{subsection.D.3}%
-\contentsline {subsection}{\numberline {D.4}BAConductor\_Analisis.m}{15}{subsection.D.4}%
-\contentsline {subsection}{\numberline {D.5}CBElectricalConductivityWithPowerLossV2.m}{16}{subsection.D.5}%
-\contentsline {subsection}{\numberline {D.6}CCStrenghtPropertyComparisons.m}{17}{subsection.D.6}%
-\contentsline {subsection}{\numberline {D.7}CDInsulationSystems.m}{18}{subsection.D.7}%
-\contentsline {subsection}{\numberline {D.8}DDBasicLineCalculations.m}{18}{subsection.D.8}%
+\contentsline {subsection}{\numberline {3.4}Economic Comparison}{9}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Problem 3: Basic Line Calculations}{10}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Fundamental Formulas}{10}{subsection.4.1}%
+\contentsline {paragraph}{Resistance.}{10}{section*.15}%
+\contentsline {paragraph}{Three-Phase Current.}{10}{section*.16}%
+\contentsline {paragraph}{Voltage Drop.}{10}{section*.17}%
+\contentsline {subsection}{\numberline {4.2}Scenario Analysis Results}{10}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Conclusion}{11}{section.5}%
+\contentsline {section}{\numberline {A}References}{12}{appendix.A}%
+\contentsline {section}{\numberline {B}Tables and Assumed Values}{12}{appendix.B}%
+\contentsline {subsection}{\numberline {B.1}List of Tables}{12}{subsection.B.1}%
+\contentsline {subsection}{List of Tables}{12}{section*.19}%
+\contentsline {subsection}{\numberline {B.2}Summary of Assumed Properties}{12}{subsection.B.2}%
+\contentsline {section}{\numberline {C}List of Formulas}{13}{appendix.C}%
+\contentsline {subsection}{\numberline {C.1}Total Line Resistance}{13}{subsection.C.1}%
+\contentsline {subsection}{\numberline {C.2}Voltage Drop (Per Phase)}{13}{subsection.C.2}%
+\contentsline {subsection}{\numberline {C.3}Three-Phase Power Loss}{13}{subsection.C.3}%
+\contentsline {subsection}{\numberline {C.4}Insulation Aging Estimation}{13}{subsection.C.4}%
+\contentsline {section}{\numberline {D}MATLAB Source Code}{14}{appendix.D}%
+\contentsline {subsection}{\numberline {D.1}AALine\_Classification\_And\_Selection.m}{14}{subsection.D.1}%
+\contentsline {subsection}{\numberline {D.2}ABLineTypeSelector.m}{15}{subsection.D.2}%
+\contentsline {subsection}{\numberline {D.3}ABpie chart.m}{16}{subsection.D.3}%
+\contentsline {subsection}{\numberline {D.4}BAConductor\_Analisis.m}{17}{subsection.D.4}%
+\contentsline {subsection}{\numberline {D.5}CBElectricalConductivityWithPowerLossV2.m}{18}{subsection.D.5}%
+\contentsline {subsection}{\numberline {D.6}CCStrenghtPropertyComparisons.m}{19}{subsection.D.6}%
+\contentsline {subsection}{\numberline {D.7}CDInsulationSystems.m}{20}{subsection.D.7}%
+\contentsline {subsection}{\numberline {D.8}DDBasicLineCalculations.m}{20}{subsection.D.8}%
