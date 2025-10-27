@@ -1,143 +1,93 @@
 \documentclass[11pt, a4paper]{article}
 
-% --- UNIVERSAL PREAMBLE BLOCK ---
+% --- Standard Packages ---
 \usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2cm, right=2cm]{geometry}
-% \usepackage{fontspec} % Removed: Requires XeLaTeX or LuaLaTeX
-% \usepackage[english, bidi=basic, provide=*]{babel} % Removed: Part of fontspec setup
-% \babelprovide[import, onchar=ids fonts]{english} % Removed
-% \babelfont{rm}{Noto Sans} % Removed
 
-% --- Fallback for pdfLaTeX environments ---
-\usepackage[utf8]{inputenc} % Handle UTF-8 source code
-\usepackage[T1]{fontenc}    % Use modern font encoding
-\usepackage[english]{babel} % Standard babel package for pdflatex
-% --- END PREAMBLE BLOCK ---
-
-\usepackage{amsmath} % For math symbols
-\usepackage{pgfplots} % For creating plots
-\usepackage{booktabs} % For nice tables
-\pgfplotsset{compat=1.18} % Use a modern version of pgfplots
+% Load pgfplots for drawing graphs
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18} % Use a modern compatibility version
 
 \begin{document}
 
-\section*{Insulation Wear: PVC vs. XLPE}
-
-This chart shows the exponential decay in relative insulation resistance as operating temperature increases. The decay coefficients are adjusted to show a more pronounced curve, especially beyond the maximum operating temperatures. Note how XLPE's resistance decays slower and it remains functional at a higher maximum temperature.
-
 \begin{figure}[h!]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    width=0.9\textwidth,
-    height=8cm,
-    title={Temperature Effect on Insulation Resistance},
-    xlabel={Operating Temperature (°C)},
-    ylabel={Relative Insulation Resistance},
-    xmin=20, xmax=120,
-    ymin=0, ymax=1050, % Adjusted ymax slightly
-    legend pos=south west, % Moved legend to avoid overlap
-    grid=major,
-    ticklabel style={font=\small},
-]
-
-% Plot PVC - Adjusted alpha for moderate decay before 70C
-\addplot[
-    domain=20:120,
-    samples=100,
-    color=red,
-    thick,
-] {1000 * exp(-0.014 * (x - 20))}; % Used alpha = 0.014
-\addlegendentry{PVC}
-
-% Plot XLPE - Adjusted alpha for moderate decay before 90C
-\addplot[
-    domain=20:120,
-    samples=100,
-    color=blue,
-    thick,
-] {1000 * exp(-0.010 * (x - 20))}; % Used alpha = 0.010
-\addlegendentry{XLPE}
-
-% Max Temp Lines - Drawn up to the approximate resistance value at max temp
-\draw[red, dashed, thick] (axis cs:70, 0) -- (axis cs:70, {1000 * exp(-0.014 * (70 - 20))}) % Ends near the curve at T=70
-    node[above, pos=1, anchor=south, font=\small] {PVC Max (70°C)};
-
-\draw[blue, dashed, thick] (axis cs:90, 0) -- (axis cs:90, {1000 * exp(-0.010 * (90 - 20))}) % Ends near the curve at T=90
-    node[above, pos=1, anchor=south, font=\small] {XLPE Max (90°C)};
-
-\end{axis}
-\end{tikzpicture}
-\caption{Comparison of insulation resistance decay for PVC and XLPE (More Curved Decay Model).}
-\end{figure}
-
-\clearpage
-
-\section*{Economic Comparison of Conductors}
-
-These charts illustrate the trade-off between initial cost and estimated 30-year operating cost for different conductor materials.
-
-\begin{figure}[h!]
-\centering
-% Bar Chart 1: Initial Cost
-\begin{tikzpicture}
-\begin{axis}[
-    ybar,
-    width=0.9\textwidth,
-    height=7cm,
-    title={Initial Conductor Cost},
-    ylabel={Cost (EUR/km)}, % Changed € symbol to EUR
-    symbolic x coords={Copper, Aluminum, ACSR},
-    xtick=data,
-    nodes near coords,
-    nodes near coords align={vertical},
-    ymin=0,
-    ymax=1300, % Adjusted ymax for better spacing
-    enlarge x limits=0.4,
-    ticklabel style={font=\small} % Removed trailing comma here
-]
-\addplot coordinates {
-    (Copper, 1200)
-    (Aluminum, 700)
-    (ACSR, 850)
-};
-\end{axis}
-\end{tikzpicture}
-\caption{Initial material cost per kilometer.}
-\end{figure}
-
-\begin{figure}[h!]
-\centering
-% Bar Chart 2: Estimated 30-Year Operating Cost
-\begin{tikzpicture}
-\begin{axis}[
-    ybar,
-    width=0.9\textwidth,
-    height=7cm,
-    title={Estimated 30-Year Operating Cost (Energy Loss)},
-    ylabel={Estimated Cost (kEUR/km)}, % Changed label
-    symbolic x coords={Copper, Aluminum, ACSR},
-    xtick=data,
-    nodes near coords,
-    nodes near coords style={ % Adjusted formatting
-        /pgf/number format/fixed,
-        /pgf/number format/precision=0,
-        font=\small
-    },
-    nodes near coords align={vertical},
-    ymin=0,
-    ymax=850, % Adjusted ymax based on new values
-    enlarge x limits=0.4,
-    ticklabel style={font=\small}, % Kept comma here as it's correct
-]
-% Estimated Costs in kEUR (Calculations based on assumptions in description)
-\addplot coordinates {
-    (Copper, 472)      % Roughly 472,020 EUR
-    (Aluminum, 737)    % Roughly 736,532 EUR
-    (ACSR, 780)        % Roughly 779,595 EUR
-};
-\end{axis}
-\end{tikzpicture}
-\caption{Estimated 30-year operating cost due to energy losses, based on assumed load (100A), area (50mm²), temp (50°C), and price (€0.15/kWh). For comparative purposes only.\protect\footnote{Energy loss calculation: Power loss per phase is $P_{loss} = I^2 R$. For a balanced 3-phase system, total power loss is $P_{total} = 3 \times I^2 R$. Total energy loss over a period is $E_{loss} = P_{total} \times \text{time} = 3 \times I^2 R \times \text{time}$. $R$ is the resistance per km at the assumed operating temperature.}}
+    \centering
+    % Define colors for clarity
+    \definecolor{voltagecolor}{rgb}{0.2, 0.2, 0.8}
+    \definecolor{currentcolor}{rgb}{0.8, 0.2, 0.2}
+    
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.9\textwidth, % Make the plot wide
+            height=0.6\textwidth,
+            title={Correct Voltage and Current Profile in a Radial Network},
+            xlabel={Distance from Source (m)},
+            xmin=0, xmax=200, % Set x-axis limits
+            % --- Primary Y-Axis (Voltage) ---
+            axis y line*=left, % Use the left Y-axis
+            ylabel={Voltage (V)},
+            ylabel style={color=voltagecolor}, % Corrected: Apply color directly to ylabel style
+            ymin=225, ymax=231, % Set voltage axis limits
+            yticklabel style={color=voltagecolor}, % Corrected: Apply color directly to tick label style
+            grid=major
+            ]
+            
+            % Plot the Voltage (Blue Line)
+            % Data: (0, 230), (50, 228.5), (100, 227.5), (150, 227.0)
+            % Slope 1 (0-50m): (230-228.5)/50 = 0.03 V/m
+            % Slope 2 (50-100m): (228.5-227.5)/50 = 0.02 V/m
+            % Slope 3 (100-150m): (227.5-227.0)/50 = 0.01 V/m
+            % The slope correctly decreases (gets flatter).
+            \addplot[
+                color=voltagecolor,
+                mark=*,
+                mark options={fill=voltagecolor, scale=0.8},
+                line width=1.5pt
+            ] coordinates {
+                (0, 230)
+                (50, 228.5)
+                (100, 227.5)
+                (150, 227.0)
+            };
+            \addlegendentry{Voltage}
+            
+        \end{axis}
+        
+        \begin{axis}[
+            width=0.9\textwidth,
+            height=0.6\textwidth,
+            axis y line*=right, % Use the right Y-axis
+            axis x line=none,   % Hide the x-axis for this one
+            ylabel={Current (A)},
+            ylabel style={color=currentcolor}, % Corrected: Apply color directly to ylabel style
+            xmin=0, xmax=200, % Match x-axis limits
+            ymin=0, ymax=70,   % Set current axis limits
+            yticklabel style={color=currentcolor}, % Corrected: Apply color directly to tick label style
+            ]
+            
+            % Plot the Current (Red Step Line)
+            % 'const plot' creates a step function
+            % At 0m, current is 60A. At 50m, it drops to 40A. At 100m, it drops to 20A. At 150m, it drops to 0.
+            \addplot[
+                color=currentcolor,
+                const plot, % This creates the step plot
+                line width=1.5pt,
+                no marks
+            ] coordinates {
+                (0, 60)
+                (50, 60)
+                (50, 40)
+                (100, 40)
+                (100, 20)
+                (150, 20)
+                (150, 0)
+                (200, 0)
+            };
+            \addlegendentry{Current}
+            
+        \end{axis}
+    \end{tikzpicture}
+    
+    \caption{A physically correct plot showing voltage drop in a radial network. As the current (red) decreases in steps, the slope of the voltage profile (blue) becomes progressively flatter, indicating a smaller voltage drop per meter.}
 \end{figure}
 
 \end{document}

@@ -7,11 +7,11 @@
 \contentsline {subsection}{\numberline {2.1}Theoretical Framework}{3}{subsection.2.1}%
 \contentsline {subsection}{\numberline {2.2}Comprehensive Sizing Algorithm}{3}{subsection.2.2}%
 \contentsline {subsection}{\numberline {2.3}Unifilar Diagram and Characteristic Profiles}{4}{subsection.2.3}%
-\contentsline {section}{\numberline {3}Analysis of Advanced Network Topologies}{4}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Ring Network Analysis}{4}{subsection.3.1}%
+\contentsline {section}{\numberline {3}Analysis of Advanced Network Topologies}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Ring Network Analysis}{5}{subsection.3.1}%
 \contentsline {subsubsection}{\numberline {3.1.1}Theoretical Framework and Methodology}{5}{subsubsection.3.1.1}%
 \contentsline {subsubsection}{\numberline {3.1.2}Diagrams and Voltage Profile}{5}{subsubsection.3.1.2}%
-\contentsline {subsection}{\numberline {3.2}Meshed Network Analysis}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.2}Meshed Network Analysis}{6}{subsection.3.2}%
 \contentsline {subsubsection}{\numberline {3.2.1}Theoretical Framework and Methodology}{6}{subsubsection.3.2.1}%
 \contentsline {subsubsection}{\numberline {3.2.2}Diagrams and Voltage Profile}{7}{subsubsection.3.2.2}%
 \contentsline {section}{\numberline {4}Economic Comparison of Network Topologies}{7}{section.4}%

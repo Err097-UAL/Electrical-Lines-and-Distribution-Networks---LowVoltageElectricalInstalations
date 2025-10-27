@@ -139,34 +139,85 @@ The structure and behavior of a radial network can be visualized through its uni
     \caption{Unifilar diagram of a general radial distribution network.}
     \label{fig:radial_diagram}
 \end{figure}
-
-\begin{figure}[htbp]
+\begin{figure}[h!]
     \centering
+    % Define colors for clarity
+    \definecolor{voltagecolor}{rgb}{0.2, 0.2, 0.8}
+    \definecolor{currentcolor}{rgb}{0.8, 0.2, 0.2}
+    
     \begin{tikzpicture}
         \begin{axis}[
-            title={Voltage and Current Profile in a Radial Network},
-            xlabel={Distance from Source},
-            ylabel={Voltage (p.u.)},
-            ymin=0.9, ymax=1.05,
-            axis y line*=left,
-            legend pos=south west
-        ]
-            \addplot[blue, thick, mark=*] coordinates {(0, 1.0) (1, 0.98) (2, 0.95) (3, 0.92)};
+            width=0.9\textwidth, % Make the plot wide
+            height=0.6\textwidth,
+            title={Correct Voltage and Current Profile in a Radial Network},
+            xlabel={Distance from Source (m)},
+            xmin=0, xmax=200, % Set x-axis limits
+            % --- Primary Y-Axis (Voltage) ---
+            axis y line*=left, % Use the left Y-axis
+            ylabel={Voltage (V)},
+            ylabel style={color=voltagecolor}, % Corrected: Apply color directly to ylabel style
+            ymin=225, ymax=231, % Set voltage axis limits
+            yticklabel style={color=voltagecolor}, % Corrected: Apply color directly to tick label style
+            grid=major
+            ]
+            
+            % Plot the Voltage (Blue Line)
+            % Data: (0, 230), (50, 228.5), (100, 227.5), (150, 227.0)
+            % Slope 1 (0-50m): (230-228.5)/50 = 0.03 V/m
+            % Slope 2 (50-100m): (228.5-227.5)/50 = 0.02 V/m
+            % Slope 3 (100-150m): (227.5-227.0)/50 = 0.01 V/m
+            % The slope correctly decreases (gets flatter).
+            \addplot[
+                color=voltagecolor,
+                mark=*,
+                mark options={fill=voltagecolor, scale=0.8},
+                line width=1.5pt
+            ] coordinates {
+                (0, 230)
+                (50, 228.5)
+                (100, 227.5)
+                (150, 227.0)
+            };
             \addlegendentry{Voltage}
+            
         \end{axis}
+        
         \begin{axis}[
-            ylabel={Current (p.u.)},
-            ymin=0, ymax=1.2,
-            axis y line*=right,
-            axis x line=none,
-            legend pos=south east
-        ]
-            \addplot[red, thick, const plot] coordinates {(0, 1.0) (1, 0.6) (2, 0.3) (3, 0.3) (3.5,0)};
+            width=0.9\textwidth,
+            height=0.6\textwidth,
+            axis y line*=right, % Use the right Y-axis
+            axis x line=none,   % Hide the x-axis for this one
+            ylabel={Current (A)},
+            ylabel style={color=currentcolor}, % Corrected: Apply color directly to ylabel style
+            xmin=0, xmax=200, % Match x-axis limits
+            ymin=0, ymax=70,   % Set current axis limits
+            yticklabel style={color=currentcolor}, % Corrected: Apply color directly to tick label style
+            ]
+            
+            % Plot the Current (Red Step Line)
+            % 'const plot' creates a step function
+            % At 0m, current is 60A. At 50m, it drops to 40A. At 100m, it drops to 20A. At 150m, it drops to 0.
+            \addplot[
+                color=currentcolor,
+                const plot, % This creates the step plot
+                line width=1.5pt,
+                no marks
+            ] coordinates {
+                (0, 60)
+                (50, 60)
+                (50, 40)
+                (100, 40)
+                (100, 20)
+                (150, 20)
+                (150, 0)
+                (200, 0)
+            };
             \addlegendentry{Current}
+            
         \end{axis}
     \end{tikzpicture}
-    \caption{Voltage steadily decreases with distance, while current drops in steps as loads are served.}
-    \label{fig:radial_profiles}
+    
+    \caption{A physically correct plot showing voltage drop in a radial network. As the current (red) decreases in steps, the slope of the voltage profile (blue) becomes progressively flatter, indicating a smaller voltage drop per meter.}
 \end{figure}
 
 % =================================================================

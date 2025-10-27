@@ -1,0 +1,97 @@
+\documentclass[10pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+
+\geometry{
+ a4paper,
+ margin=1in,
+}
+
+\title{\textbf{Project Technical Baseline Specification} \\ \small Multi Sector Technology Park Spain}
+\author{Expert Analytical Consultant}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction and Scope}
+This document establishes the critical design input parameters and system architectural specifications required for the professional engineering documentation of a multi sector technology park in Spain. All design elements are predicated on compliance with the \textbf{Reglamento Electrotécnico para Baja Tensión (REBT)} and relevant Medium Voltage (MT) regulations.
+
+The park aggregates diverse loads, including administrative offices, a public access museum, heavy industrial facilities, and a critical 1 MW nuclear research reactor. The combined approximate demand necessitates a primary Medium Voltage (MT) intake.
+
+\section{Architectural and Demand Parameters}
+These parameters define the physical scale and power requirements for the design baseline. Note that P connected denotes the estimated connected power.
+
+\begin{table}[h!]
+    \centering
+    \caption{\textbf{Facility Power and Classification Baseline}}
+    \label{tab:demand baseline}
+    % Used p{width} columns for the first two columns to force wrapping and prevent overflow
+    \begin{tabular}{|p{2.5cm}|p{2.8cm}|c|c|c|c|}
+        \hline
+        \textbf{Facility / Sector} & \textbf{REBT Class (ITC)} & \textbf{Area (m\textsuperscript{2})} & \textbf{P conn. (kW)} & \textbf{cos $\phi$} & \textbf{Supply (V)} \\
+        \hline
+        Office Building & ITC BT 28 (Oficinas) & 1,500 & 100 & 0.95 & 400/230 \\
+        \hline
+        Museum & ITC BT 28 (Publ. Conc.) & 2,500 & 180 & 0.90 & 400 \\
+        \hline
+        Machining Workshop & ITC BT 29 (Industrial) & 1,000 & 350 & 0.85 & MT $\rightarrow$ 400 \\
+        \hline
+        Chemical Plant & ITC BT 29 (Riesgo Especial) & 3,000 & 650 & 0.88 & MT $\rightarrow$ 400 \\
+        \hline
+        Nuclear Reactor & Critical/Special Load & 500 (Aux.) & 1000 & 0.98 & Primary MT \\
+        \hline
+        \textbf{TOTAL PARK DEMAND} & & & $\approx$ 2,300 & & \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\section{Primary Distribution and Substation Architecture}
+The approximate 2.3 MW aggregated demand requires a primary Medium Voltage (MT) intake.
+
+\subsection{Medium Voltage (MT) System Parameters}
+\begin{itemize}
+    \item \textbf{Service Voltage (U MT):} 20 kV. (Standard voltage for industrial parks in Spain).
+    \item \textbf{Primary MT Intake (Acometida):} Single connection point subject to DNO (Distribution Network Operator) technical standards.
+    \item \textbf{Internal MT Network:} Underground network linking the intake to the internal Transformation Centers (CT).
+\end{itemize}
+
+\subsection{Transformation Centers (CT) Specification}
+Three CTs are mandated to manage demand and minimize Low Voltage (BT) line losses. The BT side of all internal CTs will use the \textbf{TN S} earthing system (ITC BT 08).
+
+\begin{table}[h!]
+    \centering
+    \caption{\textbf{Transformation Center (CT) Architecture}}
+    \label{tab:ct architecture}
+    % Adjusting columns for Table 2 for safety
+    \begin{tabular}{|l|p{3.5cm}|c|c|c|c|}
+        \hline
+        \textbf{CT} & \textbf{Served Load} & \textbf{Primary U} & \textbf{Secondary U} & \textbf{Est. S nominal} & \textbf{BT Earthing} \\
+        \hline
+        CT A & Workshop and Chem. Plant & 20 kV & 400 V & 1,600 kVA & **TN S** \\
+        \hline
+        CT B & Offices and Museum & 20 kV & 400/230 V & 500 kVA & **TN S** \\
+        \hline
+        CT C & Nuclear Reactor Aux. & 20 kV & 400 V & 1,000 kVA (Dedicated) & **TN S** \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\section{Critical Missing Design Parameters}
+These parameters are essential for safety, stability, and compliance.
+
+\begin{itemize}
+    \item \textbf{Short Circuit Power (S cc):} Must be calculated at all busbars to determine the required \textbf{breaking capacity} of protective devices (ITC BT 22).
+    \item \textbf{Availability/Redundancy Class (Nuclear Reactor):} The critical nature of the reactor requires a Tier IV or similar classification. CT C must have \textbf{Dual MT Feeder Redundancy} and a dedicated **Emergency Power System** (UPS/Genset).
+    \item \textbf{Harmonics Study:} Required due to industrial motor and process loads. Compliance with \textbf{EN 50160} necessitates a study to determine the placement and rating of **Harmonic Filters** for power quality maintenance.
+    \item \textbf{Earthing System (MT Regimen de Neutro):} The MT system's earthing (e.g., Resistor Earthed or Isolated) must be specified by the DNO to ensure protection selectivity and service continuity.
+    \item \textbf{EMC Shielding Requirements:} The sensitive equipment in the Chemical Plant and Nuclear Reactor mandates detailed \textbf{Electromagnetic Compatibility (EMC) studies} (ITC BT 29) and potentially shielded cabling/conduits.
+\end{itemize}
+
+\end{document}
