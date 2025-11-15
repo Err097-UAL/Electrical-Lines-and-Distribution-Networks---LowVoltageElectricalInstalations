@@ -1,6 +1,6 @@
-function [R_total, R_env] = Z3_calculateEnvironmentalResistance(scenario, params)
+function [R_total, R_env, iteration_history] = Z3_calculateEnvironmentalResistance(scenario, params)
 % -------------------------------------------------------------------------
-% [R_total, R_env] = Z3_calculateEnvironmentalResistance(scenario, params)
+% [R_total, R_env, iteration_history] = Z3_calculateEnvironmentalResistance(scenario, params)
 % -------------------------------------------------------------------------
 % This function calculates the environmental and total thermal resistance
 % based on the defined scenario.
@@ -9,6 +9,9 @@ function [R_total, R_env] = Z3_calculateEnvironmentalResistance(scenario, params
 % Case 2: 'overhead', v_wind = 0 -> Iterative solver for Natural Convection.
 % Case 3: 'overhead', v_wind > 0 -> Iterative solver for Forced Convection.
 % -------------------------------------------------------------------------
+
+% Initialize iteration history
+iteration_history = [];
 
 % Unpack necessary parameters
 L = params.L;
@@ -42,6 +45,10 @@ else
     % P_gen = (T_B - T_C) / R_conv_ss  (Heat leaving surface)
     % R_conv_ss = 1 / (h_c * A_s)
     % h_c = f(T_B, T_C, v_wind)
+    
+    % Initialize iteration history logging
+    iteration_history.headers = {'Iteration', 'T_B Guess (C)', 'h_c (W/m^2K)', 'R_conv (K/W)', 'T_B New (C)'};
+    iteration_history.data = {};
     
     % Iteration parameters
     T_B_guess = T_C + 20; % Initial guess for surface temp (C)
@@ -78,12 +85,15 @@ else
             % P_gen = (T_B - T_C) / R_conv
             T_B_new = T_C + (P_gen * R_conv);
             
-            % 7. Check for convergence
+            % 7. Log data for this iteration
+            iteration_history.data = [iteration_history.data; {iter, T_B_guess, h_c, R_conv, T_B_new}];
+            
+            % 8. Check for convergence
             if abs(T_B_new - T_B_guess) < tolerance
                 break;
             end
             
-            % 8. Update guess (use damping for stability)
+            % 9. Update guess (use damping for stability)
             T_B_guess = (T_B_guess + T_B_new) / 2;
         end
         
@@ -115,15 +125,22 @@ else
             % 6. Calculate new T_B based on this R_conv
             T_B_new = T_C + (P_gen * R_conv);
             
-            % 7. Check for convergence
+            % 7. Log data for this iteration
+            iteration_history.data = [iteration_history.data; {iter, T_B_guess, h_c, R_conv, T_B_new}];
+            
+            % 8. Check for convergence
             if abs(T_B_new - T_B_guess) < tolerance
                 break;
             end
             
-            % 8. Update guess
+            % 9. Update guess
             T_B_guess = (T_B_guess + T_B_new) / 2;
          end
     end
+    
+    % Store final iteration count and convergence status
+    iteration_history.count = iter;
+    iteration_history.converged = (iter < max_iter);
     
     if iter == max_iter
         warning('Iterative solver for R_env did not converge. Using last value.');

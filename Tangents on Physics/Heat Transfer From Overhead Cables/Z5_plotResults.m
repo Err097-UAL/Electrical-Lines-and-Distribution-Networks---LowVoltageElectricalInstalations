@@ -100,13 +100,48 @@ plot_circle(0, 0, r1_mm, [1 0.5 0.2]); % Conductor (orange)
 
 hold off;
 axis equal; % Ensures the circles are round
-axis off; % Hide the x/Y axes
+axis off; % Hide the x/y axes
 title('Cable Cross-Section');
 legend('Insulation', 'Conductor', 'Location', 'northeastoutside');
 
+% --- Figure 6: Iteration History Table ---
+% Only plot if this data exists (i.e., for overhead cases)
+if ~isempty(results.iteration_history)
+    f_table = figure('Name', 'Iteration History');
+    
+    % Extract data
+    data = results.iteration_history.data;
+    headers = results.iteration_history.headers;
+    num_iterations = results.iteration_history.count;
+    converged = results.iteration_history.converged;
+    
+    if converged
+        title_str = ['Solver Converged in ' num2str(num_iterations) ' Iterations'];
+    else
+        title_str = ['Solver FAILED to Converge after ' num2str(num_iterations) ' Iterations'];
+    end
+
+    % Add a title using uicontrol (static text)
+    uicontrol('Style', 'text', ...
+              'String', title_str, ...
+              'Units', 'normalized', ...
+              'Position', [0.1 0.9 0.8 0.08], ...
+              'FontSize', 14, ...
+              'FontWeight', 'bold', ...
+              'BackgroundColor', get(f_table, 'Color')); % Match figure color
+    
+    % Create the table
+    uitable(f_table, 'Data', data, ...
+                     'ColumnName', headers, ...
+                     'Units', 'normalized', ...
+                     'Position', [0.05 0.05 0.9 0.8]); % Position below title
+end
+
+% THIS IS THE END OF THE MAIN FUNCTION
 end
 
 
+% --- LOCAL HELPER FUNCTION ---
 function h = plot_circle(x, y, r, c)
 % Helper function to plot a filled circle
 % x, y: center coordinates

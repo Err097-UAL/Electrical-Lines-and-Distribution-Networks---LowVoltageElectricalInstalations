@@ -16,7 +16,8 @@ function results = Z2_solveCableTemperature(scenario, params, sim)
 % 1. Calculate Total Thermal Resistance
 % -------------------------------------------------------------------------
 disp('Calculating thermal resistances...');
-[R_total, R_env] = Z3_calculateEnvironmentalResistance(scenario, params);
+% Updated to receive iteration_history
+[R_total, R_env, iteration_history] = Z3_calculateEnvironmentalResistance(scenario, params);
 
 disp(['Calculated R_env: ' num2str(R_env, '%.4f') ' K/W']);
 disp(['Calculated R_ins: ' num2str(params.R_ins, '%.4f') ' K/W']);
@@ -119,5 +120,8 @@ results.T_ins_profile = T_ins_profile_2D; % For the 2D plot
 results.T_ins_profile_full = T_ins_profile_full; % For the 3D plot
 results.r_soil_vector = r_soil_vector;
 results.T_soil_profile = T_soil_profile;
+
+% Add iteration history to results
+results.iteration_history = iteration_history;
 
 end
