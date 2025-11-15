@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cable Ampacity & Thermal Modeler</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Chart.js for 2D plotting -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Load Plotly.js for 3D plotting (Updated to a recent version) -->
+    <script src="https://cdn.plot.ly/plotly-2.33.0.min.js"></script>
+    <style>
+        /* Simple dark mode and font settings */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827;
+            color: #d1d5db;
+        }
+        .form-input, .form-select {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f3f4f6;
+        }
+        /* Style for read-only input */
+        .form-input:read-only {
+            background-color: #4b5563;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .form-label {
+            color: #9ca3af;
+            font-weight: 500;
+        }
+        .card {
+            background-color: #1f2937;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        .btn-secondary {
+            background-color: #4b5563;
+            color: white;
+            font-weight: 600;
+        }
+        .btn-secondary:hover {
+            background-color: #374151;
+        }
+        .output-field {
+            background-color: #374151;
+            color: #f3f4f6;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+    <!-- Load Inter font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold text-white mb-2">Cable Ampacity & Thermal Modeler</h1>
+        <p class="text-lg text-gray-400 mb-6">Interactive simulation of transient heat transfer for an insulated cable based on our corrected lumped capacitance model.</p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- ====== COLUMN 1: INPUTS ====== -->
+            <div class="lg:col-span-1 space-y-6">
+                
+                <!-- Scenario Controls -->
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-white mb-4">1. Scenario Controls</h2>
+                    <div class="space-y-4">
+                        
+                        <div>
+                            <label for="currentInputMode" class="form-label block mb-1">Current Input Mode</label>
+                            <select id="currentInputMode" class="w-full form-select rounded-md">
+                                <option value="direct" selected>Direct Current Input</option>
+                                <option value="ac_load">AC Load (P, V, PF)</option>
+                            </select>
+                        </div>
+
+                        <!-- Mode 1: Direct Current (Always Visible) -->
+                        <div id="directCurrentInput" class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="current" class="form-label block mb-1">Current (I)</label>
+                                <input type="number" id="current" value="30" class="w-full form-input rounded-md">
+                            </div>
+                            <div class="text-gray-400 text-right pt-7">Amps</div>
+                        </div>
+
+                        <!-- Mode 2: AC Load (hidden by default) -->
+                        <div id="acLoadInput" class="hidden space-y-4 p-4 bg-gray-800 rounded-md border border-gray-700">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="loadPower" class="form-label block mb-1">Load Power (P)</label>
+                                    <input type="number" id="loadPower" value="5000" class="w-full form-input rounded-md">
+                                </div>
+                                <div class="text-gray-400 text-right pt-7">Watts</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="loadVoltage" class="form-label block mb-1">Load Voltage (V)</label>
+                                    <input type="number" id="loadVoltage" value="230" class="w-full form-input rounded-md">
+                                </div>
+                                <div class="text-gray-400 text-right pt-7">Volts</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="powerFactor" class="form-label block mb-1">Power Factor (PF)</label>
+                                    <input type="number" id="powerFactor" value="0.9" step="0.01" min="0" max="1" class="w-full form-input rounded-md">
+                                </div>
+                                <div class="text-gray-400 text-right pt-7">0.0 - 1.0</div>
+                            </div>
+                            <p class="text-xs text-gray-400">Calculates current $I$ (above) based on a load. The simulation then finds the cable's heat loss ($I^2 R_{elec}$) from that current.</p>
+                        </div>
+
+                        <!-- Shared fields -->
+                        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-700">
+                            <div>
+                                <label for="simTime" class="form-label block mb-1">Sim. Time (t)</label>
+                                <input type="number" id="simTime" value="3600" class="w-full form-input rounded-md">
+                            </div>
+                            <div class="text-gray-400 text-right pt-7">Seconds</div>
+                        </div>
+
+                        <button id="runHeating" class="btn-primary py-2 rounded-md w-full">Run Heating Simulation</button>
+                        <button id="runCooling" class="btn-secondary py-2 rounded-md w-full">Run Cooling Simulation</button>
+                    </div>
+                </div>
+
+                <!-- Conductor Properties -->
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-white mb-4">2. Conductor (Node A)</h2>
+                    <div>
+                        <label for="conductorMat" class="form-label block mb-1">Material</label>
+                        <select id="conductorMat" class="w-full form-select rounded-md">
+                            <option value="copper" selected>Copper (Annealed)</option>
+                            <option value="aluminum">Aluminum (EC 1350)</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label for="radius1" class="form-label block mb-1">Radius (r₁)</label>
+                            <input type="number" id="radius1" value="0.002" class="w-full form-input rounded-md">
+                        </div>
+                        <div class="text-gray-400 text-right pt-7">meters</div>
+                        
+                        <div>
+                            <label for="length" class="form-label block mb-1">Length (L)</label>
+                            <input type="number" id="length" value="1.0" class="w-full form-input rounded-md">
+                        </div>
+                        <div class="text-gray-400 text-right pt-7">meters</div>
+                    </div>
+                </div>
+
+                <!-- Insulation Properties -->
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-white mb-4">3. Insulation (A to B)</h2>
+                    <div>
+                        <label for="insulationMat" class="form-label block mb-1">Material</label>
+                        <select id="insulationMat" class="w-full form-select rounded-md">
+                            <option value="pvc" selected>PVC (70°C)</option>
+                            <option value="xlpe">XLPE (90°C)</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label for="radius2" class="form-label block mb-1">Outer Radius (r₂)</label>
+                            <input type="number" id="radius2" value="0.005" class="w-full form-input rounded-md">
+                        </div>
+                        <div class="text-gray-400 text-right pt-7">meters</div>
+                    </div>
+                </div>
+
+                <!-- Environment Properties -->
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-white mb-4">4. Environment (Node C)</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="tempC" class="form-label block mb-1">Ambient (T_C)</label>
+                            <input type="number" id="tempC" value="20" class="w-full form-input rounded-md">
+                        </div>
+                        <div class="text-gray-400 text-right pt-7">°C</div>
+                    </div>
+                    <div class="mt-4">
+                        <label for="envType" class="form-label block mb-1">Environment Type</label>
+                        <select id="envType" class="w-full form-select rounded-md">
+                            <option value="forced" selected>Overhead (Forced Conv.)</option>
+                            <option value="natural">Overhead (Natural Conv.)</option>
+                            <option value="underground">Underground (Conduction)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Conditional Inputs -->
+                    <div id="forcedInputs" class="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label for="windSpeed" class="form-label block mb-1">Wind Speed</label>
+                            <input type="number" id="windSpeed" value="2" class="w-full form-input rounded-md">
+                        </div>
+                        <div class="text-gray-400 text-right pt-7">m/s</div>
+                    </div>
+
+                    <div id="undergroundInputs" class="hidden grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label for="burialDepth" class="form-label block mb-1">Burial Depth (z)</label>
+                            <input type="number" id="burialDepth" value="1" class="w-full form-input rounded-md">
+                        </div>
+                        <div class="text-gray-400 text-right pt-7">meters</div>
+                        
+                        <div>
+                            <label for="soilK" class="form-label block mb-1">Soil k</label>
+                            <input type="number" id="soilK" value="1.0" class="w-full form-input rounded-md">
+                        </div>
+                        <div class="text-gray-400 text-right pt-7">W/m·K</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ====== COLUMN 2: OUTPUTS ====== -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Key Results -->
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-white mb-4">Simulation Results</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label class="form-label">Max Ampacity</label>
+                            <input type="text" id="resAmpacity" class="w-full output-field rounded-md p-2" readonly>
+                        </div>
+                        <div>
+                            <label class="form-label">T_ss (Heating)</label>
+                            <input type="text" id="resTss" class="w-full output-field rounded-md p-2" readonly>
+                        </div>
+                        <div>
+                            <label class="form-label">Time Constant (τ)</label>
+                            <input type="text" id="resTau" class="w-full output-field rounded-md p-2" readonly>
+                        </div>
+                        <div>
+                            <label class="form-label">R_ins</label>
+                            <input type="text" id="resRIns" class="w-full output-field rounded-md p-2" readonly>
+                        </div>
+                        <div>
+                            <label class="form-label">R_env</label>
+                            <input type="text" id="resREnv" class="w-full output-field rounded-md p-2" readonly>
+                        </div>
+                        <div>
+                            <label class="form-label">R_total</label>
+                            <input type="text" id="resRTotal" class="w-full output-field rounded-md p-2" readonly>
+                        </div>
+                         <div>
+                            <label class="form-label">C_th (Conductor)</label>
+                            <input type="text" id="resCthC" class="w-full output-field rounded-md p-2" readonly>
+                        </div>
+                         <div>
+                            <label class="form-label">C_th (Insulation)</label>
+                            <input type="text" id="resCthIns" class="w-full output-field rounded-md p-2" readonly>
+                        </div>
+                         <div>
+                            <label class="form-label">C_th (Corrected)</label>
+                            <input type="text" id="resCthTotal" class="w-full output-field rounded-md p-2" readonly>
+                        </div>
+                    </div>
+                    <div id="errorLog" class="text-red-400 mt-4"></div>
+                </div>
+
+                <!-- Chart 1: Temp vs Time -->
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-white mb-4">Evolution: Temperature vs. Time</h2>
+                    <div class="h-64 md:h-80">
+                        <canvas id="chartTvsT"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 3: 3D Surface Plot T(r,t) -->
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-white mb-4">Evolution: 3D Surface Plot T(r, t)</h2>
+                    <div id="chart3D" class="h-96"></div>
+                </div>
+
+                <!-- Chart 2: Temp vs Radius -->
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-white mb-4">Profile: Temperature vs. Radius (Slice)</h2>
+                    <div>
+                        <label for="timeSlider" class="form-label">View profile at time <span id="timeSliderLabel">0</span> s</label>
+                        <input type="range" id="timeSlider" min="0" max="3600" value="0" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <div class="h-64 md:h-80 mt-4">
+                        <canvas id="chartTvsR"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== JAVASCRIPT ENGINE ====== -->
+    <script>
+        // --- Globals ---
+        let chartTvsT, chartTvsR;
+        let simResults = {}; // To store results for the radial plot slider
+
+        // --- DOM Elements ---
+        const ui = {
+            current: document.getElementById('current'),
+            currentInputMode: document.getElementById('currentInputMode'),
+            directCurrentInput: document.getElementById('directCurrentInput'),
+            acLoadInput: document.getElementById('acLoadInput'),
+            loadPower: document.getElementById('loadPower'),
+            loadVoltage: document.getElementById('loadVoltage'),
+            powerFactor: document.getElementById('powerFactor'),
+            simTime: document.getElementById('simTime'),
+            conductorMat: document.getElementById('conductorMat'),
+            radius1: document.getElementById('radius1'),
+            length: document.getElementById('length'),
+            insulationMat: document.getElementById('insulationMat'),
+            radius2: document.getElementById('radius2'),
+            tempC: document.getElementById('tempC'),
+            envType: document.getElementById('envType'),
+            windSpeed: document.getElementById('windSpeed'),
+            burialDepth: document.getElementById('burialDepth'),
+            soilK: document.getElementById('soilK'),
+            forcedInputs: document.getElementById('forcedInputs'),
+            undergroundInputs: document.getElementById('undergroundInputs'),
+            runHeating: document.getElementById('runHeating'),
+            runCooling: document.getElementById('runCooling'),
+            timeSlider: document.getElementById('timeSlider'),
+            timeSliderLabel: document.getElementById('timeSliderLabel'),
+            errorLog: document.getElementById('errorLog'),
+            // Outputs
+            resAmpacity: document.getElementById('resAmpacity'),
+            resTss: document.getElementById('resTss'),
+            resTau: document.getElementById('resTau'),
+            resRIns: document.getElementById('resRIns'),
+            resREnv: document.getElementById('resREnv'),
+            resRTotal: document.getElementById('resRTotal'),
+            resCthC: document.getElementById('resCthC'),
+            resCthIns: document.getElementById('resCthIns'),
+            resCthTotal: document.getElementById('resCthTotal'),
+        };
+
+        // --- Material Property Database ---
+        const materials = {
+            conductor: {
+                copper: { rho: 8960, cp: 385, resistivity: 1.68e-8 },
+                aluminum: { rho: 2700, cp: 900, resistivity: 2.65e-8 }
+            },
+            insulation: {
+                pvc: { rho: 1400, cp: 900, k: 0.17, maxTemp: 70 },
+                xlpe: { rho: 920, cp: 2150, k: 0.28, maxTemp: 90 }
+            }
+        };
+
+        /**
+         * Approximates air properties at a given film temperature.
+         * @param {number} T_f_celsius - Film temperature in Celsius.
+         * @returns {object} - Object with k, nu (kinematic viscosity), Pr, and beta.
+         */
+        function getAirProperties(T_f_celsius) {
+            const T_f_kelvin = T_f_celsius + 273.15;
+            // Simple linear interpolations around 300-350K (good enough for this)
+            const k_air = 0.0241 + (0.0276 - 0.0241) * (T_f_celsius - 0) / 50; // W/m·K
+            const nu = (1.57e-5 + (2.09e-5 - 1.57e-5) * (T_f_celsius - 0) / 50); // m²/s
+            const Pr = 0.707; // Prandtl number for air is ~constant
+            const beta = 1 / T_f_kelvin; // Thermal expansion coefficient
+            return { k_air, nu, Pr, beta };
+        }
+
+        /**
+         * Iteratively finds the convective resistance for overhead lines.
+         * @param {object} props - Collected properties from the simulation.
+         * @returns {number} - The environmental resistance (R_env).
+         */
+        function findConvectiveResistance(props) {
+            const { P_gen, T_C, D, L, envType, v_wind } = props;
+            const A_s = Math.PI * D * L;
+            let h_c = 0;
+
+            let T_B_guess = T_C + 20; // Initial guess for surface temp
+            
+            for (let i = 0; i < 100; i++) { // Max 100 iterations
+                const T_f = (T_B_guess + T_C) / 2;
+                const air = getAirProperties(T_f);
+                let Nu = 0;
+
+                if (envType === 'natural') {
+                    const Gr = (9.81 * air.beta * Math.abs(T_B_guess - T_C) * Math.pow(D, 3)) / Math.pow(air.nu, 2);
+                    const Ra = Gr * air.Pr;
+                    
+                    const num = 0.387 * Math.pow(Ra, 1/6);
+                    const den_inner = 1 + Math.pow(0.559 / air.Pr, 9/16);
+                    const den = Math.pow(den_inner, 8/27);
+                    Nu = Math.pow(0.60 + (num / den), 2);
+                } else { // forced
+                    const Re = (v_wind * D) / air.nu;
+
+                    const num1 = 0.62 * Math.pow(Re, 1/2) * Math.pow(air.Pr, 1/3);
+                    const den1_inner = 1 + Math.pow(0.4 / air.Pr, 2/3);
+                    const den1 = Math.pow(den1_inner, 1/4);
+                    const term1 = num1 / den1;
+                    
+                    const term2_inner = 1 + Math.pow(Re / 282000, 5/8);
+                    const term2 = Math.pow(term2_inner, 4/5);
+
+                    Nu = 0.3 + term1 * term2;
+                }
+
+                h_c = (air.k_air / D) * Nu;
+                const R_conv = 1 / (h_c * A_s);
+                
+                // If P_gen is 0 (cooling), we can't converge this way.
+                // We'll just use the h_c based on a 20C delta.
+                if (P_gen === 0) {
+                     if (T_B_guess === T_C + 20) return R_conv; // Run once
+                     T_B_guess = T_C + 20; // reset for first run
+                } else {
+                    const T_B_new = T_C + P_gen * R_conv;
+                    if (Math.abs(T_B_new - T_B_guess) < 0.1) {
+                        return R_conv; // Converged!
+                    }
+                    T_B_guess = (T_B_new + T_B_guess) / 2; // Stabilize convergence
+                }
+            }
+            
+            ui.errorLog.textContent = "Convection solver did not converge. Using last value.";
+            return 1 / (h_c * A_s);
+        }
+
+        /**
+         * Calculates the steady-state maximum ampacity.
+         * @param {object} props - Collected properties.
+         * @param {number} R_total - Total thermal resistance.
+         * @returns {number} - Maximum continuous current (Amps).
+         */
+        function calculateAmpacity(props, R_total) {
+            const { insulProps, T_C, R_elec } = props;
+            const T_max = insulProps.maxTemp;
+            const deltaT_max = T_max - T_C;
+            
+            if (R_elec === 0 || R_total === 0) return 0;
+
+            const I_max_sq = deltaT_max / (R_elec * R_total);
+            return Math.sqrt(I_max_sq);
+        }
+
+        /**
+         * Main simulation function.
+         * @param {string} scenario - 'heating' or 'cooling'.
+         */
+        function runSimulation(scenario) {
+            ui.errorLog.textContent = ""; // Clear errors
+            
+            // 1. Collect all inputs and base properties
+            const props = {};
+            props.I = parseFloat(ui.current.value);
+            props.simTime = parseFloat(ui.simTime.value);
+            props.r1 = parseFloat(ui.radius1.value);
+            props.L = parseFloat(ui.length.value);
+            props.r2 = parseFloat(ui.radius2.value);
+            props.D = props.r2 * 2;
+            props.T_C = parseFloat(ui.tempC.value);
+            props.envType = ui.envType.value;
+            props.v_wind = parseFloat(ui.windSpeed.value);
+            props.z = parseFloat(ui.burialDepth.value);
+            props.k_soil = parseFloat(ui.soilK.value);
+            
+            props.condProps = materials.conductor[ui.conductorMat.value];
+            props.insulProps = materials.insulation[ui.insulationMat.value];
+
+            // 2. Calculate constants
+            const V_c = Math.PI * Math.pow(props.r1, 2) * props.L;
+            const m_c = props.condProps.rho * V_c;
+            props.C_th_c = m_c * props.condProps.cp;
+            props.R_elec = (props.condProps.resistivity * props.L) / (Math.PI * Math.pow(props.r1, 2));
+
+            const V_ins = Math.PI * (Math.pow(props.r2, 2) - Math.pow(props.r1, 2)) * props.L;
+            const m_ins = props.insulProps.rho * V_ins;
+            props.C_th_ins = m_ins * props.insulProps.cp;
+            
+            props.C_th_corrected = props.C_th_c + 0.5 * props.C_th_ins;
+            
+            props.R_ins = Math.log(props.r2 / props.r1) / (2 * Math.PI * props.insulProps.k * props.L);
+            props.P_gen = (scenario === 'heating') ? Math.pow(props.I, 2) * props.R_elec : 0;
+
+            // 3. Find Environmental Resistance
+            let R_env = 0;
+            if (props.envType === 'underground') {
+                R_env = Math.log(4 * props.z / props.D) / (2 * Math.PI * props.k_soil * props.L);
+            } else {
+                // For cooling, we still need to find the 'h' value.
+                // We'll run the solver as if it's heating to find the steady-state 'h'.
+                let heating_P_gen = Math.pow(props.I, 2) * props.R_elec;
+                if (heating_P_gen === 0) heating_P_gen = 1; // Avoid divide by zero if I=0
+                R_env = findConvectiveResistance({...props, P_gen: heating_P_gen});
+            }
+            props.R_env = R_env;
+            
+            // 4. Calculate Final Results
+            const R_total = props.R_ins + props.R_env;
+            const tau = R_total * props.C_th_corrected;
+            const T_ss_heat = props.T_C + (Math.pow(props.I, 2) * props.R_elec) * R_total;
+            const ampacity = calculateAmpacity(props, R_total);
+
+            // Store results for plot slider
+            simResults = { ...props, R_total, tau, T_ss_heat, R_env };
+
+            // 5. Update UI
+            ui.resAmpacity.value = `${ampacity.toFixed(2)} A`;
+            ui.resTss.value = `${T_ss_heat.toFixed(2)} °C`;
+            ui.resTau.value = `${tau.toFixed(1)} s`;
+            ui.resRIns.value = `${props.R_ins.toFixed(4)} K/W`;
+            ui.resREnv.value = `${props.R_env.toFixed(4)} K/W`;
+            ui.resRTotal.value = `${R_total.toFixed(4)} K/W`;
+            ui.resCthC.value = `${props.C_th_c.toExponential(2)} J/K`;
+            ui.resCthIns.value = `${props.C_th_ins.toExponential(2)} J/K`;
+            ui.resCthTotal.value = `${props.C_th_corrected.toExponential(2)} J/K`;
+
+            // 6. Generate 2D Plot Data (T vs t)
+            const T_i = (scenario === 'heating') ? props.T_C : T_ss_heat;
+            const T_final = (scenario === 'heating') ? T_ss_heat : props.T_C;
+
+            const timeLabels = [];
+            const dataTA = [];
+            const dataTB = [];
+            const steps = 100;
+            const timeStep = props.simTime / steps;
+
+            for (let i = 0; i <= steps; i++) {
+                const t = i * timeStep;
+                timeLabels.push(t.toFixed(0));
+
+                const T_A = T_final + (T_i - T_final) * Math.exp(-t / tau);
+                const T_B = props.T_C + ((T_A - props.T_C) / R_total) * props.R_env;
+                
+                dataTA.push(T_A.toFixed(2));
+                dataTB.push(T_B.toFixed(2));
+            }
+            
+            // 7. Plot T vs T
+            plotTvsTChart(timeLabels, dataTA, dataTB);
+
+            // 8. Generate 3D Plot Data
+            const radiusLabels3D = [];
+            const zData = [];
+            const radiusSteps = 20;
+            const rStep = (props.r2 - props.r1) / radiusSteps;
+            const log_r2_r1 = Math.log(props.r2 / props.r1);
+
+            for (let j = 0; j <= radiusSteps; j++) {
+                const r = props.r1 + j * rStep;
+                radiusLabels3D.push(r);
+                const tempRow = [];
+                for (let i = 0; i <= steps; i++) {
+                    const t = i * timeStep;
+                    const T_A = T_final + (T_i - T_final) * Math.exp(-t / tau);
+                    const T_B = props.T_C + ((T_A - props.T_C) / R_total) * props.R_env;
+                    
+                    let T_r = 0;
+                    if (log_r2_r1 > 0) { // Avoid divide by zero if r1=r2
+                        T_r = T_A - (T_A - T_B) * (Math.log(r / props.r1) / log_r2_r1);
+                    } else {
+                        T_r = T_A; // If r1=r2, temp is just T_A
+                    }
+                    tempRow.push(T_r);
+                }
+                zData.push(tempRow);
+            }
+
+            // 9. Plot 3D Chart
+            plot3DChart(timeLabels, radiusLabels3D, zData);
+            
+            // 10. Update Radial Plot Slider
+            ui.timeSlider.max = props.simTime;
+            ui.timeSlider.value = 0;
+            ui.timeSliderLabel.textContent = "0";
+            updateRadialPlot(0); // Show initial radial plot
+        }
+
+        /**
+         * Updates the T vs T chart (2D).
+         */
+        function plotTvsTChart(labels, dataTA, dataTB) {
+            const ctx = document.getElementById('chartTvsT').getContext('2d');
+            if (chartTvsT) {
+                chartTvsT.destroy();
+            }
+            chartTvsT = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'T_A (Conductor)',
+                            data: dataTA,
+                            borderColor: '#f87171',
+                            backgroundColor: '#f8717133',
+                            fill: false,
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'T_B (Surface)',
+                            data: dataTB,
+                            borderColor: '#60a5fa',
+                            backgroundColor: '#60a5fa33',
+                            fill: false,
+                            borderWidth: 2,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Time (s)', color: '#9ca3af' },
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: '#374151' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Temperature (°C)', color: '#9ca3af' },
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: '#374151' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#d1d5db' } }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Updates the T vs R chart (2D Slice) based on the slider.
+         * @param {number} t - The specific time 't' to plot.
+         */
+        function updateRadialPlot(t) {
+            if (!simResults.R_total) return; // No sim run yet
+
+            const { T_C, T_ss_heat, R_total, tau, R_env, r1, r2 } = simResults;
+            const scenario = simResults.P_gen > 0 ? 'heating' : 'cooling';
+
+            const T_i = (scenario === 'heating') ? T_C : T_ss_heat;
+            const T_final = (scenario === 'heating') ? T_ss_heat : T_C;
+            
+            const T_A = T_final + (T_i - T_final) * Math.exp(-t / tau);
+            const T_B = T_C + ((T_A - T_C) / R_total) * R_env;
+
+            const radiusLabels = [];
+            const dataTR = [];
+            const steps = 20;
+            const rStep = (r2 - r1) / steps;
+            const log_r2_r1 = Math.log(r2 / r1);
+
+            for (let i = 0; i <= steps; i++) {
+                const r = r1 + i * rStep;
+                radiusLabels.push(r.toExponential(2));
+                
+                let T_r = 0;
+                if (log_r2_r1 > 0) { // Avoid divide by zero if r1=r2
+                    T_r = T_A - (T_A - T_B) * (Math.log(r / r1) / log_r2_r1);
+                } else {
+                    T_r = T_A;
+                }
+                dataTR.push(T_r.toFixed(2));
+            }
+
+            const ctx = document.getElementById('chartTvsR').getContext('2d');
+            if (chartTvsR) {
+                chartTvsR.destroy();
+            }
+            chartTvsR = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: radiusLabels,
+                    datasets: [{
+                        label: `T(r) at t = ${t}s`,
+                        data: dataTR,
+                        borderColor: '#34d399',
+                        backgroundColor: '#34d39933',
+                        fill: true,
+                        borderWidth: 2,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Radius (m)', color: '#9ca3af' },
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: '#374151' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Temperature (°C)', color: '#9ca3af' },
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: '#374151' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#d1d5db' } }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Creates the 3D surface plot.
+         * @param {Array} xData - Time labels (1D array)
+         * @param {Array} yData - Radius labels (1D array)
+         * @param {Array} zData - Temperature data (2D array, z[y][x])
+         */
+        function plot3DChart(xData, yData, zData) {
+            const data = [{
+                z: zData,
+                x: xData,
+                y: yData,
+                type: 'surface',
+                colorscale: 'Hot',
+                colorbar: { title: { text: 'Temp (°C)', font: { color: '#9ca3af' } }, tickfont: { color: '#9ca3af' } },
+                contours: {
+                    z: { show: true, usecolormap: true, highlightcolor: "#FFFFFF", project: { z: true } }
+                }
+            }];
+
+            const layout = {
+                title: { text: 'T(radius, time)', font: { color: '#d1d5db' } },
+                paper_bgcolor: '#1f2937',
+                plot_bgcolor: '#1f2937',
+                font: { color: '#d1d5db' },
+                scene: {
+                    xaxis: { title: 'Time (s)', color: '#9ca3af', gridcolor: '#374151', backgroundcolor: '#111827', zerolinecolor: '#4b5563' },
+                    yaxis: { title: 'Radius (m)', color: '#9ca3af', gridcolor: '#374151', backgroundcolor: '#111827', zerolinecolor: '#4b5563' },
+                    zaxis: { title: 'Temperature (°C)', color: '#9ca3af', gridcolor: '#374151', backgroundcolor: '#111827', zerolinecolor: '#4b5563' }
+                },
+                margin: { l: 0, r: 0, b: 0, t: 40 }
+            };
+
+            Plotly.newPlot('chart3D', data, layout, {responsive: true});
+        }
+        
+        /**
+         * Calculates current I based on AC load parameters and updates the UI.
+         */
+        function calculateCurrentFromAC() {
+            const P = parseFloat(ui.loadPower.value);
+            const V = parseFloat(ui.loadVoltage.value);
+            const PF = parseFloat(ui.powerFactor.value);
+
+            if (isNaN(P) || isNaN(V) || isNaN(PF) || V === 0 || PF === 0) {
+                ui.current.value = 0;
+                return;
+            }
+
+            const I = P / (V * PF);
+            ui.current.value = I.toFixed(2);
+        }
+
+        // --- Event Listeners ---
+        ui.envType.addEventListener('change', (e) => {
+            const type = e.target.value;
+            ui.forcedInputs.classList.toggle('hidden', type !== 'forced');
+            ui.undergroundInputs.classList.toggle('hidden', type !== 'underground');
+        });
+
+        // NEW: Listener for the input mode switch
+        ui.currentInputMode.addEventListener('change', (e) => {
+            const mode = e.target.value;
+            if (mode === 'direct') {
+                ui.acLoadInput.classList.add('hidden');
+                ui.current.readOnly = false;
+            } else { // ac_load
+                ui.acLoadInput.classList.remove('hidden');
+                ui.current.readOnly = true;
+                calculateCurrentFromAC(); // Calculate on switch
+            }
+        });
+
+        // NEW: Listeners for AC load inputs
+        ui.loadPower.addEventListener('input', calculateCurrentFromAC);
+        ui.loadVoltage.addEventListener('input', calculateCurrentFromAC);
+        ui.powerFactor.addEventListener('input', calculateCurrentFromAC);
+
+
+        ui.runHeating.addEventListener('click', () => {
+            simResults = { P_gen: parseFloat(ui.current.value) * parseFloat(ui.current.value) }; // Store P_gen intent
+            runSimulation('heating');
+        });
+        ui.runCooling.addEventListener('click', () => {
+            simResults = { P_gen: 0 }; // Store P_gen intent
+            runSimulation('cooling');
+        });
+        
+        ui.timeSlider.addEventListener('input', (e) => {
+            const t = parseFloat(e.target.value);
+            ui.timeSliderLabel.textContent = t.toFixed(0);
+            updateRadialPlot(t);
+        });
+
+        // --- Initial Setup ---
+        // Initialize charts with empty data
+        plotTvsTChart([], [], []);
+        updateRadialPlot(0);
+        // Trigger env dropdown change to set initial UI
+        ui.envType.dispatchEvent(new Event('change'));
+        // Trigger current mode change to set initial UI
+        ui.currentInputMode.dispatchEvent(new Event('change'));
+        // Run a default simulation on load
+        runSimulation('heating');
+
+    </script>
+</body>
+</html>

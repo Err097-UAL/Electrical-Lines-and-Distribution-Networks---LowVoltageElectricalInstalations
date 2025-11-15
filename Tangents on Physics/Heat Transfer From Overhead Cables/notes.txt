@@ -1,20 +1,15 @@
 ===================================================================================
 		
 ===================================================================================
-Los archivos con prefijo 
-A son para Flujo natural (dia tranquilo)
-B flujo forzado (viento)
-C (regimen transitorio)
 
 
 
 ===================================================================================
 		Problemas
 ===================================================================================
-1) para comprobar el valor del numero adimensional Reynolds despues de suponer Nusselt, necesito
-saber la velocidad del viento generado por la diferencia de calor, pero no encuentro
-como modelar esto
+1) este modelo no es apto para encontrar la temperatura a una distancia de los cables para el caso de lineas aereas, todo eso se lo come por usar el coefficiente hc que lo concentra todo
 
+2) este es un modelo basado en algunas suposiciones para simplificarlo. Se puede formar un modelo mas complejo pero con EDP en vez de una EDO
 
 
 
