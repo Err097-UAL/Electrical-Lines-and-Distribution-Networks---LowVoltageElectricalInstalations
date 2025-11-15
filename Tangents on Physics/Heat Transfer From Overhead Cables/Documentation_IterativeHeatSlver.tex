@@ -1,0 +1,597 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- UNIVERSAL PREAMBLE BLOCK ---
+% Geometry for layout
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2cm, right=2cm]{geometry}
+
+% Font and Language Setup (Noto Sans)
+\usepackage{fontspec}
+\usepackage[english, bidi=basic, provide=*]{babel}
+\babelprovide[import, onchar=ids fonts]{english}
+\babelfont{rm}{Noto Sans}
+\usepackage[T1]{fontenc} % For proper font encoding in PDF
+
+% --- END UNIVERSAL PREAMBLE BLOCK ---
+
+% Math and Science Packages
+\usepackage{amsmath}  % For math environments (align, equation)
+\usepackage{amssymb}  % For math symbols
+\usepackage{siunitx}  % For typesetting units (e.g., \SI{10}{\watt\per\metre\per\kelvin})
+\usepackage{booktabs} % For professional tables (e.g., \toprule)
+\usepackage{longtable} % For multi-page tables (like the nomenclature)
+\usepackage{graphicx} % For images
+\usepackage{pgfplots} % <<< NEW: For drawing graphs
+\pgfplotsset{compat=1.18} % <<< NEW: Set compatibility for pgfplots
+\usepackage{hyperref} % For clickable links
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Cable Thermal Model},
+}
+
+% Document Metadata
+\title{Transient Thermal Model for Insulated Cables: Theory and Examples}
+\author{Enrique Antonio Raudales Rodriguez \\ Low Voltage Electrical Installations Class \\ University of Almeria}
+\date{\today}
+
+% Helper command for subscripted text
+\newcommand{\textsub}[1]{_{\text{#1}}}
+
+\begin{document}
+
+% --- PAGE 1: TITLE PAGE (MODIFIED) ---
+\begin{titlepage}
+    \centering
+    \vfill % Vertically center content
+    
+    % Title
+    {\Huge\bfseries Transient Thermal Model for Insulated Cables: Theory and Examples \par}
+    
+    \vspace{2.5cm}
+    
+    % <<< NEW: PGFPlots Graph >>>
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.8\textwidth,
+            height=8cm,
+            title={\large Conceptual Heating Curve $T(t)$},
+            xlabel={Time ($t$)},
+            ylabel={Temperature ($T$)},
+            xmin=0, xmax=10,
+            ymin=0, ymax=12,
+            xtick=\empty, % Hide x-axis numbers
+            ytick={2, 10}, % Show only specific y-ticks
+            yticklabels={$T_C$, $T_{ss,heat}$},
+            axis lines*=left, % Show only y-axis
+            ]
+            
+            % Plot the exponential heating curve: T_ss + (T_i - T_ss) * exp(-t/tau)
+            % Here: T_ss=10, T_i=2, tau=2
+            \addplot[
+                domain=0:10,
+                samples=100,
+                color=red,
+                thick,
+            ] {10 + (2 - 10) * exp(-x/2)};
+            \addlegendentry{$T_A(t) = T_{ss} + (T_i - T_{ss}) e^{-t/\tau}$}
+            
+            % Add the steady-state asymptote line
+            \addplot[
+                color=blue,
+                dashed,
+                domain=0:10,
+            ] {10};
+            \addlegendentry{$T_{ss,heat}$}
+
+            % Add the initial temperature line
+            \addplot[
+                color=gray,
+                dashed,
+                domain=0:10,
+            ] {2};
+            \addlegendentry{$T_C = T_i$}
+            
+        \end{axis}
+    \end{tikzpicture}
+    % <<< END PGFPlots Graph >>>
+    
+    \vspace{2.5cm}
+    
+    % Author and Institution
+    {\Large\itshape Enrique Antonio Raudales Rodriguez \par}
+    \vspace{0.5cm}
+    {\Large Low Voltage Electrical Installations Class \par}
+    {\Large University of Almeria \par}
+    
+    \vspace{1cm}
+    
+    % Date
+    {\large \today \par}
+    
+    \vfill % Push content to vertical center
+\end{titlepage}
+
+% --- PAGE 2: TABLE OF CONTENTS ---
+\tableofcontents
+\newpage
+
+% --- PAGE 3: LIST OF PARAMETERS ---
+\section*{List of Parameters and Units}
+\addcontentsline{toc}{section}{List of Parameters and Units} % Add to TOC manually
+
+\begin{longtable}{@{}l l l@{}}
+    \toprule
+    \textbf{Symbol} & \textbf{Description} & \textbf{Unit} \\
+    \midrule
+    \endfirsthead % Header for first page
+    
+    \multicolumn{3}{c}%
+    {{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
+    \toprule
+    \textbf{Symbol} & \textbf{Description} & \textbf{Unit} \\
+    \midrule
+    \endhead % Header for subsequent pages
+
+    \bottomrule
+    \multicolumn{3}{r}{{\textit{Continued on next page}}} \\
+    \endfoot % Footer for all but last page
+
+    \bottomrule
+    \endlastfoot % Footer for last page
+
+    % --- Temperatures ---
+    $T_A(t)$ & Conductor Temperature (Node A) & \si{\celsius} \\
+    $T_B(t)$ & Insulation Surface Temperature (Node B) & \si{\celsius} \\
+    $T_C$ & Ambient Temperature (Node C) & \si{\celsius} \\
+    $T_i$ & Initial Temperature (at $t=0$) & \si{\celsius} \\
+    $T_{ss,heat}$ & Steady-State Temp. (Heating) & \si{\celsius} \\
+    $T(r,t)$ & Temperature in Insulation (at $r, t$) & \si{\celsius} \\
+    $T_{soil}(r,t)$ & Temperature in Soil (at $r, t$) & \si{\celsius} \\
+    $T_{max}$ & Max. Insulation Temperature & \si{\celsius} \\
+    $T_f$ & Film Temperature (for air props) & \si{\celsius} \\
+    
+    \addlinespace % Space
+    % --- Physical Dimensions ---
+    $r$ & General Radius & \si{\metre} \\
+    $r_1$ & Conductor Radius & \si{\metre} \\
+    $r_2$ & Insulation Outer Radius & \si{\metre} \\
+    $D$ & Cable Outer Diameter ($2r_2$) & \si{\metre} \\
+    $L$ & Cable Length & \si{\metre} \\
+    $z$ & Burial Depth & \si{\metre} \\
+    $A_c$ & Conductor Cross-Sectional Area & \si{\square\metre} \\
+    $A_s$ & Cable Outer Surface Area & \si{\square\metre} \\
+    $V_c$ & Conductor Volume & \si{\cubic\metre} \\
+    $V_{ins}$ & Insulation Volume & \si{\cubic\metre} \\
+    
+    \addlinespace % Space
+    % --- Electrical Properties ---
+    $P$ & Load Power & \si{\watt} \\
+    $V$ & Load Voltage & \si{\volt} \\
+    $PF$ & Power Factor & dimensionless \\
+    $I$ & Current & \si{\ampere} \\
+    $I_{max}$ & Ampacity (Max. Current) & \si{\ampere} \\
+    $R_{elec}$ & Electrical Resistance & \si{\ohm} \\
+    $\rho_e$ & Electrical Resistivity & \si{\ohm\metre} \\
+    $\sigma$ & Electrical Conductivity & \si{\metre\per\ohm\per\square\mm} \\
+    
+    \addlinespace % Space
+    % --- Thermal Generation & Loss ---
+    $P_{gen}$ & Generated Heat (Joule Loss) & \si{\watt} \\
+    $P_{loss}$ & Lost Heat (to environment) & \si{\watt} \\
+    
+    \addlinespace % Space
+    % --- Thermal Properties (Lumped) ---
+    $t$ & Time & \si{\second} \\
+    $\tau$ & System Time Constant & \si{\second} \\
+    $C_{th,c}$ & Conductor Thermal Capacitance & \si{\joule\per\kelvin} \\
+    $C_{th,ins}$ & Insulation Thermal Capacitance & \si{\joule\per\kelvin} \\
+    $C_{th,corrected}$ & Corrected Total Capacitance & \si{\joule\per\kelvin} \\
+    $R_{ins}$ & Insulation Thermal Resistance & \si{\kelvin\per\watt} \\
+    $R_{env}$ & Environmental Thermal Resistance & \si{\kelvin\per\watt} \\
+    $R_{soil}$ & Soil Thermal Resistance & \si{\kelvin\per\watt} \\
+    $R_{conv}$ & Convection Thermal Resistance & \si{\kelvin\per\watt} \\
+    $R_{total}$ & Total Thermal Resistance & \si{\kelvin\per\watt} \\
+    
+    \addlinespace % Space
+    % --- Material Properties ---
+    $m_c$ & Mass of Conductor & \si{\kilogram} \\
+    $m_{ins}$ & Mass of Insulation & \si{\kilogram} \\
+    $\rho_c, \rho_{ins}$ & Density & \si{\kilogram\per\cubic\metre} \\
+    $c_{p,c}, c_{p,ins}$ & Specific Heat Capacity & \si{\joule\per\kilogram\per\kelvin} \\
+    $k_{ins}, k_{soil}, k_{air}$ & Thermal Conductivity & \si{\watt\per\metre\per\kelvin} \\
+    $\rho_{soil}$ & Soil Thermal Resistivity & \si{\kelvin\metre\per\watt} \\
+    
+    \addlinespace % Space
+    % --- Convection & Fluid Dynamics ---
+    $h_c$ & Convective Heat Transfer Coeff. & \si{\watt\per\square\metre\per\kelvin} \\
+    $v_{wind}$ & Wind Speed & \si{\metre\per\second} \\
+    $\alpha$ & Thermal Diffusivity & \si{\square\metre\per\second} \\
+    $\nu$ & Kinematic Viscosity & \si{\square\metre\per\second} \\
+    $\beta$ & Thermal Expansion Coefficient & \si{\per\kelvin} \\
+    $g$ & Gravitational Acceleration & \si{\metre\per\square\second} \\
+    $Nu$ & Nusselt Number & dimensionless \\
+    $Pr$ & Prandtl Number & dimensionless \\
+    $Re$ & Reynolds Number & dimensionless \\
+    $Gr$ & Grashof Number & dimensionless \\
+    $Ra$ & Rayleigh Number & dimensionless \\
+\end{longtable}
+\newpage
+
+% --- START OF MAIN CONTENT ---
+
+\section{The Core Model: A Corrected ODE}
+
+The model is based on the \textbf{Lumped Capacitance Method}, where the cable's thermal mass is "lumped" into the conductor ($T_A$). This simplification reduces a complex Partial Differential Equation (PDE) to a single First-Order Ordinary Differential Equation (ODE), which is robust and solvable.
+
+The model is governed by one fundamental energy balance:
+$$ C_{th,\text{corrected}} \frac{dT_A}{dt} = P_{\text{gen}} - P_{\text{loss}} \quad [\si{\watt}] $$
+
+Where:
+\begin{itemize}
+    \item \textbf{$C_{th,\text{corrected}}$ (Corrected Thermal Capacitance):} This is a key improvement to increase accuracy, accounting for the conductor and a fraction of the insulation's thermal mass.
+    \begin{equation}
+        C_{th,\text{corrected}} = (m_c c_{p,c}) + 0.5 \cdot (m_{\text{ins}} c_{p,\text{ins}}) \quad [\si{\joule\per\kelvin}]
+    \end{equation}
+
+    \item \textbf{$P_{\text{gen}}$ (Heat Generation):} The heat from Joule's Law in the conductor.
+    \begin{equation}
+        P_{\text{gen}} = I^2 R_{\text{elec}} \quad [\si{\watt}]
+    \end{equation}
+
+    \item \textbf{$P_{\text{loss}}$ (Heat Loss):} The heat escaping from the conductor to the environment.
+    \begin{equation}
+        P_{\text{loss}} = \frac{T_A(t) - T_C}{R_{\text{total}}} \quad [\si{\watt}]
+    \end{equation}
+
+    \item \textbf{$R_{\text{total}}$ (Total Thermal Resistance):} The sum of all series resistances.
+    \begin{equation}
+        R_{\text{total}} = R_{\text{ins}} + R_{\text{env}} \quad [\si{\kelvin\per\watt}]
+    \end{equation}
+\end{itemize}
+
+\section{The Two Scenarios: Heating \& Cooling}
+
+Both scenarios are solved using the \textbf{Time Constant ($\tau$)}, which defines the characteristic speed of the thermal response.
+
+\begin{equation}
+    \tau = R_{\text{total}} \cdot C_{th,\text{corrected}} \quad [\si{\second}]
+\end{equation}
+
+\subsection{Scenario 1: Heating (Current $I$ is ON)}
+The conductor temperature $T_A(t)$ rises from an initial temperature $T_i$ (e.g., ambient $T_C$) to a final steady-state temperature $T_{ss,\text{heat}}$.
+
+\begin{itemize}
+    \item \textbf{Steady-State Temp ($T_{ss,\text{heat}}$):} This is the final temperature where $P_{\text{gen}} = P_{\text{loss}}$.
+    \begin{equation}
+        T_{ss,\text{heat}} = T_C + (P_{\text{gen}} \cdot R_{\text{total}}) \quad [\si{\celsius}]
+    \end{equation}
+    
+    \item \textbf{Transient Equation:}
+    \begin{equation}
+        T_A(t) = T_{ss,\text{heat}} + (T_i - T_{ss,\text{heat}}) \exp\left(-\frac{t}{\tau}\right) \quad [\si{\celsius}]
+    \end{equation}
+\end{itemize}
+
+\subsection{Scenario 2: Cooling (Current is OFF)}
+The conductor temperature $T_A(t)$ falls from an initial hot temperature $T_i$ (e.g., $T_{ss,\text{heat}}$) to the ambient temperature $T_C$. Here, $P_{\text{gen}} = 0$.
+
+\begin{itemize}
+    \item \textbf{Steady-State Temp ($T_{ss,\text{cool}}$):} $T_C$
+    
+    \item \textbf{Transient Equation:}
+    \begin{equation}
+        T_A(t) = T_C + (T_i - T_C) \exp\left(-\frac{t}{\tau}\right) \quad [\si{\celsius}]
+    \end{equation}
+\end{itemize}
+
+\section{Environmental Cases (Calculating $R_{\text{total}}$)}
+The total resistance $R_{\text{total}}$ depends on the fixed insulation resistance $R_{\text{ins}}$ and the variable environmental resistance $R_{\text{env}}$.
+
+\begin{itemize}
+    \item \textbf{Insulation Resistance (Fixed):} Radial conduction through a cylinder.
+    \begin{equation}
+        R_{\text{ins}} = \frac{\ln(r_2 / r_1)}{2 \pi k_{\text{ins}} L} \quad [\si{\kelvin\per\watt}]
+    \end{equation}
+\end{itemize}
+
+\subsection{Case 1: Underground (Conduction)}
+Heat conducts through the soil. $R_{\text{total}}$ is a constant.
+\begin{equation}
+    R_{\text{env}} = R_{\text{soil}} = \frac{\ln(4z/D)}{2 \pi k_{\text{soil}} L} \quad [\si{\kelvin\per\watt}] \quad \text{(for burial depth $z$)}
+\end{equation}
+This model can be solved directly.
+
+\subsection{Case 2: Overhead (Natural Convection)}
+Heat convects into still air. $R_{\text{total}}$ is temperature-dependent and must be found iteratively at steady-state.
+\begin{equation}
+    R_{\text{env}} = R_{\text{conv}} = \frac{1}{h_c A_s} \quad \text{where} \quad h_c = \frac{k_{\text{air}}}{D} Nu_{\text{nat}} \quad [\si{\kelvin\per\watt}]
+\end{equation}
+The Rayleigh Number ($Ra$) is calculated as $Ra = Gr \cdot Pr$.
+\begin{itemize}
+    \item \textbf{Churchill-Chu Equation (for $Nu_{\text{nat}}$):}
+    \begin{equation}
+        Nu_{\text{nat}} = \left\{ 0.60 + \frac{0.387 Ra^{1/6}}{\left[1 + (0.559/Pr)^{9/16}\right]^{8/27}} \right\}^2 \quad [\text{dimensionless}]
+    \end{equation}
+\end{itemize}
+
+\subsection{Case 3: Overhead (Forced Convection)}
+Heat convects into wind. $R_{\text{total}}$ is also temperature-dependent and found iteratively.
+\begin{equation}
+    R_{\text{env}} = R_{\text{conv}} = \frac{1}{h_c A_s} \quad \text{where} \quad h_c = \frac{k_{\text{air}}}{D} Nu_{\text{forced}} \quad [\si{\kelvin\per\watt}]
+\end{equation}
+The Reynolds Number ($Re$) is calculated as $Re = \frac{v_{\text{wind}} D}{\nu}$.
+\begin{itemize}
+    \item \textbf{Churchill-Bernstein Equation (for $Nu_{\text{forced}}$):}
+    \begin{equation}
+        Nu_{\text{forced}} = 0.3 + \frac{0.62 Re^{1/2} Pr^{1/3}}{\left[1 + (0.4/Pr)^{2/3}\right]^{1/4}} \left[1 + \left(\frac{Re}{282000}\right)^{5/8}\right]^{4/5} \quad [\text{dimensionless}]
+    \end{equation}
+\end{itemize}
+
+\section{Finding Other Temperatures (At any time $t$)}
+Once $T_A(t)$ is found, we can find other temperatures using the quasi-steady-state assumption:
+
+\subsection{Surface Temperature $T_B(t)$}
+\begin{equation}
+    T_B(t) = T_C + \left( \frac{T_A(t) - T_C}{R_{\text{total}}} \right) R_{\text{env}} \quad [\si{\celsius}]
+\end{equation}
+
+\subsection{Temperature Profile across Insulation $T(r, t)$}
+This gives the temperature at any radius $r$ (where $r_1 \le r \le r_2$) at a specific time $t$.
+\begin{equation}
+    T(r, t) = T_A(t) - \left[ (T_A(t) - T_B(t)) \cdot \frac{\ln(r / r_1)}{\ln(r_2 / r_1)} \right] \quad [\si{\celsius}]
+\end{equation}
+
+\subsection{Soil Temperature Profile $T_{\text{soil}}(r, t)$}
+This equation allows you to find the temperature at any distance from your cable ($r > r_2$), as long as it is buried.
+\begin{equation}
+    T_{\text{soil}}(r, t) = T_C + \left( T_B(t) - T_C \right) \frac{\ln(4z/r)}{\ln(4z/D)} \quad [\si{\celsius}]
+\end{equation}
+Where $z$ is the burial depth and $D = 2r_2$.
+
+\newpage
+
+\section{Detailed Examples}
+We will now apply the model to two scenarios. Note that $I_{max}$ (Ampacity) is calculated based on the $T_{\text{max}}$ of the insulation. 
+\textbf{Note on calculations:} The values for $\rho_e$ (resistivity) and $k_{\text{soil}}$ (conductivity) used in these examples are $\rho_e = \SI{1.68e-8}{\ohm\metre}$ and $k_{\text{soil}}=\SI{1.0}{\watt\per\metre\per\kelvin}$, respectively, to match the step-by-step verification.
+
+\subsection{Example 1: ``Household Main'' Heavy Load}
+
+\subsubsection{Given Parameters (Load 1)}
+\begin{itemize}
+    \item \textbf{Load:} $P = \SI{10000}{\watt}$, $V = \SI{230}{\volt}$, $PF = 0.95$
+    \item \textbf{Conductor (Copper, $\approx \SI{25}{\square\mm}$):}
+        $r_1 = \SI{0.00282}{\metre}$, $L = \SI{200}{\metre}$ \\
+        $\rho_c = \SI{8960}{\kilogram\per\cubic\metre}$, $c_{p,c} = \SI{385}{\joule\per\kilogram\per\kelvin}$, $\rho_e = \SI{1.68e-8}{\ohm\metre}$
+    \item \textbf{Insulation (XLPE):}
+        $r_2 = \SI{0.004}{\metre}$ ($D = \SI{0.008}{\metre}$), $T_{\text{max}} = \SI{90}{\celsius}$ \\
+        $\rho_{\text{ins}} = \SI{920}{\kilogram\per\cubic\metre}$, $c_{p,\text{ins}} = \SI{2150}{\joule\per\kilogram\per\kelvin}$, $k_{\text{ins}} = \SI{0.28}{\watt\per\metre\per\kelvin}$
+    \item \textbf{Environment:} $T_C = \SI{20}{\celsius}$
+\end{itemize}
+
+\subsubsection{Common Calculations (Load 1)}
+\begin{itemize}
+    \item $I = 10000 / (230 \cdot 0.95) = \SI{45.77}{\ampere}$
+    \item $A_c = \pi \cdot (\SI{0.00282}{\metre})^2 = \SI{2.498e-5}{\square\metre}$
+    \item $R_{\text{elec}} = (\SI{1.68e-8}{\ohm\metre} \cdot \SI{200}{\metre}) / \SI{2.498e-5}{\square\metre} = \SI{0.1345}{\ohm}$
+    \item $P_{\text{gen}} = (\SI{45.77}{\ampere})^2 \cdot \SI{0.1345}{\ohm} = \SI{281.9}{\watt}$
+    \item $C_{th,c} = (\SI{8960}{\kilogram\per\cubic\metre} \cdot \pi \cdot \SI{0.00282}{\metre}^2 \cdot \SI{200}{\metre}) \cdot \SI{385}{\joule\per\kilogram\per\kelvin} = \SI{17233}{\joule\per\kelvin}$
+    \item $C_{th,ins} = (\SI{920}{\kilogram\per\cubic\metre} \cdot \pi \cdot (\SI{0.004}{\metre}^2 - \SI{0.00282}{\metre}^2) \cdot \SI{200}{\metre}) \cdot \SI{2150}{\joule\per\kilogram\per\kelvin} = \SI{9998}{\joule\per\kelvin}$
+    \item $C_{th,\text{corrected}} = 17233 + 0.5(9998) = \SI{22232}{\joule\per\kelvin}$
+    \item $R_{\text{ins}} = \ln(0.004/0.00282) / (2\pi \cdot \SI{0.28}{\watt\per\metre\per\kelvin} \cdot \SI{200}{\metre}) = \SI{0.00099}{\kelvin\per\watt}$
+\end{itemize}
+
+\subsubsection{Results by Environment (Load 1)}
+\begin{itemize}
+    \item \textbf{Case 1: Underground} ($z=\SI{0.7}{\metre}$, $k_{\text{soil}}=\SI{1.0}{\watt\per\metre\per\kelvin}$)
+        \begin{itemize}
+            \item $R_{\text{env}} = \ln(4 \cdot 0.7 / 0.008) / (2\pi \cdot 1.0 \cdot 200) = \SI{0.00466}{\kelvin\per\watt}$
+            \item $R_{\text{total}} = 0.00099 + 0.00466 = \SI{0.00565}{\kelvin\per\watt}$
+            \item $T_{ss,\text{heat}} = 20 + (281.9 \cdot 0.00565) = \SI{21.59}{\celsius}$
+            \item $\tau = 0.00565 \cdot 22232 = \SI{125.6}{\second}$
+            \item $I_{\text{max}} = \sqrt{(90-20) / (0.1345 \cdot 0.00565)} = \SI{303.4}{\ampere}$
+        \end{itemize}
+
+    \item \textbf{Case 2: Natural Convection} ($v_{\text{wind}} = \SI{0}{\metre\per\second}$)
+        \begin{itemize}
+            \item $R_{\text{env}} = \SI{0.02438}{\kelvin\per\watt}$ (from iterative solution)
+            \item $R_{\text{total}} = 0.00099 + 0.02438 = \SI{0.02537}{\kelvin\per\watt}$
+            \item $T_{ss,\text{heat}} = 20 + (281.9 \cdot 0.02537) = \SI{27.15}{\celsius}$
+            \item $\tau = 0.02537 \cdot 22232 = \SI{564.0}{\second}$
+            \item $I_{\text{max}} = \sqrt{(90-20) / (0.1345 \cdot 0.02537)} = \SI{143.4}{\ampere}$
+        \end{itemize}
+
+    \item \textbf{Case 3: Forced Convection} ($v_{\text{wind}} = \SI{3}{\metre\per\second}$)
+        \begin{itemize}
+            \item $R_{\text{env}} = \SI{0.00312}{\kelvin\per\watt}$ (from iterative solution)
+            \item $R_{\text{total}} = 0.00099 + 0.00312 = \SI{0.00411}{\kelvin\per\watt}$
+            \item $T_{ss,\text{heat}} = 20 + (281.9 \cdot 0.00411) = \SI{21.16}{\celsius}$
+            \item $\tau = 0.00411 \cdot 22232 = \SI{91.37}{\second}$
+            \item $I_{\text{max}} = \sqrt{(90-20) / (0.1345 \cdot 0.00411)} = \SI{356.1}{\ampere}$
+        \end{itemize}
+\end{itemize}
+
+\newpage
+
+\subsection{Example 2: ``Washing Machine'' Load}
+
+\subsubsection{Given Parameters (Load 2)}
+\begin{itemize}
+    \item \textbf{Load:} $P = \SI{2000}{\watt}$, $V = \SI{230}{\volt}$, $PF = 0.65$ (Bad)
+    \item \textbf{Conductor (Copper, $\approx \SI{2.5}{\square\mm}$):}
+        $r_1 = \SI{0.000892}{\metre}$, $L = \SI{200}{\metre}$ \\
+        (Material properties same as Load 1)
+    \item \textbf{Insulation (PVC):}
+        $r_2 = \SI{0.0017}{\metre}$ ($D = \SI{0.0034}{\metre}$), $T_{\text{max}} = \SI{70}{\celsius}$ \\
+        $\rho_{\text{ins}} = \SI{1400}{\kilogram\per\cubic\metre}$, $c_{p,\text{ins}} = \SI{900}{\joule\per\kilogram\per\kelvin}$, $k_{\text{ins}} = \SI{0.17}{\watt\per\metre\per\kelvin}$
+    \item \textbf{Environment:} $T_C = \SI{20}{\celsius}$
+\end{itemize}
+
+\subsubsection{Common Calculations (Load 2)}
+\begin{itemize}
+    \item $I = 2000 / (230 \cdot 0.65) = \SI{13.38}{\ampere}$
+    \item $A_c = \pi \cdot (\SI{0.000892}{\metre})^2 = \SI{2.499e-6}{\square\metre}$
+    \item $R_{\text{elec}} = (\SI{1.68e-8}{\ohm\metre} \cdot \SI{200}{\metre}) / \SI{2.499e-6}{\square\metre} = \SI{1.345}{\ohm}$
+    \item $P_{\text{gen}} = (\SI{13.38}{\ampere})^2 \cdot \SI{1.345}{\ohm} = \SI{240.8}{\watt}$
+    \item $C_{th,c} = (\SI{8960}{\kilogram\per\cubic\metre} \cdot \pi \cdot \SI{0.000892}{\metre}^2 \cdot \SI{200}{\metre}) \cdot \SI{385}{\joule\per\kilogram\per\kelvin} = \SI{1724}{\joule\per\kelvin}$
+    \item $C_{th,ins} = (\SI{1400}{\kilogram\per\cubic\metre} \cdot \pi \cdot (\SI{0.0017}{\metre}^2 - \SI{0.000892}{\metre}^2) \cdot \SI{200}{\metre}) \cdot \SI{900}{\joule\per\kilogram\per\kelvin} = \SI{1660}{\joule\per\kelvin}$
+    \item $C_{th,\text{corrected}} = 1724 + 0.5(1660) = \SI{2554}{\joule\per\kelvin}$
+    \item $R_{\text{ins}} = \ln(0.0017/0.000892) / (2\pi \cdot \SI{0.17}{\watt\per\metre\per\kelvin} \cdot \SI{200}{\metre}) = \SI{0.00302}{\kelvin\per\watt}$
+\end{itemize}
+
+\subsubsection{Results by Environment (Load 2)}
+\begin{itemize}
+    \item \textbf{Case 1: Underground} ($z=\SI{0.7}{\metre}$, $k_{\text{soil}}=\SI{1.0}{\watt\per\metre\per\kelvin}$)
+        \begin{itemize}
+            \item $R_{\text{env}} = \ln(4 \cdot 0.7 / 0.0034) / (2\pi \cdot 1.0 \cdot 200) = \SI{0.00534}{\kelvin\per\watt}$
+            \item $R_{\text{total}} = 0.00302 + 0.00534 = \SI{0.00836}{\kelvin\per\watt}$
+            \item $T_{ss,\text{heat}} = 20 + (240.8 \cdot 0.00836) = \SI{22.01}{\celsius}$
+            \item $\tau = 0.00836 \cdot 2554 = \SI{21.35}{\second}$
+            \item $I_{\text{max}} = \sqrt{(70-20) / (1.345 \cdot 0.00836)} = \SI{66.7}{\ampere}$
+        \end{itemize}
+
+    \item \textbf{Case 2: Natural Convection} ($v_{\text{wind}} = \SI{0}{\metre\per\second}$)
+        \begin{itemize}
+            \item $R_{\text{env}} = \SI{0.0352}{\kelvin\per\watt}$ (from iterative solution)
+            \item $R_{\text{total}} = 0.00302 + 0.0352 = \SI{0.03822}{\kelvin\per\watt}$
+            \item $T_{ss,\text{heat}} = 20 + (240.8 \cdot 0.03822) = \SI{29.20}{\celsius}$
+            \item $\tau = 0.03822 \cdot 2554 = \SI{97.6}{\second}$
+            \item $I_{\text{max}} = \sqrt{(70-20) / (1.345 \cdot 0.03822)} = \SI{31.2}{\ampere}$
+        \end{itemize}
+
+    \item \textbf{Case 3: Forced Convection} ($v_{\text{wind}} = \SI{3}{\metre\per\second}$)
+        \begin{itemize}
+            \item $R_{\text{env}} = \SI{0.00484}{\kelvin\per\watt}$ (from iterative solution)
+            \item $R_{\text{total}} = 0.00302 + 0.00484 = \SI{0.00786}{\kelvin\per\watt}$
+            \item $T_{ss,\text{heat}} = 20 + (240.8 \cdot 0.00786) = \SI{21.89}{\celsius}$
+            \item $\tau = 0.00786 \cdot 2554 = \SI{20.07}{\second}$
+            \item $I_{\text{max}} = \sqrt{(70-20) / (1.345 \cdot 0.00786)} = \SI{68.8}{\ampere}$
+        \end{itemize}
+\end{itemize}
+
+% --- APPENDICES ---
+\newpage
+\appendix
+\section{References}
+
+\begin{itemize}
+    \item \textbf{PROPIEDADES TERMICAS FISICAS DEL AIRE} \\
+    Engineers Edge. (n.d.). \textit{Viscosity of Air, Dynamic and Kinematic.} \\
+    \url{https://www.engineersedge.com/physics/viscosity_of_air_dynamic_and_kinematic_14483.htm#google_vignette}
+
+    \item \textbf{PROPIEDADES TERMICAS DEL XLPE} \\
+    Lee, K. Y., Yang, J. S., Choi, Y. S., \& Park, D. H. (n.d.). \textit{Specific Heat and Thermal Conductivity Measurement of XLPE Insulator and Semiconducting Materials.}
+    
+    \item \textbf{Transferencia de Calor y Masa} \\
+    Cengel, Y. A.
+    
+    \item \textbf{Termotecnia UAL} \\
+    Molina Aiz, F.
+    
+    \item \textbf{Propiedades Fisicas del PVC} \\
+    Kök, M., Demirelli, K., \& Aydogdu, Y. (2008). Thermophysical Properties Of Blend Of Poly (Vinyl Chloride) With Poly (Isobornyl Acrylate). \textit{Int. J. Sci. Technol., 3.}
+    
+    \item \textbf{Model Development} \\
+    Assistance from Google Gemini AI.
+
+\end{itemize}
+
+\section{Assumed Material Properties}
+
+\subsection{Summary of Material Properties}
+The following table consolidates the key material properties assumed for the calculations throughout this report. These values are representative and based on standard engineering references.
+
+\begin{table}[h!]
+    \centering
+    \caption{Consolidated Material Properties and Assumed Values}
+    \label{tab:material_properties}
+    \begin{tabular}{@{}l l l@{}}
+        \toprule
+        \textbf{Material} & \textbf{Property} & \textbf{Value} \\
+        \midrule
+        \textbf{Copper} & Density ($\rho$) & \SI{8960}{\kilogram\per\cubic\metre} \\
+                        & Specific Heat ($c_p$) & \SI{385}{\joule\per\kilogram\per\kelvin} \\
+                        & Conductivity ($\sigma$) & \SI{56}{\metre\per\ohm\per\square\mm} \\
+                        & Temp. Coefficient ($\alpha$) & \SI{0.00393}{\per\kelvin} \\
+        \midrule
+        \textbf{Aluminum} & Density ($\rho$) & \SI{2700}{\kilogram\per\cubic\metre} \\
+                          & Specific Heat ($c_p$) & \SI{900}{\joule\per\kilogram\per\kelvin} \\
+                          & Conductivity ($\sigma$) & \SI{36}{\metre\per\ohm\per\square\mm} \\
+                          & Temp. Coefficient ($\alpha$) & \SI{0.00403}{\per\kelvin} \\
+        \midrule
+        \textbf{ACSR} & Density (approx. avg.) & \SI{3980}{\kilogram\per\cubic\metre} \\
+                      & Specific Heat (approx. avg.) & \SI{880}{\joule\per\kilogram\per\kelvin} \\
+                      & Conductivity ($\sigma$) & \SI{34}{\metre\per\ohm\per\square\mm} \\
+        \midrule
+        \textbf{PVC} & Density ($\rho$) & \SI{1400}{\kilogram\per\cubic\metre} \\
+                     & Specific Heat ($c_p$) & \SI{1000}{\joule\per\kilogram\per\kelvin} \\
+                     & Thermal Conductivity ($k$) & \SI{0.17}{\watt\per\metre\per\kelvin} \\
+        \midrule
+        \textbf{XLPE} & Density ($\rho$) & \SI{920}{\kilogram\per\cubic\metre} \\
+                      & Specific Heat ($c_p$) & \SI{2300}{\joule\per\kilogram\per\kelvin} \\
+                      & Thermal Conductivity ($k$) & \SI{0.28}{\watt\per\metre\per\kelvin} \\
+        \midrule
+        \textbf{Soil} & Thermal Resistivity ($\rho_{\text{soil}}$) & \SI{1.5}{\kelvin\metre\per\watt} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\newpage
+
+\section{Beyond the Lumped Model: A PDE Approach}
+
+The Lumped Capacitance Model (ODE) is an excellent engineering approximation, but it relies on a key simplification: it treats the insulation as a "massless" resistor and lumps all thermal capacitance into the conductor. This Appendix briefly explains the "real" physics model, which uses a Partial Differential Equation (PDE), and its connection to Fourier analysis.
+
+\subsection{The "Real" Physics: The Heat Diffusion Equation}
+A more realistic model treats the insulation as a region that *both* resists and *stores* heat. This means the temperature $T$ is a function of *both* radius $r$ and time $t$, written as $T(r, t)$. This is governed by the Heat Diffusion Equation, which in cylindrical coordinates (assuming only radial flow) is:
+
+\begin{equation}
+    \frac{1}{r} \frac{\partial}{\partial r} \left( r \frac{\partial T}{\partial r} \right) = \frac{1}{\alpha} \frac{\partial T}{\partial t} \quad \left[ \frac{\si{\watt}}{\si{\cubic\metre}} \right]
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item \textbf{Left Side:} Represents the net heat conduction *into* a small ring of insulation.
+    \item \textbf{Right Side:} Represents the rate of heat *stored* in that small ring of insulation.
+    \item \textbf{$\alpha = \frac{k_{\text{ins}}}{\rho_{\text{ins}} c_{p,\text{ins}}}$:} is the \textbf{thermal diffusivity} of the insulation, a material property that measures how quickly heat diffuses relative to how much it stores.
+\end{itemize}
+
+This PDE cannot be solved by simple integration. It must be solved simultaneously with a set of complex boundary conditions (e.g., balancing conductor heat generation/storage with conduction into the insulation) and an initial condition ($T(r, 0) = T_i$).
+
+\subsection{The Solution Strategy: Fourier Series and Separation}
+
+The classic method to solve this PDE is \textbf{Separation of Variables}.
+
+\begin{enumerate}
+    \item \textbf{Assume a Solution Form:} We assume the solution can be "separated" into a product of two functions, one for space and one for time:
+    $$ T(r, t) = R(r) \cdot \Theta(t) $$
+    
+    \item \textbf{Split the PDE:} Plugging this assumption into the PDE and rearranging, we can split the one complex PDE into two simpler ODEs:
+    \begin{itemize}
+        \item An ODE for the spatial part, $R(r)$.
+        \item An ODE for the time part, $\Theta(t)$.
+    \end{itemize}
+    
+    \item \textbf{Solve the Time ODE:} The time ODE, $\Theta(t)$, solves to a simple exponential decay, just like our lumped model: $\Theta(t) = C \exp(-\lambda t)$.
+    
+    \item \textbf{Solve the Spatial ODE (The Fourier Connection):} The spatial ODE, $R(r)$, is more complex. Its solutions are not simple functions, but a special set of functions called \textbf{Bessel functions}.
+    
+    Just like a complex musical chord can be represented as a \textbf{Fourier Series} (a sum of simple sines and cosines), our complex initial temperature profile can be represented as a \textbf{Fourier-Bessel Series} (a sum of these Bessel functions).
+    
+    Each of these functions represents a "thermal mode" or a "shape" of heat distribution.
+\end{enumerate}
+
+\subsubsection{Putting It All Together}
+The "real" solution $T(r, t)$ is an \textbf{infinite sum} (a Fourier-Bessel series) of these spatial shapes, where each shape decays in time at its own unique rate:
+
+$$ T(r, t) = \sum_{n=1}^{\infty} A_n R_n(r) \exp(-\lambda_n t) $$
+
+Our simple lumped model (with its single $\tau$) is essentially a first-order approximation of this. It uses only the *first and most dominant term* ($n=1$) of this infinite series, effectively capturing the slowest, most dominant time constant of the system.
+
+\subsubsection{Fourier Transforms vs. Series}
+\begin{itemize}
+    \item \textbf{Fourier Series} (and their cousins, Fourier-Bessel series) are used when the problem has \textbf{finite boundaries}, like our insulation layer (from $r_1$ to $r_2$).
+    \item \textbf{Fourier Transforms} are the tool used when the problem has \textbf{infinite boundaries}. For example, a more advanced model for the *underground* case could use a Fourier Transform to analyze the diffusion of heat from the cable into an infinitely large volume of soil.
+\end{itemize}
+
+\end{document}
