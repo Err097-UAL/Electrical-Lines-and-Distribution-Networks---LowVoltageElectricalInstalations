@@ -1,6 +1,6 @@
-function air = getAirProperties(T_celsius)
+function air = Z4_getAirProperties(T_celsius)
 % -------------------------------------------------------------------------
-% air = getAirProperties(T_celsius)
+% air = Z4_getAirProperties(T_celsius)
 % -------------------------------------------------------------------------
 % Returns a struct 'air' with properties of air at 1 atm.
 % Properties are a function of the film temperature T_celsius (in deg C).

@@ -1,6 +1,6 @@
-function plotResults(results)
+function Z5_plotResults(results)
 % -------------------------------------------------------------------------
-% plotResults(results)
+% Z5_plotResults(results)
 % -------------------------------------------------------------------------
 % Generates a set of plots based on the data in the 'results' struct.
 % -------------------------------------------------------------------------
@@ -28,7 +28,7 @@ legend('Conductor (T_A)', 'Surface (T_B)', 'Steady-State (T_{ss})', 'Ambient (T_
 axis tight;
 
 % --- Figure 2: Radial Profile (Insulation) ---
-figure('Name', 'Insulation Temperature Profile');
+figure('Name', 'Insulation Temperature Profile (2D)');
 hold on;
 r_ins_mm = results.r_ins_vector * 1000; % Convert to mm
 profile_times_sec = results.sim.profile_times_sec;
@@ -72,4 +72,48 @@ if ~isempty(results.T_soil_profile)
     axis tight;
 end
 
+% --- Figure 4: Insulation Profile (3D Surface) ---
+figure('Name', 'Insulation Temperature Profile (3D)');
+
+% Create meshgrid for 3D plot
+[T_MESH, R_MESH] = meshgrid(t_hours, r_ins_mm);
+
+% Plot the surface. Note: T_ins_profile_full is [time, radius]
+% We need to transpose it to [radius, time] to match the meshgrid.
+surf(T_MESH, R_MESH, results.T_ins_profile_full', 'EdgeColor', 'none');
+title('3D Temperature Profile (Insulation)');
+xlabel('Time (hours)');
+ylabel('Radius (mm)');
+zlabel('Temperature (deg C)');
+colorbar;
+axis tight;
+
+% --- Figure 5: Cable Cross-Section ---
+figure('Name', 'Cable Geometry');
+hold on;
+r1_mm = results.params.conductor.r1 * 1000;
+r2_mm = results.params.conductor.r2 * 1000;
+
+% Use a helper function to draw filled circles
+plot_circle(0, 0, r2_mm, [0.4 0.4 1]); % Insulation (light blue)
+plot_circle(0, 0, r1_mm, [1 0.5 0.2]); % Conductor (orange)
+
+hold off;
+axis equal; % Ensures the circles are round
+axis off; % Hide the x/Y axes
+title('Cable Cross-Section');
+legend('Insulation', 'Conductor', 'Location', 'northeastoutside');
+
+end
+
+
+function h = plot_circle(x, y, r, c)
+% Helper function to plot a filled circle
+% x, y: center coordinates
+% r: radius
+% c: color triplet [R G B]
+    t = linspace(0, 2*pi, 100);
+    X = r * cos(t) + x;
+    Y = r * sin(t) + y;
+    h = fill(X, Y, c);
 end

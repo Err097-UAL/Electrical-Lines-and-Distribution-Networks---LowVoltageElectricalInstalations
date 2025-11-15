@@ -1,6 +1,6 @@
-function [R_total, R_env] = calculateEnvironmentalResistance(scenario, params)
+function [R_total, R_env] = Z3_calculateEnvironmentalResistance(scenario, params)
 % -------------------------------------------------------------------------
-% [R_total, R_env] = calculateEnvironmentalResistance(scenario, params)
+% [R_total, R_env] = Z3_calculateEnvironmentalResistance(scenario, params)
 % -------------------------------------------------------------------------
 % This function calculates the environmental and total thermal resistance
 % based on the defined scenario.
@@ -55,7 +55,7 @@ else
         for iter = 1:max_iter
             % 1. Get air properties at film temperature
             T_film = (T_B_guess + T_C) / 2;
-            air = getAirProperties(T_film);
+            air = Z4_getAirProperties(T_film);
             
             % 2. Calculate Ra (Rayleigh Number)
             Gr = (9.81 * air.beta * abs(T_B_guess - T_C) * D^3) / (air.nu^2);
@@ -94,7 +94,7 @@ else
          for iter = 1:max_iter
             % 1. Get air properties at film temperature
             T_film = (T_B_guess + T_C) / 2;
-            air = getAirProperties(T_film);
+            air = Z4_getAirProperties(T_film);
             
             % 2. Calculate Re (Reynolds Number)
             Re = (scenario.v_wind * D) / air.nu;
