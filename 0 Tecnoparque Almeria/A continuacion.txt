@@ -1,0 +1,47 @@
+Summary of Missing Elements for Detailed Schematic:
+
+(Your current single-line diagram is an excellent conceptual summary. The following items are what you would add to make it a detailed schematic for construction/implementation.)
+
+1. Main 20 kV (MV) Installation:
+
+Main isolation device (load break switch or circuit breaker) at the property line / Point of Common Coupling (PCC).
+
+Utility Metering Unit (required by the utility) with its own Current Transformers (CTs) and Potential Transformers (PTs).
+
+2. Transformer Protection:
+
+MV Side (20 kV): Protection for each transformer (e.g., MV fuses or disconnect switches).
+
+LV Side (400V): A main air circuit breaker (interruptor automático) on the 400V output of both Transformer A (2.5 MVA) and Transformer 2 (0.4 MVA).
+
+3. Feeder Protection (400V Loads):
+
+A main 400V switchboard/busbar fed from Transformer A.
+
+Individual molded-case circuit breakers (MCCBs) for each feeder line coming from that switchboard, going to:
+
+Oficinas (Office)
+
+Museo (Museum)
+
+Nave A (Workshop A)
+
+Nave B (Workshop B)
+
+Alumbrado Exterior (Exterior Lighting)
+
+4. Generator Connection (400V):
+
+A generator circuit breaker (syncing breaker) connecting the "Nave C Reactor Nuclear" to the 400V side of Transformer 2.
+
+5. System & Cable Specification:
+
+Details of the grounding system (e.g., drawing the "Esquema TT" with earth connections for the transformer neutral and the building masses).
+
+Cable and busbar specifications (e.g., material, conductor size, insulation type, and installation method).
+
+6. Drawing Formalities:
+
+Use of standard IEC symbols for all new components (breakers, switches, etc.).
+
+A more detailed title block with revision control, drawing scale, and formal approval fields.
